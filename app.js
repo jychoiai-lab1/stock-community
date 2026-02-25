@@ -40,6 +40,28 @@ async function loadTicker() {
 loadTicker();
 setInterval(loadTicker, 60 * 60 * 1000); // 1시간마다 자동 갱신
 
+async function loadSpecialTickers() {
+  var list = document.getElementById('specialTickerList');
+  if (!list) return;
+  try {
+    var res = await db.from('special_tickers').select('*').order('first_date', { ascending: false });
+    if (res.error) throw res.error;
+    if (!res.data || !res.data.length) {
+      list.innerHTML = '<div class="sidebar-empty">아직 없음</div>';
+      return;
+    }
+    list.innerHTML = res.data.map(function(t) {
+      var d = t.first_date ? t.first_date.replace(/-/g, '.') : '';
+      return '<div class="sidebar-ticker">' +
+        '<span class="sidebar-ticker-symbol">' + t.ticker + '</span>' +
+        '<span class="sidebar-ticker-name">' + t.name + '</span>' +
+        '<span class="sidebar-ticker-date">' + d + '</span>' +
+        '</div>';
+    }).join('');
+  } catch(e) { console.error('특별종목 오류:', e); }
+}
+loadSpecialTickers();
+
 var allPosts = [];
 async function loadPosts() {
   var postList = document.getElementById('postList');

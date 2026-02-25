@@ -18,7 +18,7 @@
     </div>
   </header>
   <main class="main">
-    <div class="container">
+    <div class="container-wide">
       <!-- 커스텀 티커 테이프 -->
       <div class="ticker-tape">
         <div class="ticker-track" id="tickerTrack">
@@ -26,15 +26,25 @@
         </div>
       </div>
       <div class="ticker-refresh-note">🕐 1시간마다 자동 갱신</div>
-      <section class="posts-section">
-        <div class="posts-header">
-          <h2 class="section-title">브리핑</h2>
-          <span class="posts-count" id="postsCount"></span>
+      <div class="layout">
+        <div class="main-col">
+          <section class="posts-section">
+            <div class="posts-header">
+              <h2 class="section-title">브리핑</h2>
+              <span class="posts-count" id="postsCount"></span>
+            </div>
+            <div class="post-list" id="postList">
+              <div class="loading-spinner"><div class="spinner"></div><p>불러오는 중...</p></div>
+            </div>
+          </section>
         </div>
-        <div class="post-list" id="postList">
-          <div class="loading-spinner"><div class="spinner"></div><p>불러오는 중...</p></div>
-        </div>
-      </section>
+        <aside class="sidebar">
+          <div class="sidebar-title">🔬 특별 분석 종목</div>
+          <div id="specialTickerList">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </aside>
+      </div>
     </div>
   </main>
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">

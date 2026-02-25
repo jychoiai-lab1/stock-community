@@ -22,7 +22,7 @@ MARKET_TICKERS = {
 
 # 기술적 분석 대상 종목 (여기에 추가/수정하세요)
 ANALYSIS_TICKERS = {
-    'URA (우라늄 ETF)': 'URA',
+    'NTR (뉴트리엔)': 'NTR',
 }
 
 # yfinance 티커 → chart_data 키 매핑
@@ -33,7 +33,7 @@ CHART_KEYS = {
     'USDJPY=X': 'USDJPY',
     'DX=F':     'DXY',
     'BTC-USD':  'BTC',
-    'URA':      'URA',
+    'NTR':      'NTR',
 }
 
 # =============================================
@@ -314,6 +314,22 @@ def update_stock_prices(client):
         print(f"  주식 현황 {len(rows)}개 저장 완료")
 
 # =============================================
+# 특별 분석 종목 저장
+# =============================================
+def save_special_ticker(client, name, ticker):
+    try:
+        existing = client.table('special_tickers').select('id').eq('ticker', ticker).execute()
+        if not existing.data:
+            client.table('special_tickers').insert({
+                'name': name,
+                'ticker': ticker,
+                'first_date': datetime.now().strftime('%Y-%m-%d'),
+            }).execute()
+            print(f"  특별종목 저장: {name} ({ticker})")
+    except Exception as e:
+        print(f"  특별종목 저장 오류: {e}")
+
+# =============================================
 # Supabase 게시글 업로드
 # =============================================
 def post_to_supabase(client, title, content):
@@ -362,6 +378,7 @@ def main():
     special_sections = ""
     for name, ticker in ANALYSIS_TICKERS.items():
         print(f"    {name} 특별분석 중...")
+        save_special_ticker(client, name, ticker)
         chart_div = get_chart_div(ticker)
         analysis_html = analyze_ticker_html(name, ticker)
         special_sections += f'''

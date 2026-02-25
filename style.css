@@ -14,6 +14,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 /* ===== 메인 ===== */
 .main { min-height: calc(100vh - 56px); padding: 24px 0 60px; }
 .container { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+.container-wide { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
+
+/* ===== 레이아웃 ===== */
+.layout { display: flex; gap: 20px; align-items: flex-start; }
+.main-col { flex: 1; min-width: 0; }
+
+/* ===== 사이드바 ===== */
+.sidebar { width: 196px; flex-shrink: 0; position: sticky; top: 72px; background: #161b27; border: 1px solid #2d3748; border-radius: 16px; padding: 16px; }
+.sidebar-title { font-size: 13px; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #2d3748; }
+.sidebar-ticker { padding: 10px 0; border-bottom: 1px solid #1e2535; }
+.sidebar-ticker:last-child { border-bottom: none; }
+.sidebar-ticker-symbol { display: block; font-size: 14px; font-weight: 700; color: #60a5fa; }
+.sidebar-ticker-name { display: block; font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.sidebar-ticker-date { display: block; font-size: 11px; color: #475569; margin-top: 3px; }
+.sidebar-empty { font-size: 13px; color: #475569; text-align: center; padding: 12px 0; }
+
+@media (max-width: 720px) { .layout { flex-direction: column; } .sidebar { width: 100%; position: static; } }
 
 /* ===== 커스텀 티커 테이프 ===== */
 .ticker-tape { overflow: hidden; background: #161b27; border: 1px solid #2d3748; border-radius: 10px; height: 46px; display: flex; align-items: center; margin: 12px 0 8px; }
