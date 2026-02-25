@@ -21,8 +21,8 @@ async function loadPosts() {
   var postList = document.getElementById('postList');
   var postsCount = document.getElementById('postsCount');
   try {
-    if (supabase) {
-      var res = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+    if (db) {
+      var res = await db.from('posts').select('*').order('created_at', { ascending: false });
       if (res.error) throw res.error;
       allPosts = res.data || [];
     } else {
