@@ -19,6 +19,27 @@ function createPostCard(post) {
   var preview = stripHtml(post.content).slice(0, 80) + '...';
   return '<div class="post-card" onclick="openPost(' + post.id + ')"><div class="post-category">' + post.category + '</div><div class="post-title">' + post.title + '</div><div class="post-preview">' + preview + '</div><div class="post-meta"><span class="post-date">' + formatDate(post.created_at) + '</span><span class="post-stat">👁 ' + (post.views||0) + '</span></div></div>';
 }
+async function loadTicker() {
+  var tape = document.getElementById('tickerTrack');
+  if (!tape) return;
+  try {
+    var res = await db.from('market_ticker').select('*').order('id');
+    if (res.error || !res.data || !res.data.length) return;
+    var items = res.data.map(function(t) {
+      var cls = t.is_up ? 'up' : 'down';
+      var arrow = t.is_up ? '▲' : '▼';
+      return '<span class="ticker-item">' +
+        '<span class="ticker-name">' + t.name + '</span>' +
+        '<span class="ticker-price">' + t.price + '</span>' +
+        '<span class="ticker-chg ' + cls + '">' + arrow + ' ' + t.change_pct + '</span>' +
+        '</span>';
+    }).join('');
+    tape.innerHTML = items + items; // 무한 루프를 위해 2번 반복
+  } catch(e) { console.error('티커 오류:', e); }
+}
+loadTicker();
+setInterval(loadTicker, 60 * 60 * 1000); // 1시간마다 자동 갱신
+
 var allPosts = [];
 async function loadPosts() {
   var postList = document.getElementById('postList');

@@ -15,13 +15,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 .main { min-height: calc(100vh - 56px); padding: 24px 0 60px; }
 .container { max-width: 720px; margin: 0 auto; padding: 0 16px; }
 
-/* ===== TradingView 티커 테이프 ===== */
-.tv-tape-wrap { margin: 12px 0 8px; border-radius: 10px; overflow: hidden; border: 1px solid #2d3748; }
-.tv-tape-wrap .tradingview-widget-container { height: 46px; }
-
-/* ===== TradingView 차트 ===== */
-.tv-chart { width: 100%; height: 380px; background: #161b27; }
-.tv-chart > div { width: 100% !important; height: 100% !important; }
+/* ===== 커스텀 티커 테이프 ===== */
+.ticker-tape { overflow: hidden; background: #161b27; border: 1px solid #2d3748; border-radius: 10px; height: 46px; display: flex; align-items: center; margin: 12px 0 8px; }
+.ticker-track { display: flex; align-items: center; animation: ticker-scroll 30s linear infinite; white-space: nowrap; will-change: transform; }
+.ticker-tape:hover .ticker-track { animation-play-state: paused; }
+.ticker-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 24px; font-size: 13px; border-right: 1px solid #2d3748; height: 46px; }
+.ticker-name { color: #64748b; font-weight: 600; font-size: 12px; }
+.ticker-price { color: #f1f5f9; font-weight: 700; }
+.ticker-chg { font-size: 12px; font-weight: 600; }
+.ticker-chg.up { color: #f87171; }
+.ticker-chg.down { color: #60a5fa; }
+@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 /* ===== 게시글 섹션 ===== */
 .posts-section { margin-top: 8px; }
