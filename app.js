@@ -12,8 +12,11 @@ function formatDate(d) {
   if (diff < 1440) return Math.floor(diff/60) + '시간 전';
   return dt.getFullYear() + '.' + String(dt.getMonth()+1).padStart(2,'0') + '.' + String(dt.getDate()).padStart(2,'0');
 }
+function stripHtml(html) {
+  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
 function createPostCard(post) {
-  var preview = post.content.replace(/\n/g, ' ').slice(0, 80) + '...';
+  var preview = stripHtml(post.content).slice(0, 80) + '...';
   return '<div class="post-card" onclick="openPost(' + post.id + ')"><div class="post-category">' + post.category + '</div><div class="post-title">' + post.title + '</div><div class="post-preview">' + preview + '</div><div class="post-meta"><span class="post-date">' + formatDate(post.created_at) + '</span><span class="post-stat">👁 ' + (post.views||0) + '</span></div></div>';
 }
 var allPosts = [];
@@ -42,7 +45,7 @@ async function loadPosts() {
 function openPost(id) {
   var post = allPosts.find(function(p){ return p.id === id; });
   if (!post) return;
-  document.getElementById('modalContent').innerHTML = '<div class="modal-category">' + post.category + '</div><div class="modal-title">' + post.title + '</div><div class="modal-date">' + formatDate(post.created_at) + '</div><div class="modal-body">' + post.content.replace(/\n/g,'<br>') + '</div>';
+  document.getElementById('modalContent').innerHTML = '<div class="modal-category">' + post.category + '</div><div class="modal-title">' + post.title + '</div><div class="modal-date">' + formatDate(post.created_at) + '</div><div class="modal-body">' + post.content + '</div>';
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
