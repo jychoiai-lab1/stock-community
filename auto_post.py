@@ -25,14 +25,14 @@ ANALYSIS_TICKERS = {
     'URA (우라늄 ETF)': 'URA',
 }
 
-# yfinance 티커 → TradingView 심볼 매핑
+# yfinance 티커 → TradingView 심볼 매핑 (TVC = 무료 데이터)
 TV_SYMBOLS = {
-    '^NDX':     'NASDAQ:NDX',
-    '^GSPC':    'SP:SPX',
-    '^VIX':     'CBOE:VIX',
+    '^NDX':     'TVC:NDX',
+    '^GSPC':    'TVC:SPX',
+    '^VIX':     'TVC:VIX',
     'USDJPY=X': 'FX:USDJPY',
     'JPY=X':    'FX:JPYUSD',
-    'BTC-USD':  'BINANCE:BTCUSDT',
+    'BTC-USD':  'BITSTAMP:BTCUSD',
     'URA':      'AMEX:URA',
 }
 

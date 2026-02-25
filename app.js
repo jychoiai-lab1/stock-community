@@ -42,31 +42,35 @@ async function loadPosts() {
     postList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + err.message + '</div></div>';
   }
 }
-var tvScriptLoaded = false;
-function loadTVScript(callback) {
-  if (tvScriptLoaded && typeof TradingView !== 'undefined') { callback(); return; }
-  var s = document.createElement('script');
-  s.src = 'https://s3.tradingview.com/tv.js';
-  s.onload = function() { tvScriptLoaded = true; callback(); };
-  document.head.appendChild(s);
-}
 function initTVCharts() {
   var charts = document.querySelectorAll('.tv-chart');
   if (!charts.length) return;
-  loadTVScript(function() {
-    charts.forEach(function(el, i) {
-      var symbol = el.getAttribute('data-symbol');
-      var id = 'tv_' + i + '_' + Date.now();
-      el.id = id;
-      new TradingView.widget({
-        container_id: id, symbol: symbol,
-        interval: 'D', theme: 'dark', style: '1',
-        locale: 'kr', width: '100%', height: 380,
-        hide_top_toolbar: false, hide_legend: false,
-        save_image: false, allow_symbol_change: false,
-        studies: ['MAExp@tv-basicstudies'],
-      });
-    });
+  charts.forEach(function(el, i) {
+    var symbol = el.getAttribute('data-symbol');
+    var id = 'tv_' + i + '_' + Date.now();
+    el.id = id;
+    el.innerHTML = '';
+    var widgetDiv = document.createElement('div');
+    widgetDiv.className = 'tradingview-widget-container__widget';
+    el.appendChild(widgetDiv);
+    var config = {
+      autosize: true,
+      symbol: symbol,
+      interval: 'D',
+      timezone: 'Asia/Seoul',
+      theme: 'dark',
+      style: '1',
+      locale: 'kr',
+      hide_top_toolbar: false,
+      allow_symbol_change: false,
+      container_id: id
+    };
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+    script.async = true;
+    script.innerHTML = JSON.stringify(config);
+    el.appendChild(script);
   });
 }
 function openPost(id) {
