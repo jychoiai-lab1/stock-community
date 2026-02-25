@@ -25,8 +25,15 @@
         <h2 class="section-title" style="margin-bottom:16px;">자유게시판</h2>
         <input type="text" id="nickname" class="board-input" placeholder="닉네임" maxlength="20" />
         <div contenteditable="true" id="boardContent" class="board-contenteditable"
-             data-placeholder="자유롭게 글을 남겨주세요 · 키보드 GIF 바로 붙여넣기 가능"
+             role="textbox" aria-multiline="true"
+             data-placeholder="자유롭게 글을 남겨주세요"
              oninput="onPostInput()"></div>
+        <div class="board-gif-row">
+          <button class="board-gif-btn" onclick="document.getElementById('postGifFile').click()">🖼️ GIF/사진 첨부</button>
+          <span class="board-gif-name" id="postGifName" style="font-size:12px;color:#475569;margin-left:8px;"></span>
+        </div>
+        <input type="file" id="postGifFile" accept="image/*" style="display:none;"
+               onchange="handleGifFile(this,'postGifPreview','postGifStored','postGifName')" />
         <input type="hidden" id="postGifStored" value="" />
         <img id="postGifPreview" class="board-gif-preview" style="display:none;" />
         <div class="board-form-footer">

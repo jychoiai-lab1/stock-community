@@ -56,6 +56,25 @@ async function extractGifFromEl(el, previewId, storedId) {
   } catch(e) { console.error('GIF 업로드 오류:', e); }
 }
 
+async function handleGifFile(input, previewId, storedId, nameId) {
+  var file = input.files[0];
+  if (!file) return;
+  if (nameId) document.getElementById(nameId).textContent = file.name;
+  var preview = document.getElementById(previewId);
+  if (preview) {
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+  }
+  try {
+    var url = await uploadGif(file);
+    if (storedId) document.getElementById(storedId).value = url;
+    if (preview) preview.src = url;
+  } catch(e) {
+    console.error('GIF 업로드 오류:', e);
+    alert('업로드 실패: ' + e.message);
+  }
+}
+
 function onPostInput() {
   var el = document.getElementById('boardContent');
   document.getElementById('charCount').textContent = el.innerText.length + ' / 300';
@@ -90,8 +109,14 @@ async function loadBoard() {
           '<div class="board-comment-form">' +
             '<input type="text" class="board-input" id="cnick-' + p.id + '" placeholder="닉네임" maxlength="20" style="margin-bottom:6px;" />' +
             '<div contenteditable="true" class="board-contenteditable" id="ctxt-' + p.id + '" ' +
-              'data-placeholder="댓글 입력 · 키보드 GIF 바로 붙여넣기 가능" ' +
+              'data-placeholder="댓글 입력" ' +
               'oninput="onCommentInput(' + p.id + ')"></div>' +
+            '<div class="board-gif-row">' +
+              '<button class="board-gif-btn" onclick="document.getElementById(\'cgiffile-' + p.id + '\').click()">🖼️ GIF/사진 첨부</button>' +
+              '<span class="board-gif-name" id="cgifname-' + p.id + '" style="font-size:12px;color:#475569;margin-left:8px;"></span>' +
+            '</div>' +
+            '<input type="file" id="cgiffile-' + p.id + '" accept="image/*" style="display:none;" ' +
+              'onchange="handleGifFile(this,\'cgifpreview-' + p.id + '\',\'cgifstored-' + p.id + '\',\'cgifname-' + p.id + '\')" />' +
             '<input type="hidden" id="cgifstored-' + p.id + '" value="" />' +
             '<img id="cgifpreview-' + p.id + '" class="board-gif-preview" style="display:none;margin-top:6px;" />' +
             '<button class="board-submit" style="margin-top:8px;width:100%;" onclick="submitComment(' + p.id + ')">댓글 등록</button>' +
