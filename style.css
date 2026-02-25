@@ -91,6 +91,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 .stock-change.down { color: #60a5fa; }
 .stock-change.flat { color: #64748b; }
 
+/* ===== 자유게시판 ===== */
+.board-form { background: #161b27; border: 1px solid #2d3748; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+.board-input { width: 100%; background: #0e1117; border: 1px solid #2d3748; border-radius: 10px; padding: 10px 14px; color: #e2e8f0; font-size: 14px; margin-bottom: 10px; outline: none; }
+.board-input:focus { border-color: #60a5fa; }
+.board-textarea { width: 100%; background: #0e1117; border: 1px solid #2d3748; border-radius: 10px; padding: 10px 14px; color: #e2e8f0; font-size: 14px; resize: none; height: 100px; outline: none; font-family: inherit; }
+.board-textarea:focus { border-color: #60a5fa; }
+.board-form-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.board-char-count { font-size: 12px; color: #475569; }
+.board-submit { background: #1e3a5f; color: #60a5fa; border: 1px solid #1d4ed8; border-radius: 10px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.board-submit:hover { background: #1d4ed8; color: #fff; }
+.board-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.board-card { background: #161b27; border: 1px solid #2d3748; border-radius: 16px; padding: 16px; margin-bottom: 8px; }
+.board-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.board-nickname { font-size: 13px; font-weight: 700; color: #60a5fa; }
+.board-time { font-size: 12px; color: #475569; }
+.board-card-content { font-size: 14px; color: #cbd5e1; line-height: 1.7; word-break: break-word; }
+.board-card-footer { margin-top: 12px; padding-top: 10px; border-top: 1px solid #1e2535; }
+.board-like { background: none; border: 1px solid #2d3748; border-radius: 8px; padding: 4px 12px; color: #94a3b8; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+.board-like:hover { border-color: #f87171; color: #f87171; }
+
 /* ===== 로딩 ===== */
 .loading-spinner { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: #64748b; font-size: 14px; gap: 12px; }
 .spinner { width: 32px; height: 32px; border: 3px solid #2d3748; border-top-color: #60a5fa; border-radius: 50%; animation: spin 0.8s linear infinite; }

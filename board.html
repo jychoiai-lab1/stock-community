@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자유게시판 - 겁쟁이리서치</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">📈 겁쟁이리서치</div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">홈</a>
+        <a href="stocks.html" class="nav-link">주식 현황</a>
+        <a href="board.html" class="nav-link active">자유게시판</a>
+      </nav>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <!-- 글쓰기 폼 -->
+      <div class="board-form">
+        <h2 class="section-title" style="margin-bottom:16px;">자유게시판</h2>
+        <input type="text" id="nickname" class="board-input" placeholder="닉네임" maxlength="20" />
+        <textarea id="boardContent" class="board-textarea" placeholder="자유롭게 글을 남겨주세요 (최대 300자)" maxlength="300"></textarea>
+        <div class="board-form-footer">
+          <span class="board-char-count" id="charCount">0 / 300</span>
+          <button class="board-submit" onclick="submitPost()">등록</button>
+        </div>
+      </div>
+      <!-- 게시글 목록 -->
+      <div id="boardList">
+        <div class="loading-spinner"><div class="spinner"></div><p>불러오는 중...</p></div>
+      </div>
+    </div>
+  </main>
+  <script src="config.js"></script>
+  <script src="board.js"></script>
+</body>
+</html>
