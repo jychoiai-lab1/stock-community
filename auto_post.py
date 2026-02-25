@@ -334,7 +334,7 @@ def save_special_ticker(client, name, ticker):
 # =============================================
 def post_to_supabase(client, title, content):
     client.table('posts').insert({
-        'category': '📊 아침 브리핑',
+        'category': '📊 장중 브리핑',
         'title': title,
         'content': content,
         'views': 0
