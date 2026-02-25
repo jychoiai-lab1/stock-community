@@ -270,6 +270,66 @@ def analyze_ticker_html(name, ticker):
         return f'<p class="an-error">분석 오류: {e}</p>'
 
 # =============================================
+# 주식 현황 데이터 저장
+# =============================================
+STOCK_PRICES = {
+    'KR': {
+        '삼성전자':      '005930.KS',
+        'SK하이닉스':    '000660.KS',
+        'LG에너지솔루션':'373220.KS',
+        '현대차':        '005380.KS',
+        'NAVER':         '035420.KS',
+        '카카오':        '035720.KS',
+    },
+    'US': {
+        '애플':         'AAPL',
+        '엔비디아':     'NVDA',
+        '마이크로소프트':'MSFT',
+        '테슬라':       'TSLA',
+        '아마존':       'AMZN',
+        '구글':         'GOOGL',
+    }
+}
+
+def update_stock_prices(client):
+    rows = []
+    for market, stocks in STOCK_PRICES.items():
+        for name, ticker in stocks.items():
+            try:
+                data = yf.download(ticker, period='2d', interval='1d', progress=False, auto_adjust=True)
+                if len(data) < 2:
+                    continue
+                close = data['Close'].squeeze()
+                prev = float(close.iloc[-2])
+                curr = float(close.iloc[-1])
+                chg = ((curr - prev) / prev) * 100
+                sign = "+" if chg >= 0 else ""
+                is_up = chg >= 0
+                if market == 'KR':
+                    price_str = f"{curr:,.0f}원"
+                    chg_str = f"{sign}{curr - prev:,.0f}"
+                else:
+                    price_str = f"${curr:,.2f}"
+                    chg_str = f"{sign}${abs(curr - prev):,.2f}"
+                rows.append({
+                    'market': market,
+                    'name': name,
+                    'ticker': ticker.replace('.KS',''),
+                    'price': price_str,
+                    'change_val': chg_str,
+                    'change_pct': f"{sign}{chg:.2f}%",
+                    'is_up': is_up,
+                })
+                print(f"    {name}: {price_str} ({sign}{chg:.2f}%)")
+            except Exception as e:
+                print(f"    {name} 오류: {e}")
+
+    if rows:
+        client.table('stock_prices').delete().neq('id', 0).execute()
+        client.table('stock_prices').insert(rows).execute()
+        print(f"  주식 현황 {len(rows)}개 저장 완료")
+
+# =============================================
 # Supabase 게시글 업로드
 # =============================================
 def post_to_supabase(client, title, content):
@@ -287,6 +347,9 @@ def main():
     today = datetime.now().strftime('%Y년 %m월 %d일')
     print(f"[{datetime.now().strftime('%H:%M:%S')}] 브리핑 생성 시작...")
     client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    print("  주식 현황 업데이트 중...")
+    update_stock_prices(client)
 
     print("  시장 데이터 수집 중...")
     market = get_market_overview()
