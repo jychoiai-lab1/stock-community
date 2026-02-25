@@ -41,9 +41,12 @@ loadTicker();
 setInterval(loadTicker, 60 * 60 * 1000); // 1시간마다 자동 갱신
 
 async function openPostByDate(dateStr) {
-  var post = allPosts.find(function(p) { return p.created_at && p.created_at.startsWith(dateStr); });
+  // dateStr '2026-02-26' → '2026년 02월 26일' 로 변환해서 제목으로 검색
+  var parts = dateStr.split('-');
+  var korDate = parts[0] + '년 ' + parts[1] + '월 ' + parts[2] + '일';
+  var post = allPosts.find(function(p) { return p.title && p.title.includes(korDate); });
   if (post) { openPost(post.id); return; }
-  var res = await db.from('posts').select('*').gte('created_at', dateStr + 'T00:00:00').lte('created_at', dateStr + 'T23:59:59').limit(1);
+  var res = await db.from('posts').select('*').ilike('title', '%' + korDate + '%').limit(1);
   if (res.data && res.data.length) {
     allPosts.push(res.data[0]);
     openPost(res.data[0].id);
