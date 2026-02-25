@@ -108,7 +108,7 @@ def generate_chart(ticker, name, client):
             data,
             type='candle',
             style='yahoo',
-            title=f'{name} - 일봉 (3개월)',
+            title=f'{ticker.replace("^","").replace("=","")} - Daily Chart (3M)',
             addplot=apds,
             volume=True,
             savefig=dict(fname=fname, dpi=120, bbox_inches='tight'),
