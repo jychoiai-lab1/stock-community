@@ -40,6 +40,16 @@ async function loadTicker() {
 loadTicker();
 setInterval(loadTicker, 60 * 60 * 1000); // 1시간마다 자동 갱신
 
+async function openPostByDate(dateStr) {
+  var post = allPosts.find(function(p) { return p.created_at && p.created_at.startsWith(dateStr); });
+  if (post) { openPost(post.id); return; }
+  var res = await db.from('posts').select('*').gte('created_at', dateStr + 'T00:00:00').lte('created_at', dateStr + 'T23:59:59').limit(1);
+  if (res.data && res.data.length) {
+    allPosts.push(res.data[0]);
+    openPost(res.data[0].id);
+  }
+}
+
 async function loadSpecialTickers() {
   var list = document.getElementById('specialTickerList');
   if (!list) return;
@@ -52,10 +62,12 @@ async function loadSpecialTickers() {
     }
     list.innerHTML = res.data.map(function(t) {
       var d = t.first_date ? t.first_date.replace(/-/g, '.') : '';
-      return '<div class="sidebar-ticker">' +
-        '<span class="sidebar-ticker-symbol">' + t.ticker + '</span>' +
+      return '<div class="sidebar-ticker" onclick="openPostByDate(\'' + t.first_date + '\')">' +
+        '<div class="sidebar-ticker-top">' +
+          '<span class="sidebar-ticker-symbol">' + t.ticker + '</span>' +
+          '<span class="sidebar-ticker-date">' + d + '</span>' +
+        '</div>' +
         '<span class="sidebar-ticker-name">' + t.name + '</span>' +
-        '<span class="sidebar-ticker-date">' + d + '</span>' +
         '</div>';
     }).join('');
   } catch(e) { console.error('특별종목 오류:', e); }
