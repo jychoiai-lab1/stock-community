@@ -42,36 +42,51 @@ async function loadPosts() {
     postList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + err.message + '</div></div>';
   }
 }
-function initTVCharts() {
-  var charts = document.querySelectorAll('.tv-chart');
-  if (!charts.length) return;
-  charts.forEach(function(el, i) {
-    var symbol = el.getAttribute('data-symbol');
-    var id = 'tv_' + i + '_' + Date.now();
-    el.id = id;
-    el.innerHTML = '';
-    var widgetDiv = document.createElement('div');
-    widgetDiv.className = 'tradingview-widget-container__widget';
-    el.appendChild(widgetDiv);
-    var config = {
-      autosize: true,
-      symbol: symbol,
-      interval: 'D',
-      timezone: 'Asia/Seoul',
-      theme: 'dark',
-      style: '1',
-      locale: 'kr',
-      hide_top_toolbar: false,
-      allow_symbol_change: false,
-      container_id: id
-    };
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
-    script.async = true;
-    script.innerHTML = JSON.stringify(config);
-    el.appendChild(script);
-  });
+async function initLWCharts() {
+  var els = document.querySelectorAll('.lw-chart');
+  if (!els.length) return;
+  var keys = Array.from(els).map(function(el){ return el.getAttribute('data-key'); }).filter(Boolean);
+  if (!keys.length) return;
+  try {
+    var res = await db.from('chart_data').select('ticker_key,ohlcv').in('ticker_key', keys);
+    if (res.error) throw res.error;
+    var dataMap = {};
+    (res.data || []).forEach(function(row){ dataMap[row.ticker_key] = row.ohlcv; });
+    els.forEach(function(el) {
+      var key = el.getAttribute('data-key');
+      var ohlcv = dataMap[key];
+      if (!ohlcv) { el.innerHTML = '<div style="color:#64748b;padding:12px;font-size:13px;">차트 데이터 없음</div>'; return; }
+      el.innerHTML = '';
+      var chart = LightweightCharts.createChart(el, {
+        width: el.clientWidth,
+        height: 300,
+        layout: { background: { color: '#0e1117' }, textColor: '#94a3b8' },
+        grid: { vertLines: { color: '#1e2535' }, horzLines: { color: '#1e2535' } },
+        crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+        rightPriceScale: { borderColor: '#2d3748' },
+        timeScale: { borderColor: '#2d3748', timeVisible: true },
+      });
+      var candleSeries = chart.addCandlestickSeries({
+        upColor: '#f87171', downColor: '#60a5fa',
+        borderUpColor: '#f87171', borderDownColor: '#60a5fa',
+        wickUpColor: '#f87171', wickDownColor: '#60a5fa',
+      });
+      candleSeries.setData(ohlcv.candles || []);
+      if (ohlcv.ema20 && ohlcv.ema20.length) {
+        var ema20Series = chart.addLineSeries({ color: '#facc15', lineWidth: 1, priceLineVisible: false });
+        ema20Series.setData(ohlcv.ema20);
+      }
+      if (ohlcv.ema50 && ohlcv.ema50.length) {
+        var ema50Series = chart.addLineSeries({ color: '#a78bfa', lineWidth: 1, priceLineVisible: false });
+        ema50Series.setData(ohlcv.ema50);
+      }
+      chart.timeScale().fitContent();
+      var ro = new ResizeObserver(function(){ chart.applyOptions({ width: el.clientWidth }); chart.timeScale().fitContent(); });
+      ro.observe(el);
+    });
+  } catch(err) {
+    console.error('차트 로딩 오류:', err);
+  }
 }
 function openPost(id) {
   var post = allPosts.find(function(p){ return p.id === id; });
@@ -83,7 +98,7 @@ function openPost(id) {
     '<div class="modal-body">' + post.content + '</div>';
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
-  setTimeout(initTVCharts, 100);
+  setTimeout(initLWCharts, 100);
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('active');

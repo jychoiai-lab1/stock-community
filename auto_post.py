@@ -25,15 +25,15 @@ ANALYSIS_TICKERS = {
     'URA (우라늄 ETF)': 'URA',
 }
 
-# yfinance 티커 → TradingView 심볼 매핑 (TVC = 무료 데이터)
-TV_SYMBOLS = {
-    '^NDX':     'TVC:NDX',
-    '^GSPC':    'TVC:SPX',
-    '^VIX':     'TVC:VIX',
-    'USDJPY=X': 'FX:USDJPY',
-    'JPY=X':    'FX:JPYUSD',
-    'BTC-USD':  'BITSTAMP:BTCUSD',
-    'URA':      'AMEX:URA',
+# yfinance 티커 → chart_data 키 매핑
+CHART_KEYS = {
+    '^NDX':     'NDX',
+    '^GSPC':    'SPX',
+    '^VIX':     'VIX',
+    'USDJPY=X': 'USDJPY',
+    'JPY=X':    'JPYX',
+    'BTC-USD':  'BTC',
+    'URA':      'URA',
 }
 
 # =============================================
@@ -80,11 +80,41 @@ def check_ema_cross(close):
     return signals
 
 # =============================================
-# TradingView 차트 div 생성
+# OHLCV 데이터 Supabase 저장 + 차트 div 생성
 # =============================================
-def get_tv_chart_div(ticker):
-    symbol = TV_SYMBOLS.get(ticker, ticker)
-    return f'<div class="tv-chart" data-symbol="{symbol}"></div>'
+def save_chart_data(client, ticker, name):
+    import json
+    key = CHART_KEYS.get(ticker, ticker.replace('^','').replace('=X','').replace('=',''))
+    try:
+        data = yf.download(ticker, period='3mo', interval='1d', progress=False, auto_adjust=True)
+        if len(data) < 5:
+            return
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+        close = data['Close'].squeeze()
+        ema20 = calc_ema(close, 20)
+        ema50 = calc_ema(close, 50)
+        candles = [{'time': idx.strftime('%Y-%m-%d'),
+                    'open':  round(float(data.loc[idx,'Open']),4),
+                    'high':  round(float(data.loc[idx,'High']),4),
+                    'low':   round(float(data.loc[idx,'Low']),4),
+                    'close': round(float(data.loc[idx,'Close']),4)}
+                   for idx in data.index]
+        ema20_list = [{'time': idx.strftime('%Y-%m-%d'), 'value': round(float(v),4)} for idx,v in ema20.items()]
+        ema50_list = [{'time': idx.strftime('%Y-%m-%d'), 'value': round(float(v),4)} for idx,v in ema50.items()]
+        payload = {'candles': candles, 'ema20': ema20_list, 'ema50': ema50_list}
+        existing = client.table('chart_data').select('id').eq('ticker_key', key).execute()
+        if existing.data:
+            client.table('chart_data').update({'ohlcv': payload, 'symbol_name': name}).eq('ticker_key', key).execute()
+        else:
+            client.table('chart_data').insert({'ticker_key': key, 'symbol_name': name, 'ohlcv': payload}).execute()
+        print(f"    차트 저장: {name}")
+    except Exception as e:
+        print(f"    차트 오류 ({name}): {e}")
+
+def get_chart_div(ticker):
+    key = CHART_KEYS.get(ticker, ticker.replace('^','').replace('=X','').replace('=',''))
+    return f'<div class="lw-chart" data-key="{key}"></div>'
 
 # =============================================
 # 시장 등락률
@@ -308,11 +338,17 @@ def main():
     print("  시장 데이터 수집 중...")
     market = get_market_overview()
 
+    print("  차트 데이터 저장 중...")
+    for name, ticker in MARKET_TICKERS.items():
+        save_chart_data(client, ticker, name)
+    for name, ticker in ANALYSIS_TICKERS.items():
+        save_chart_data(client, ticker, name)
+
     print("  분석 생성 중...")
     market_sections = ""
     for name, ticker in MARKET_TICKERS.items():
         print(f"    {name} 분석 중...")
-        chart_div = get_tv_chart_div(ticker)
+        chart_div = get_chart_div(ticker)
         analysis_html = analyze_ticker_html(name, ticker)
         market_sections += f'''
 <div class="ticker-section">
@@ -326,7 +362,7 @@ def main():
     special_sections = ""
     for name, ticker in ANALYSIS_TICKERS.items():
         print(f"    {name} 특별분석 중...")
-        chart_div = get_tv_chart_div(ticker)
+        chart_div = get_chart_div(ticker)
         analysis_html = analyze_ticker_html(name, ticker)
         special_sections += f'''
 <div class="ticker-section special">
