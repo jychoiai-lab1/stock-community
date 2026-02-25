@@ -3,7 +3,40 @@ import pandas as pd
 from datetime import datetime
 from supabase import create_client
 import warnings
+import os
+from docx import Document
 warnings.filterwarnings('ignore')
+
+REPORTS_DIR = r'C:\Users\asdf\webtest\reports'
+
+def read_report(ticker):
+    """종목 코드로 docx 파일 읽기 (예: NTR.docx)"""
+    path = os.path.join(REPORTS_DIR, f'{ticker}.docx')
+    if not os.path.exists(path):
+        return None
+    try:
+        doc = Document(path)
+        paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+        return '\n'.join(paragraphs)
+    except Exception as e:
+        print(f"  보고서 읽기 오류 ({ticker}): {e}")
+        return None
+
+def report_to_html(text):
+    """보고서 텍스트를 HTML로 변환"""
+    lines = text.split('\n')
+    html = ''
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith('# '):
+            html += f'<h4 style="color:#f1f5f9;margin:16px 0 8px;">{line[2:]}</h4>'
+        elif line.startswith('## '):
+            html += f'<h5 style="color:#94a3b8;margin:12px 0 6px;">{line[3:]}</h5>'
+        else:
+            html += f'<p style="font-size:14px;color:#cbd5e1;line-height:1.8;margin:4px 0;">{line}</p>'
+    return html
 
 # =============================================
 # 설정
@@ -381,12 +414,22 @@ def main():
         save_special_ticker(client, name, ticker)
         chart_div = get_chart_div(ticker)
         analysis_html = analyze_ticker_html(name, ticker)
+        report_text = read_report(ticker)
+        report_html = ''
+        if report_text:
+            print(f"    {ticker}.docx 보고서 발견, 추가 중...")
+            report_html = f'''
+<div style="margin-top:16px;padding:16px;background:#0e1117;border-radius:10px;border:1px solid #2d3748;">
+  <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">📄 리서치 보고서</div>
+  {report_to_html(report_text)}
+</div>'''
         special_sections += f'''
 <div class="ticker-section special">
   <h3 class="ticker-title">⭐ {name} — 오늘의 특별 분석</h3>
   {chart_div}
   <div class="analysis-box">
     {analysis_html}
+    {report_html}
   </div>
 </div>'''
 
