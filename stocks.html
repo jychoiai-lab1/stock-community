@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>주식 현황 - 주식 커뮤니티</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">📈 주식 커뮤니티</div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">홈</a>
+        <a href="stocks.html" class="nav-link active">주식 현황</a>
+      </nav>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <section class="stocks-section">
+        <h2 class="section-title">오늘의 주식 현황</h2>
+        <p class="stocks-updated" id="stocksUpdated">데이터 로딩 중...</p>
+        <div class="market-block">
+          <h3 class="market-title">🇰🇷 한국 시장</h3>
+          <div class="stock-grid" id="krStocks"><div class="loading-spinner"><div class="spinner"></div></div></div>
+        </div>
+        <div class="market-block">
+          <h3 class="market-title">🇺🇸 미국 시장</h3>
+          <div class="stock-grid" id="usStocks"><div class="loading-spinner"><div class="spinner"></div></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="config.js"></script>
+  <script src="stocks.js"></script>
+</body>
+</html>

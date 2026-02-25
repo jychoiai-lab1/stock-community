@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>주식 커뮤니티</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">📈 주식 커뮤니티</div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link active">홈</a>
+        <a href="stocks.html" class="nav-link">주식 현황</a>
+      </nav>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <section class="ticker-bar">
+        <div class="ticker-item"><span class="ticker-name">코스피</span><span class="ticker-value" id="kospi">-</span></div>
+        <div class="ticker-item"><span class="ticker-name">코스닥</span><span class="ticker-value" id="kosdaq">-</span></div>
+        <div class="ticker-item"><span class="ticker-name">S&amp;P 500</span><span class="ticker-value" id="sp500">-</span></div>
+        <div class="ticker-item"><span class="ticker-name">나스닥</span><span class="ticker-value" id="nasdaq">-</span></div>
+        <div class="ticker-item"><span class="ticker-name">다우존스</span><span class="ticker-value" id="dow">-</span></div>
+      </section>
+      <section class="posts-section">
+        <div class="posts-header">
+          <h2 class="section-title">브리핑</h2>
+          <span class="posts-count" id="postsCount"></span>
+        </div>
+        <div class="post-list" id="postList">
+          <div class="loading-spinner"><div class="spinner"></div><p>불러오는 중...</p></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
