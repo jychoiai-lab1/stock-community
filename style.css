@@ -57,12 +57,50 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sa
 .empty-state-text { font-size: 15px; font-weight: 500; }
 @media (max-width: 480px) { .stock-grid { grid-template-columns: 1fr; } .modal { padding: 20px; } }
 
-/* ===== 차트 ===== */
-.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 24px; }
-.chart-block { background: #f8f9fa; border-radius: 12px; padding: 10px; }
-.chart-label { font-size: 12px; font-weight: 600; color: #6b7684; margin-bottom: 6px; }
-.chart-img { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; display: block; }
-.briefing h3 { font-size: 15px; font-weight: 700; color: #191f28; margin: 20px 0 10px; }
-.briefing pre { font-size: 13px; line-height: 1.8; color: #333d4b; white-space: pre-wrap; background: #f8f9fa; padding: 12px; border-radius: 8px; }
-.auto-time { font-size: 12px; color: #8b95a1; margin-top: 20px; }
-@media (max-width: 600px) { .chart-grid { grid-template-columns: 1fr; } }
+/* ===== 브리핑 ===== */
+.briefing h3 { font-size: 16px; font-weight: 700; color: #191f28; margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 2px solid #ebf3fe; }
+.briefing pre { font-size: 13px; line-height: 1.8; color: #333d4b; white-space: pre-wrap; background: #f8f9fa; padding: 14px; border-radius: 10px; }
+.auto-time { font-size: 12px; color: #8b95a1; margin-top: 24px; text-align: right; }
+
+/* ===== 종목 섹션 ===== */
+.ticker-section { margin-bottom: 32px; border: 1px solid #e8eaed; border-radius: 16px; overflow: hidden; }
+.ticker-section.special { border-color: #3182f6; }
+.ticker-title { font-size: 15px; font-weight: 700; color: #191f28; padding: 14px 16px; background: #f8f9fa; margin: 0; border-bottom: 1px solid #e8eaed; }
+.ticker-section.special .ticker-title { background: #ebf3fe; color: #3182f6; }
+.chart-img-full { width: 100%; display: block; }
+
+/* ===== 분석 박스 ===== */
+.analysis-box { padding: 16px; }
+.an-price { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+.an-curr { font-size: 22px; font-weight: 700; }
+.an-chg { font-size: 15px; font-weight: 600; }
+.up { color: #f04452; }
+.down { color: #1b9af5; }
+.neutral { color: #8b95a1; }
+.an-section { margin-bottom: 14px; padding: 12px; background: #f8f9fa; border-radius: 10px; }
+.an-label { font-size: 11px; font-weight: 700; color: #8b95a1; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.an-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 13px; color: #333d4b; }
+.an-neutral { font-size: 13px; color: #8b95a1; }
+.an-div { font-size: 13px; margin-top: 6px; color: #333d4b; }
+.an-error { font-size: 13px; color: #f04452; }
+
+/* EMA */
+.ema-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.ema-item { font-size: 12px; color: #6b7684; background: #fff; border: 1px solid #e8eaed; border-radius: 6px; padding: 4px 8px; }
+.ema-item b { color: #191f28; margin-left: 4px; }
+
+/* 크로스 신호 */
+.signal-badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; margin: 2px 4px 2px 0; }
+.signal-badge.dead { background: #fff0f1; color: #f04452; }
+.signal-badge.golden { background: #ebf3fe; color: #3182f6; }
+
+/* RSI 바 */
+.rsi-bar-wrap { width: 100px; height: 6px; background: #e8eaed; border-radius: 3px; overflow: hidden; }
+.rsi-bar { height: 100%; background: #3182f6; border-radius: 3px; }
+
+/* 종합 의견 */
+.an-opinion { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; line-height: 1.6; }
+.an-opinion.up { background: #fff0f1; color: #c0392b; }
+.an-opinion.down { background: #f0f7ff; color: #1a6fb5; }
+
+@media (max-width: 480px) { .ema-row { gap: 4px; } .an-row { gap: 8px; } }

@@ -148,52 +148,119 @@ def get_market_overview():
     return "\n".join(lines)
 
 # =============================================
-# 기술적 분석
+# 기술적 분석 (HTML 반환)
 # =============================================
-def analyze_ticker(name, ticker):
+def analyze_ticker_html(name, ticker):
     try:
         data = yf.download(ticker, period='1y', interval='1d', progress=False, auto_adjust=True)
-        if len(data) < 200:
-            return f"\n[ {name} ({ticker}) ]\n  데이터 부족\n"
+        if len(data) < 50:
+            return '<p class="an-error">데이터 부족</p>'
+
         close = data['Close'].squeeze()
-        volume = data['Volume'].squeeze()
-        periods = [7, 20, 50, 100, 200]
-        emas = {p: calc_ema(close, p) for p in periods}
-        ema_lines = "  EMA: " + " | ".join([f"EMA{p}={float(emas[p].iloc[-1]):,.2f}" for p in periods])
-        cross_signals = check_ema_cross(close)
-        cross_text = "\n".join(cross_signals) if cross_signals else "  크로스 신호 없음"
-        rsi = calc_rsi(close)
-        rsi_val = float(rsi.iloc[-1])
-        rsi_comment = "과매수 구간" if rsi_val >= 70 else ("과매도 구간" if rsi_val <= 30 else "중립")
-        macd, signal, hist = calc_macd(close)
-        div = check_divergence(close, hist)
-        avg_vol = float(volume.iloc[-20:].mean())
-        curr_vol = float(volume.iloc[-1])
-        vol_ratio = curr_vol / avg_vol if avg_vol > 0 else 1
-        if vol_ratio >= 1.5:
-            vol_comment = f"🔥 급증 ({vol_ratio:.1f}x)"
-        elif vol_ratio >= 1.1:
-            vol_comment = f"↑ 증가 ({vol_ratio:.1f}x)"
-        elif vol_ratio <= 0.7:
-            vol_comment = f"↓ 감소 ({vol_ratio:.1f}x)"
-        else:
-            vol_comment = f"보통 ({vol_ratio:.1f}x)"
+        has_volume = 'Volume' in data.columns and data['Volume'].squeeze().sum() > 0
+        volume = data['Volume'].squeeze() if has_volume else None
+
+        # 현재가 / 등락률
         prev_close = float(close.iloc[-2])
         curr_close = float(close.iloc[-1])
         chg = ((curr_close - prev_close) / prev_close) * 100
         sign = "+" if chg >= 0 else ""
-        return (
-            f"\n[ {name} ({ticker}) ]\n"
-            f"  현재가: {curr_close:,.2f}  ({sign}{chg:.2f}%)\n"
-            f"{ema_lines}\n"
-            f"{cross_text}\n"
-            f"  RSI(14): {rsi_val:.1f}  → {rsi_comment}\n"
-            f"  MACD: {float(macd.iloc[-1]):.3f} / Signal: {float(signal.iloc[-1]):.3f}\n"
-            f"  다이버전스: {div if div else '없음'}\n"
-            f"  거래량: {vol_comment}\n"
-        )
+        chg_class = "up" if chg >= 0 else "down"
+        arrow = "▲" if chg >= 0 else "▼"
+
+        # EMA
+        periods = [7, 20, 50, 100, 200]
+        avail = [p for p in periods if len(close) >= p]
+        emas = {p: calc_ema(close, p) for p in avail}
+        ema_items = "".join([
+            f'<span class="ema-item">EMA{p}<b>{float(emas[p].iloc[-1]):,.2f}</b></span>'
+            for p in avail
+        ])
+
+        # EMA 크로스
+        cross_signals = check_ema_cross(close) if len(close) >= 200 else []
+        if cross_signals:
+            cross_html = "".join([f'<div class="signal-badge {"dead" if "데드" in s else "golden"}">{s.strip()}</div>' for s in cross_signals])
+        else:
+            cross_html = '<span class="an-neutral">크로스 신호 없음</span>'
+
+        # RSI
+        rsi_val = float(calc_rsi(close).iloc[-1])
+        if rsi_val >= 70:
+            rsi_class, rsi_comment = "up", "과매수 구간 ⚠️"
+        elif rsi_val <= 30:
+            rsi_class, rsi_comment = "down", "과매도 구간 💡"
+        else:
+            rsi_class, rsi_comment = "neutral", "중립"
+
+        # MACD
+        macd_line, sig_line, hist_line = calc_macd(close)
+        macd_val = float(macd_line.iloc[-1])
+        sig_val = float(sig_line.iloc[-1])
+        div = check_divergence(close, hist_line)
+        macd_trend = "상승세" if macd_val > sig_val else "하락세"
+        macd_class = "up" if macd_val > sig_val else "down"
+
+        # 거래량
+        if volume is not None:
+            avg_vol = float(volume.iloc[-20:].mean())
+            curr_vol = float(volume.iloc[-1])
+            vol_ratio = curr_vol / avg_vol if avg_vol > 0 else 1
+            if vol_ratio >= 1.5:
+                vol_html = f'<span class="up">🔥 급증 ({vol_ratio:.1f}x 평균 대비)</span>'
+            elif vol_ratio >= 1.1:
+                vol_html = f'<span class="up">↑ 증가 ({vol_ratio:.1f}x)</span>'
+            elif vol_ratio <= 0.7:
+                vol_html = f'<span class="down">↓ 감소 ({vol_ratio:.1f}x)</span>'
+            else:
+                vol_html = f'<span class="neutral">보통 ({vol_ratio:.1f}x)</span>'
+        else:
+            vol_html = '<span class="neutral">N/A</span>'
+
+        # 종합 의견
+        bullish = sum([chg > 0, rsi_val < 60, macd_val > sig_val])
+        if bullish >= 2:
+            opinion = "단기 강세 흐름. 추세 유지 여부 확인 필요."
+            op_class = "up"
+        else:
+            opinion = "단기 약세 흐름. 지지선 확인 후 진입 고려."
+            op_class = "down"
+
+        return f'''
+<div class="an-price">
+  <span class="an-curr {chg_class}">{curr_close:,.2f}</span>
+  <span class="an-chg {chg_class}">{arrow} {sign}{chg:.2f}%</span>
+</div>
+<div class="an-section">
+  <div class="an-label">📊 EMA</div>
+  <div class="ema-row">{ema_items}</div>
+  <div class="an-label" style="margin-top:8px">크로스 신호</div>
+  {cross_html}
+</div>
+<div class="an-section">
+  <div class="an-label">📈 RSI (14)</div>
+  <div class="an-row">
+    <div class="rsi-bar-wrap"><div class="rsi-bar" style="width:{min(rsi_val,100):.0f}%"></div></div>
+    <span class="{rsi_class}">{rsi_val:.1f} — {rsi_comment}</span>
+  </div>
+</div>
+<div class="an-section">
+  <div class="an-label">📉 MACD</div>
+  <div class="an-row">
+    <span>MACD <b>{macd_val:.3f}</b></span>
+    <span>Signal <b>{sig_val:.3f}</b></span>
+    <span class="{macd_class}">{macd_trend}</span>
+  </div>
+  <div class="an-div">{div if div else "다이버전스 없음"}</div>
+</div>
+<div class="an-section">
+  <div class="an-label">📦 거래량</div>
+  {vol_html}
+</div>
+<div class="an-opinion {op_class}">💬 {opinion}</div>'''
+
     except Exception as e:
-        return f"\n[ {name} ({ticker}) ]\n  분석 오류: {e}\n"
+        return f'<p class="an-error">분석 오류: {e}</p>'
 
 # =============================================
 # Supabase 게시글 업로드
@@ -217,29 +284,46 @@ def main():
     print("  시장 데이터 수집 중...")
     market = get_market_overview()
 
-    print("  차트 생성 중...")
-    chart_html = ""
+    print("  차트 및 분석 생성 중...")
+    market_sections = ""
     for name, ticker in MARKET_TICKERS.items():
+        print(f"    {name} 처리 중...")
         url = generate_chart(ticker, name, client)
-        if url:
-            chart_html += f'<div class="chart-block"><p class="chart-label">{name}</p><img src="{url}" class="chart-img"/></div>\n'
+        analysis_html = analyze_ticker_html(name, ticker)
+        img_tag = f'<img src="{url}" class="chart-img-full"/>' if url else '<p class="an-error">차트 생성 실패</p>'
+        market_sections += f'''
+<div class="ticker-section">
+  <h3 class="ticker-title">{name}</h3>
+  {img_tag}
+  <div class="analysis-box">
+    {analysis_html}
+  </div>
+</div>'''
 
-    analysis_parts = []
+    special_sections = ""
     for name, ticker in ANALYSIS_TICKERS.items():
-        print(f"  {name} 분석 중...")
-        analysis_parts.append(analyze_ticker(name, ticker))
-    analysis = "\n".join(analysis_parts)
+        print(f"    {name} 특별분석 중...")
+        url = generate_chart(ticker, name, client)
+        analysis_html = analyze_ticker_html(name, ticker)
+        img_tag = f'<img src="{url}" class="chart-img-full"/>' if url else '<p class="an-error">차트 생성 실패</p>'
+        special_sections += f'''
+<div class="ticker-section special">
+  <h3 class="ticker-title">⭐ {name} — 오늘의 특별 분석</h3>
+  {img_tag}
+  <div class="analysis-box">
+    {analysis_html}
+  </div>
+</div>'''
 
     title = f"{today} 아침 주식 브리핑"
     content = (
         '<div class="briefing">'
         '<h3>🌍 주요 시장 현황</h3>'
         f'<pre>{market}</pre>'
-        '<h3>📈 지수 차트 (일봉)</h3>'
-        f'<div class="chart-grid">{chart_html}</div>'
-        '<h3>🔬 기술적 분석</h3>'
-        f'<pre>{analysis}</pre>'
-        f'<p class="auto-time">⏰ 자동 생성: {datetime.now().strftime("%Y-%m-%d %H:%M")}</p>'
+        '<h3>📈 지수별 차트 & 분석</h3>'
+        f'{market_sections}'
+        + (f'<h3>🔬 특별 종목 분석</h3>{special_sections}' if special_sections else '')
+        + f'<p class="auto-time">⏰ 자동 생성: {datetime.now().strftime("%Y-%m-%d %H:%M")}</p>'
         '</div>'
     )
 
