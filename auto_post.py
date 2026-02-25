@@ -26,6 +26,7 @@ MARKET_TICKERS = {
     'SPX (S&P500)':   '^GSPC',
     'VIX (공포지수)':  '^VIX',
     'USD/JPY':         'USDJPY=X',
+    'JPY/X':           'JPY=X',
     'BTC/USDT':        'BTC-USD',
 }
 
@@ -108,7 +109,7 @@ def generate_chart(ticker, name, client):
             data,
             type='candle',
             style='yahoo',
-            title=f'{ticker.replace("^","").replace("=","")} - Daily Chart (3M)',
+            title=f'{ticker.replace("^","").replace("=X","").replace("=","")} - Daily Chart (3M)',
             addplot=apds,
             volume=True,
             savefig=dict(fname=fname, dpi=120, bbox_inches='tight'),
