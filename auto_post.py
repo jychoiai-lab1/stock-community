@@ -3,11 +3,17 @@ import pandas as pd
 import mplfinance as mpf
 import matplotlib
 matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 import os
 from datetime import datetime
 from supabase import create_client
 import warnings
 warnings.filterwarnings('ignore')
+
+# 한글 폰트 설정 (Windows 맑은 고딕)
+plt.rcParams['font.family'] = 'Malgun Gothic'
+plt.rcParams['axes.unicode_minus'] = False
 
 # =============================================
 # 설정
