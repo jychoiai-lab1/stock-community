@@ -16,31 +16,50 @@ function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
-function previewGif(input, previewId, nameId) {
-  var file = input.files[0];
-  if (!file) return;
-  var preview = document.getElementById(previewId);
-  var nameEl = document.getElementById(nameId);
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    preview.src = e.target.result;
-    preview.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-  if (nameEl) nameEl.textContent = file.name;
+function gifUrlToImg(url) {
+  if (!url) return '';
+  return '<img src="' + escapeHtml(url) + '" class="board-gif-img" onerror="this.style.display=\'none\'" />';
 }
 
 async function uploadGif(file) {
-  var ext = file.name.split('.').pop() || 'gif';
+  var ext = (file.name ? file.name.split('.').pop() : null) || file.type.split('/')[1] || 'gif';
   var fileName = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
   var res = await db.storage.from('board-gifs').upload(fileName, file, { contentType: file.type });
   if (res.error) throw res.error;
   return db.storage.from('board-gifs').getPublicUrl(fileName).data.publicUrl;
 }
 
-function gifUrlToImg(url) {
-  if (!url) return '';
-  return '<img src="' + escapeHtml(url) + '" class="board-gif-img" onerror="this.style.display=\'none\'" />';
+async function extractGifFromEl(el, previewId, storedId) {
+  var imgs = el.querySelectorAll('img');
+  if (!imgs.length) return;
+  var img = imgs[0];
+  var src = img.src || img.getAttribute('src');
+  if (!src) return;
+  el.querySelectorAll('img').forEach(function(i) { i.remove(); });
+  try {
+    var blob;
+    if (src.startsWith('blob:')) {
+      blob = await fetch(src).then(function(r) { return r.blob(); });
+    } else if (src.startsWith('data:')) {
+      var arr = src.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]);
+      var u8 = new Uint8Array(bstr.length);
+      for (var i = 0; i < bstr.length; i++) u8[i] = bstr.charCodeAt(i);
+      blob = new Blob([u8], { type: mime });
+    } else { return; }
+    blob.name = 'gif.' + (blob.type.split('/')[1] || 'gif');
+    var url = await uploadGif(blob);
+    if (storedId) document.getElementById(storedId).value = url;
+    if (previewId) {
+      var preview = document.getElementById(previewId);
+      if (preview) { preview.src = url; preview.style.display = 'block'; }
+    }
+  } catch(e) { console.error('GIF 업로드 오류:', e); }
+}
+
+function onPostInput() {
+  var el = document.getElementById('boardContent');
+  document.getElementById('charCount').textContent = el.innerText.length + ' / 300';
+  if (el.querySelector('img')) extractGifFromEl(el, 'postGifPreview', 'postGifStored');
 }
 
 async function loadBoard() {
@@ -70,19 +89,25 @@ async function loadBoard() {
           '<div class="board-comments-list" id="clist-' + p.id + '"></div>' +
           '<div class="board-comment-form">' +
             '<input type="text" class="board-input" id="cnick-' + p.id + '" placeholder="닉네임" maxlength="20" style="margin-bottom:6px;" />' +
-            '<div style="display:flex;gap:8px;align-items:center;">' +
-              '<input type="text" class="board-input" id="ctxt-' + p.id + '" placeholder="댓글을 입력하세요" maxlength="200" style="margin-bottom:0;flex:1;" />' +
-              '<button class="board-gif-btn" onclick="document.getElementById(\'cgiffile-' + p.id + '\').click()">🎬</button>' +
-              '<button class="board-submit" style="padding:8px 14px;white-space:nowrap;" onclick="submitComment(' + p.id + ')">등록</button>' +
-            '</div>' +
-            '<input type="file" id="cgiffile-' + p.id + '" accept="image/gif,image/*" style="display:none;" onchange="previewGif(this,\'cgifpreview-' + p.id + '\',null)" />' +
-            '<img id="cgifpreview-' + p.id + '" class="board-gif-preview" src="" style="display:none;margin-top:6px;" />' +
+            '<div contenteditable="true" class="board-contenteditable" id="ctxt-' + p.id + '" ' +
+              'data-placeholder="댓글 입력 · 키보드 GIF 바로 붙여넣기 가능" ' +
+              'oninput="onCommentInput(' + p.id + ')"></div>' +
+            '<input type="hidden" id="cgifstored-' + p.id + '" value="" />' +
+            '<img id="cgifpreview-' + p.id + '" class="board-gif-preview" style="display:none;margin-top:6px;" />' +
+            '<button class="board-submit" style="margin-top:8px;width:100%;" onclick="submitComment(' + p.id + ')">댓글 등록</button>' +
           '</div>' +
         '</div>' +
       '</div>';
     }).join('');
   } catch(e) {
     list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + e.message + '</div></div>';
+  }
+}
+
+function onCommentInput(postId) {
+  var el = document.getElementById('ctxt-' + postId);
+  if (el && el.querySelector('img')) {
+    extractGifFromEl(el, 'cgifpreview-' + postId, 'cgifstored-' + postId);
   }
 }
 
@@ -128,23 +153,21 @@ async function submitComment(postId) {
     alert(wait + '초 후에 다시 댓글을 달 수 있어요'); return;
   }
   var nick = document.getElementById('cnick-' + postId).value.trim();
-  var txt = document.getElementById('ctxt-' + postId).value.trim();
-  var gifFileEl = document.getElementById('cgiffile-' + postId);
-  var gifFile = gifFileEl ? gifFileEl.files[0] : null;
+  var txtEl = document.getElementById('ctxt-' + postId);
+  var txt = txtEl ? txtEl.innerText.trim() : '';
+  var gifUrl = document.getElementById('cgifstored-' + postId) ? document.getElementById('cgifstored-' + postId).value : '';
   if (!nick) { alert('닉네임을 입력해주세요'); return; }
   if (nick.length > 20) { alert('닉네임은 20자 이하로 입력해주세요'); return; }
-  if (!txt && !gifFile) { alert('댓글 내용을 입력해주세요'); return; }
+  if (!txt && !gifUrl) { alert('댓글 내용을 입력해주세요'); return; }
   if (txt.length > 200) { alert('댓글은 200자 이하로 입력해주세요'); return; }
   try {
-    var gifUrl = '';
-    if (gifFile) gifUrl = await uploadGif(gifFile);
     var row = { post_id: postId, nickname: nick, content: txt };
     if (gifUrl) row.gif_url = gifUrl;
     var res = await db.from('board_comments').insert(row);
     if (res.error) throw res.error;
     lastCommentTime = Date.now();
-    document.getElementById('ctxt-' + postId).value = '';
-    if (gifFileEl) { gifFileEl.value = ''; }
+    if (txtEl) txtEl.innerHTML = '';
+    document.getElementById('cgifstored-' + postId).value = '';
     var preview = document.getElementById('cgifpreview-' + postId);
     if (preview) { preview.style.display = 'none'; preview.src = ''; }
     await loadComments(postId);
@@ -165,28 +188,26 @@ async function submitPost() {
     alert(wait + '초 후에 다시 작성할 수 있어요'); return;
   }
   var nickname = document.getElementById('nickname').value.trim();
-  var content = document.getElementById('boardContent').value.trim();
-  var gifFile = document.getElementById('postGifFile') ? document.getElementById('postGifFile').files[0] : null;
+  var contentEl = document.getElementById('boardContent');
+  var content = contentEl ? contentEl.innerText.trim() : '';
+  var gifUrl = document.getElementById('postGifStored') ? document.getElementById('postGifStored').value : '';
   if (!nickname) { alert('닉네임을 입력해주세요'); return; }
   if (nickname.length > 20) { alert('닉네임은 20자 이하로 입력해주세요'); return; }
-  if (!content && !gifFile) { alert('내용을 입력해주세요'); return; }
+  if (!content && !gifUrl) { alert('내용을 입력해주세요'); return; }
   if (content.length > 300) { alert('내용은 300자 이하로 입력해주세요'); return; }
   var btn = document.querySelector('.board-form .board-submit');
   btn.disabled = true;
   btn.textContent = '등록 중...';
   try {
-    var gifUrl = '';
-    if (gifFile) gifUrl = await uploadGif(gifFile);
     var row = { nickname: nickname, content: content, likes: 0 };
     if (gifUrl) row.gif_url = gifUrl;
     var res = await db.from('board_posts').insert(row);
     if (res.error) throw res.error;
     lastPostTime = Date.now();
-    document.getElementById('boardContent').value = '';
+    contentEl.innerHTML = '';
     document.getElementById('charCount').textContent = '0 / 300';
-    document.getElementById('postGifFile').value = '';
+    document.getElementById('postGifStored').value = '';
     document.getElementById('postGifPreview').style.display = 'none';
-    document.getElementById('postGifName').textContent = '';
     await loadBoard();
   } catch(e) {
     alert('오류: ' + e.message);
@@ -205,8 +226,6 @@ async function likePost(id) {
   await db.from('board_posts').update({ likes: newLikes }).eq('id', id);
 }
 
-document.getElementById('boardContent').addEventListener('input', function() {
-  document.getElementById('charCount').textContent = this.value.length + ' / 300';
-});
+document.getElementById('boardContent').addEventListener('input', onPostInput);
 
 loadBoard();
