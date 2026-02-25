@@ -25,6 +25,13 @@
         <h2 class="section-title" style="margin-bottom:16px;">자유게시판</h2>
         <input type="text" id="nickname" class="board-input" placeholder="닉네임" maxlength="20" />
         <textarea id="boardContent" class="board-textarea" placeholder="자유롭게 글을 남겨주세요 (최대 300자)" maxlength="300"></textarea>
+        <div class="board-gif-row">
+          <button class="board-gif-btn" onclick="toggleGifInput('postGifWrap')">🎬 GIF</button>
+        </div>
+        <div id="postGifWrap" class="board-gif-wrap" style="display:none;">
+          <input type="text" id="postGifUrl" class="board-input" placeholder="GIF URL을 붙여넣으세요 (Giphy, Tenor 등)" style="margin-bottom:6px;" />
+          <img id="postGifPreview" class="board-gif-preview" src="" style="display:none;" />
+        </div>
         <div class="board-form-footer">
           <span class="board-char-count" id="charCount">0 / 300</span>
           <button class="board-submit" onclick="submitPost()">등록</button>

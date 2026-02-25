@@ -1,4 +1,8 @@
 var boardPosts = [];
+var lastPostTime = 0;
+var lastCommentTime = 0;
+var POST_COOLDOWN = 30000;
+var COMMENT_COOLDOWN = 10000;
 
 function formatDate(d) {
   var dt = new Date(d), now = new Date(), diff = Math.floor((now - dt) / 60000);
@@ -10,6 +14,16 @@ function formatDate(d) {
 
 function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function toggleGifInput(wrapperId) {
+  var wrap = document.getElementById(wrapperId);
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+}
+
+function gifUrlToImg(url) {
+  if (!url) return '';
+  return '<img src="' + escapeHtml(url) + '" class="board-gif-img" onerror="this.style.display=\'none\'" />';
 }
 
 async function loadBoard() {
@@ -30,6 +44,7 @@ async function loadBoard() {
           '<span class="board-time">' + formatDate(p.created_at) + '</span>' +
         '</div>' +
         '<div class="board-card-content">' + escapeHtml(p.content) + '</div>' +
+        (p.gif_url ? gifUrlToImg(p.gif_url) : '') +
         '<div class="board-card-footer">' +
           '<button class="board-like" onclick="likePost(' + p.id + ')">❤️ ' + (p.likes || 0) + '</button>' +
           '<button class="board-comment-btn" onclick="toggleComments(' + p.id + ')">💬 댓글 ' + commentCount + '</button>' +
@@ -38,9 +53,13 @@ async function loadBoard() {
           '<div class="board-comments-list" id="clist-' + p.id + '"></div>' +
           '<div class="board-comment-form">' +
             '<input type="text" class="board-input" id="cnick-' + p.id + '" placeholder="닉네임" maxlength="20" style="margin-bottom:6px;" />' +
-            '<div style="display:flex;gap:8px;">' +
+            '<div style="display:flex;gap:8px;align-items:center;">' +
               '<input type="text" class="board-input" id="ctxt-' + p.id + '" placeholder="댓글을 입력하세요" maxlength="200" style="margin-bottom:0;flex:1;" />' +
+              '<button class="board-gif-btn" onclick="toggleGifInput(\'cgif-' + p.id + '\')">🎬</button>' +
               '<button class="board-submit" style="padding:8px 14px;white-space:nowrap;" onclick="submitComment(' + p.id + ')">등록</button>' +
+            '</div>' +
+            '<div id="cgif-' + p.id + '" class="board-gif-wrap" style="display:none;margin-top:6px;">' +
+              '<input type="text" class="board-input" id="cgifurl-' + p.id + '" placeholder="GIF URL 붙여넣기" style="margin-bottom:0;" />' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -78,6 +97,7 @@ async function loadComments(postId) {
           '<span class="board-time">' + formatDate(c.created_at) + '</span>' +
         '</div>' +
         '<div class="board-comment-content">' + escapeHtml(c.content) + '</div>' +
+        (c.gif_url ? gifUrlToImg(c.gif_url) : '') +
       '</div>';
     }).join('');
   } catch(e) {
@@ -93,15 +113,20 @@ async function submitComment(postId) {
   }
   var nick = document.getElementById('cnick-' + postId).value.trim();
   var txt = document.getElementById('ctxt-' + postId).value.trim();
+  var gifUrl = document.getElementById('cgifurl-' + postId) ? document.getElementById('cgifurl-' + postId).value.trim() : '';
   if (!nick) { alert('닉네임을 입력해주세요'); return; }
   if (nick.length > 20) { alert('닉네임은 20자 이하로 입력해주세요'); return; }
-  if (!txt) { alert('댓글 내용을 입력해주세요'); return; }
+  if (!txt && !gifUrl) { alert('댓글 내용을 입력해주세요'); return; }
   if (txt.length > 200) { alert('댓글은 200자 이하로 입력해주세요'); return; }
   try {
-    var res = await db.from('board_comments').insert({ post_id: postId, nickname: nick, content: txt });
+    var row = { post_id: postId, nickname: nick, content: txt };
+    if (gifUrl) row.gif_url = gifUrl;
+    var res = await db.from('board_comments').insert(row);
     if (res.error) throw res.error;
     lastCommentTime = Date.now();
     document.getElementById('ctxt-' + postId).value = '';
+    if (document.getElementById('cgifurl-' + postId)) document.getElementById('cgifurl-' + postId).value = '';
+    document.getElementById('cgif-' + postId).style.display = 'none';
     await loadComments(postId);
     var countRes = await db.from('board_comments').select('count').eq('post_id', postId);
     if (countRes.data && countRes.data[0]) {
@@ -113,11 +138,6 @@ async function submitComment(postId) {
   }
 }
 
-var lastPostTime = 0;
-var lastCommentTime = 0;
-var POST_COOLDOWN = 30000;   // 게시글 30초
-var COMMENT_COOLDOWN = 10000; // 댓글 10초
-
 async function submitPost() {
   var now = Date.now();
   if (now - lastPostTime < POST_COOLDOWN) {
@@ -126,19 +146,24 @@ async function submitPost() {
   }
   var nickname = document.getElementById('nickname').value.trim();
   var content = document.getElementById('boardContent').value.trim();
+  var gifUrl = document.getElementById('postGifUrl') ? document.getElementById('postGifUrl').value.trim() : '';
   if (!nickname) { alert('닉네임을 입력해주세요'); return; }
   if (nickname.length > 20) { alert('닉네임은 20자 이하로 입력해주세요'); return; }
-  if (!content) { alert('내용을 입력해주세요'); return; }
+  if (!content && !gifUrl) { alert('내용을 입력해주세요'); return; }
   if (content.length > 300) { alert('내용은 300자 이하로 입력해주세요'); return; }
   var btn = document.querySelector('.board-form .board-submit');
   btn.disabled = true;
   btn.textContent = '등록 중...';
   try {
-    var res = await db.from('board_posts').insert({ nickname: nickname, content: content, likes: 0 });
+    var row = { nickname: nickname, content: content, likes: 0 };
+    if (gifUrl) row.gif_url = gifUrl;
+    var res = await db.from('board_posts').insert(row);
     if (res.error) throw res.error;
     lastPostTime = Date.now();
     document.getElementById('boardContent').value = '';
     document.getElementById('charCount').textContent = '0 / 300';
+    if (document.getElementById('postGifUrl')) document.getElementById('postGifUrl').value = '';
+    document.getElementById('postGifWrap').style.display = 'none';
     await loadBoard();
   } catch(e) {
     alert('오류: ' + e.message);
