@@ -1,19 +1,9 @@
 import yfinance as yf
 import pandas as pd
-import mplfinance as mpf
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-import os
 from datetime import datetime
 from supabase import create_client
 import warnings
 warnings.filterwarnings('ignore')
-
-# 한글 폰트 설정 (Windows 맑은 고딕)
-plt.rcParams['font.family'] = 'Malgun Gothic'
-plt.rcParams['axes.unicode_minus'] = False
 
 # =============================================
 # 설정
@@ -35,8 +25,16 @@ ANALYSIS_TICKERS = {
     'URA (우라늄 ETF)': 'URA',
 }
 
-CHART_DIR = 'C:/Users/asdf/webtest/charts'
-os.makedirs(CHART_DIR, exist_ok=True)
+# yfinance 티커 → TradingView 심볼 매핑
+TV_SYMBOLS = {
+    '^NDX':     'NASDAQ:NDX',
+    '^GSPC':    'SP:SPX',
+    '^VIX':     'CBOE:VIX',
+    'USDJPY=X': 'FX:USDJPY',
+    'JPY=X':    'FX:JPYUSD',
+    'BTC-USD':  'BINANCE:BTCUSDT',
+    'URA':      'AMEX:URA',
+}
 
 # =============================================
 # 기술적 지표
@@ -82,55 +80,11 @@ def check_ema_cross(close):
     return signals
 
 # =============================================
-# 차트 생성 및 Supabase 업로드
+# TradingView 차트 div 생성
 # =============================================
-def generate_chart(ticker, name, client):
-    try:
-        data = yf.download(ticker, period='3mo', interval='1d', progress=False, auto_adjust=True)
-        if len(data) < 10:
-            return None
-
-        if isinstance(data.columns, pd.MultiIndex):
-            data.columns = data.columns.get_level_values(0)
-
-        data.index = pd.to_datetime(data.index)
-        data = data[['Open','High','Low','Close','Volume']].dropna()
-
-        ema20 = calc_ema(data['Close'], 20)
-        ema50 = calc_ema(data['Close'], 50)
-        apds = [
-            mpf.make_addplot(ema20, color='#3182f6', width=1.2),
-            mpf.make_addplot(ema50, color='#f04452', width=1.2),
-        ]
-
-        safe_name = ticker.replace('^','').replace('=','')
-        fname = f"{CHART_DIR}/{safe_name}.png"
-        mpf.plot(
-            data,
-            type='candle',
-            style='yahoo',
-            title=f'{ticker.replace("^","").replace("=X","").replace("=","")} - Daily Chart (3M)',
-            addplot=apds,
-            volume=True,
-            savefig=dict(fname=fname, dpi=120, bbox_inches='tight'),
-            figsize=(10, 6),
-        )
-
-        storage_path = f"{safe_name}.png"
-        with open(fname, 'rb') as f:
-            img_data = f.read()
-        client.storage.from_('chart').upload(
-            storage_path, img_data,
-            file_options={"content-type": "image/png", "upsert": "true"}
-        )
-
-        public_url = f"{SUPABASE_URL}/storage/v1/object/public/chart/{storage_path}"
-        print(f"    차트 업로드 완료: {name}")
-        return public_url
-
-    except Exception as e:
-        print(f"    차트 오류 ({name}): {e}")
-        return None
+def get_tv_chart_div(ticker):
+    symbol = TV_SYMBOLS.get(ticker, ticker)
+    return f'<div class="tv-chart" data-symbol="{symbol}"></div>'
 
 # =============================================
 # 시장 등락률
@@ -354,17 +308,16 @@ def main():
     print("  시장 데이터 수집 중...")
     market = get_market_overview()
 
-    print("  차트 및 분석 생성 중...")
+    print("  분석 생성 중...")
     market_sections = ""
     for name, ticker in MARKET_TICKERS.items():
-        print(f"    {name} 처리 중...")
-        url = generate_chart(ticker, name, client)
+        print(f"    {name} 분석 중...")
+        chart_div = get_tv_chart_div(ticker)
         analysis_html = analyze_ticker_html(name, ticker)
-        img_tag = f'<img src="{url}" class="chart-img-full"/>' if url else '<p class="an-error">차트 생성 실패</p>'
         market_sections += f'''
 <div class="ticker-section">
   <h3 class="ticker-title">{name}</h3>
-  {img_tag}
+  {chart_div}
   <div class="analysis-box">
     {analysis_html}
   </div>
@@ -373,13 +326,12 @@ def main():
     special_sections = ""
     for name, ticker in ANALYSIS_TICKERS.items():
         print(f"    {name} 특별분석 중...")
-        url = generate_chart(ticker, name, client)
+        chart_div = get_tv_chart_div(ticker)
         analysis_html = analyze_ticker_html(name, ticker)
-        img_tag = f'<img src="{url}" class="chart-img-full"/>' if url else '<p class="an-error">차트 생성 실패</p>'
         special_sections += f'''
 <div class="ticker-section special">
   <h3 class="ticker-title">⭐ {name} — 오늘의 특별 분석</h3>
-  {img_tag}
+  {chart_div}
   <div class="analysis-box">
     {analysis_html}
   </div>

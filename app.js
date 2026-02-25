@@ -42,12 +42,44 @@ async function loadPosts() {
     postList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + err.message + '</div></div>';
   }
 }
+var tvScriptLoaded = false;
+function loadTVScript(callback) {
+  if (tvScriptLoaded && typeof TradingView !== 'undefined') { callback(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://s3.tradingview.com/tv.js';
+  s.onload = function() { tvScriptLoaded = true; callback(); };
+  document.head.appendChild(s);
+}
+function initTVCharts() {
+  var charts = document.querySelectorAll('.tv-chart');
+  if (!charts.length) return;
+  loadTVScript(function() {
+    charts.forEach(function(el, i) {
+      var symbol = el.getAttribute('data-symbol');
+      var id = 'tv_' + i + '_' + Date.now();
+      el.id = id;
+      new TradingView.widget({
+        container_id: id, symbol: symbol,
+        interval: 'D', theme: 'dark', style: '1',
+        locale: 'kr', width: '100%', height: 380,
+        hide_top_toolbar: false, hide_legend: false,
+        save_image: false, allow_symbol_change: false,
+        studies: ['MAExp@tv-basicstudies'],
+      });
+    });
+  });
+}
 function openPost(id) {
   var post = allPosts.find(function(p){ return p.id === id; });
   if (!post) return;
-  document.getElementById('modalContent').innerHTML = '<div class="modal-category">' + post.category + '</div><div class="modal-title">' + post.title + '</div><div class="modal-date">' + formatDate(post.created_at) + '</div><div class="modal-body">' + post.content + '</div>';
+  document.getElementById('modalContent').innerHTML =
+    '<div class="modal-category">' + post.category + '</div>' +
+    '<div class="modal-title">' + post.title + '</div>' +
+    '<div class="modal-date">' + formatDate(post.created_at) + '</div>' +
+    '<div class="modal-body">' + post.content + '</div>';
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
+  setTimeout(initTVCharts, 100);
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('active');

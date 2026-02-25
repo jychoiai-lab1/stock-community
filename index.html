@@ -19,13 +19,29 @@
   </header>
   <main class="main">
     <div class="container">
-      <section class="ticker-bar">
-        <div class="ticker-item"><span class="ticker-name">코스피</span><span class="ticker-value" id="kospi">-</span></div>
-        <div class="ticker-item"><span class="ticker-name">코스닥</span><span class="ticker-value" id="kosdaq">-</span></div>
-        <div class="ticker-item"><span class="ticker-name">S&amp;P 500</span><span class="ticker-value" id="sp500">-</span></div>
-        <div class="ticker-item"><span class="ticker-name">나스닥</span><span class="ticker-value" id="nasdaq">-</span></div>
-        <div class="ticker-item"><span class="ticker-name">다우존스</span><span class="ticker-value" id="dow">-</span></div>
-      </section>
+      <!-- TradingView 실시간 티커 테이프 -->
+      <div class="tv-tape-wrap">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+          {
+            "symbols": [
+              {"proName":"NASDAQ:NDX","title":"NDX"},
+              {"proName":"SP:SPX","title":"SPX"},
+              {"proName":"CBOE:VIX","title":"VIX"},
+              {"proName":"FX:USDJPY","title":"USD/JPY"},
+              {"proName":"FX:JPYUSD","title":"JPY/X"},
+              {"proName":"BINANCE:BTCUSDT","title":"BTC/USDT"}
+            ],
+            "showSymbolLogo": false,
+            "colorTheme": "dark",
+            "isTransparent": true,
+            "displayMode": "adaptive",
+            "locale": "kr"
+          }
+          </script>
+        </div>
+      </div>
       <section class="posts-section">
         <div class="posts-header">
           <h2 class="section-title">브리핑</h2>
