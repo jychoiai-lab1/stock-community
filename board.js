@@ -8,10 +8,14 @@ function formatDate(d) {
   return dt.getFullYear() + '.' + String(dt.getMonth()+1).padStart(2,'0') + '.' + String(dt.getDate()).padStart(2,'0');
 }
 
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
 async function loadBoard() {
   var list = document.getElementById('boardList');
   try {
-    var res = await db.from('board_posts').select('*').order('created_at', { ascending: false });
+    var res = await db.from('board_posts').select('*, board_comments(count)').order('created_at', { ascending: false });
     if (res.error) throw res.error;
     boardPosts = res.data || [];
     if (!boardPosts.length) {
@@ -19,6 +23,7 @@ async function loadBoard() {
       return;
     }
     list.innerHTML = boardPosts.map(function(p) {
+      var commentCount = (p.board_comments && p.board_comments[0]) ? p.board_comments[0].count : 0;
       return '<div class="board-card" id="bcard-' + p.id + '">' +
         '<div class="board-card-header">' +
           '<span class="board-nickname">' + escapeHtml(p.nickname) + '</span>' +
@@ -27,11 +32,77 @@ async function loadBoard() {
         '<div class="board-card-content">' + escapeHtml(p.content) + '</div>' +
         '<div class="board-card-footer">' +
           '<button class="board-like" onclick="likePost(' + p.id + ')">❤️ ' + (p.likes || 0) + '</button>' +
+          '<button class="board-comment-btn" onclick="toggleComments(' + p.id + ')">💬 댓글 ' + commentCount + '</button>' +
+        '</div>' +
+        '<div class="board-comments-wrap" id="comments-' + p.id + '" style="display:none;">' +
+          '<div class="board-comments-list" id="clist-' + p.id + '"></div>' +
+          '<div class="board-comment-form">' +
+            '<input type="text" class="board-input" id="cnick-' + p.id + '" placeholder="닉네임" maxlength="20" style="margin-bottom:6px;" />' +
+            '<div style="display:flex;gap:8px;">' +
+              '<input type="text" class="board-input" id="ctxt-' + p.id + '" placeholder="댓글을 입력하세요" maxlength="200" style="margin-bottom:0;flex:1;" />' +
+              '<button class="board-submit" style="padding:8px 14px;white-space:nowrap;" onclick="submitComment(' + p.id + ')">등록</button>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
       '</div>';
     }).join('');
   } catch(e) {
     list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + e.message + '</div></div>';
+  }
+}
+
+async function toggleComments(postId) {
+  var wrap = document.getElementById('comments-' + postId);
+  if (wrap.style.display === 'none') {
+    wrap.style.display = 'block';
+    await loadComments(postId);
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+async function loadComments(postId) {
+  var clist = document.getElementById('clist-' + postId);
+  clist.innerHTML = '<div style="color:#475569;font-size:13px;padding:8px 0;">불러오는 중...</div>';
+  try {
+    var res = await db.from('board_comments').select('*').eq('post_id', postId).order('created_at', { ascending: true });
+    if (res.error) throw res.error;
+    if (!res.data || !res.data.length) {
+      clist.innerHTML = '<div style="color:#475569;font-size:13px;padding:8px 0;">첫 댓글을 남겨보세요!</div>';
+      return;
+    }
+    clist.innerHTML = res.data.map(function(c) {
+      return '<div class="board-comment">' +
+        '<div class="board-comment-header">' +
+          '<span class="board-comment-nick">' + escapeHtml(c.nickname) + '</span>' +
+          '<span class="board-time">' + formatDate(c.created_at) + '</span>' +
+        '</div>' +
+        '<div class="board-comment-content">' + escapeHtml(c.content) + '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    clist.innerHTML = '<div style="color:#f87171;font-size:13px;">오류: ' + e.message + '</div>';
+  }
+}
+
+async function submitComment(postId) {
+  var nick = document.getElementById('cnick-' + postId).value.trim();
+  var txt = document.getElementById('ctxt-' + postId).value.trim();
+  if (!nick) { alert('닉네임을 입력해주세요'); return; }
+  if (!txt) { alert('댓글 내용을 입력해주세요'); return; }
+  try {
+    var res = await db.from('board_comments').insert({ post_id: postId, nickname: nick, content: txt });
+    if (res.error) throw res.error;
+    document.getElementById('ctxt-' + postId).value = '';
+    await loadComments(postId);
+    // 댓글 수 버튼 갱신
+    var countRes = await db.from('board_comments').select('count').eq('post_id', postId);
+    if (countRes.data && countRes.data[0]) {
+      var btn = document.querySelector('#bcard-' + postId + ' .board-comment-btn');
+      if (btn) btn.textContent = '💬 댓글 ' + countRes.data[0].count;
+    }
+  } catch(e) {
+    alert('오류: ' + e.message);
   }
 }
 
@@ -64,10 +135,6 @@ async function likePost(id) {
   var btn = document.querySelector('#bcard-' + id + ' .board-like');
   if (btn) btn.textContent = '❤️ ' + newLikes;
   await db.from('board_posts').update({ likes: newLikes }).eq('id', id);
-}
-
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
 document.getElementById('boardContent').addEventListener('input', function() {
