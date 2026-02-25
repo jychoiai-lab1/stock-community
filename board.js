@@ -86,16 +86,23 @@ async function loadComments(postId) {
 }
 
 async function submitComment(postId) {
+  var now = Date.now();
+  if (now - lastCommentTime < COMMENT_COOLDOWN) {
+    var wait = Math.ceil((COMMENT_COOLDOWN - (now - lastCommentTime)) / 1000);
+    alert(wait + '초 후에 다시 댓글을 달 수 있어요'); return;
+  }
   var nick = document.getElementById('cnick-' + postId).value.trim();
   var txt = document.getElementById('ctxt-' + postId).value.trim();
   if (!nick) { alert('닉네임을 입력해주세요'); return; }
+  if (nick.length > 20) { alert('닉네임은 20자 이하로 입력해주세요'); return; }
   if (!txt) { alert('댓글 내용을 입력해주세요'); return; }
+  if (txt.length > 200) { alert('댓글은 200자 이하로 입력해주세요'); return; }
   try {
     var res = await db.from('board_comments').insert({ post_id: postId, nickname: nick, content: txt });
     if (res.error) throw res.error;
+    lastCommentTime = Date.now();
     document.getElementById('ctxt-' + postId).value = '';
     await loadComments(postId);
-    // 댓글 수 버튼 갱신
     var countRes = await db.from('board_comments').select('count').eq('post_id', postId);
     if (countRes.data && countRes.data[0]) {
       var btn = document.querySelector('#bcard-' + postId + ' .board-comment-btn');
@@ -106,17 +113,30 @@ async function submitComment(postId) {
   }
 }
 
+var lastPostTime = 0;
+var lastCommentTime = 0;
+var POST_COOLDOWN = 30000;   // 게시글 30초
+var COMMENT_COOLDOWN = 10000; // 댓글 10초
+
 async function submitPost() {
+  var now = Date.now();
+  if (now - lastPostTime < POST_COOLDOWN) {
+    var wait = Math.ceil((POST_COOLDOWN - (now - lastPostTime)) / 1000);
+    alert(wait + '초 후에 다시 작성할 수 있어요'); return;
+  }
   var nickname = document.getElementById('nickname').value.trim();
   var content = document.getElementById('boardContent').value.trim();
   if (!nickname) { alert('닉네임을 입력해주세요'); return; }
+  if (nickname.length > 20) { alert('닉네임은 20자 이하로 입력해주세요'); return; }
   if (!content) { alert('내용을 입력해주세요'); return; }
-  var btn = document.querySelector('.board-submit');
+  if (content.length > 300) { alert('내용은 300자 이하로 입력해주세요'); return; }
+  var btn = document.querySelector('.board-form .board-submit');
   btn.disabled = true;
   btn.textContent = '등록 중...';
   try {
     var res = await db.from('board_posts').insert({ nickname: nickname, content: content, likes: 0 });
     if (res.error) throw res.error;
+    lastPostTime = Date.now();
     document.getElementById('boardContent').value = '';
     document.getElementById('charCount').textContent = '0 / 300';
     await loadBoard();

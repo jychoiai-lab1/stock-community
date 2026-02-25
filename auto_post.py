@@ -10,9 +10,13 @@ warnings.filterwarnings('ignore')
 REPORTS_DIR = r'C:\Users\asdf\webtest\reports'
 
 def read_report(ticker):
-    """종목 코드로 docx 파일 읽기 (예: NTR.docx)"""
-    path = os.path.join(REPORTS_DIR, f'{ticker}.docx')
-    if not os.path.exists(path):
+    """종목 코드로 docx 파일 읽기 — CHART_KEYS 단축키 우선 (예: SKT.docx)"""
+    key = CHART_KEYS.get(ticker, ticker.replace('^','').replace('=X','').replace('.KS',''))
+    for name in [key, ticker]:
+        path = os.path.join(REPORTS_DIR, f'{name}.docx')
+        if os.path.exists(path):
+            break
+    else:
         return None
     try:
         doc = Document(path)
@@ -42,7 +46,7 @@ def report_to_html(text):
 # 설정
 # =============================================
 SUPABASE_URL = 'https://miyrssfrjvhwswjylahw.supabase.co'
-SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1peXJzc2ZyanZod3N3anlsYWh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjIxNDYsImV4cCI6MjA4NzU5ODE0Nn0.oBwDXc1x4II1M4NX5AcfXIt2MTx4L3m4e9mHwqo-ObA'
+SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1peXJzc2ZyanZod3N3anlsYWh3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjAyMjE0NiwiZXhwIjoyMDg3NTk4MTQ2fQ.rZczJNVwP5ApcQnFFiogD_Bop3IIAItNPjUD2zvN0ts'
 
 MARKET_TICKERS = {
     'NDX (나스닥100)': '^NDX',
@@ -66,7 +70,8 @@ CHART_KEYS = {
     'USDJPY=X': 'USDJPY',
     'DX=F':     'DXY',
     'BTC-USD':  'BTC',
-    'NTR':      'NTR',
+    'NTR':         'NTR',
+    '017670.KS':   'SKT',
 }
 
 # =============================================
