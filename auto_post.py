@@ -390,7 +390,7 @@ def main():
   </div>
 </div>'''
 
-    title = f"{today} 아침 주식 브리핑"
+    title = f"{today} 장중 브리핑"
     content = (
         '<div class="briefing">'
         '<h3>🌍 주요 시장 현황</h3>'
