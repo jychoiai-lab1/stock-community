@@ -161,6 +161,19 @@ function openPost(id) {
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
   setTimeout(initLWCharts, 100);
+  // 조회수 +1
+  var newViews = (post.views || 0) + 1;
+  post.views = newViews;
+  db.from('posts').update({ views: newViews }).eq('id', id).then(function() {
+    // 카드에 표시된 조회수도 갱신
+    var cards = document.querySelectorAll('.post-card');
+    cards.forEach(function(card) {
+      if (card.getAttribute('onclick') === 'openPost(' + id + ')') {
+        var stat = card.querySelector('.post-stat');
+        if (stat) stat.textContent = '👁 ' + newViews;
+      }
+    });
+  });
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('active');
