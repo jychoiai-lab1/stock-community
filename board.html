@@ -24,18 +24,7 @@
       <div class="board-form">
         <h2 class="section-title" style="margin-bottom:16px;">자유게시판</h2>
         <input type="text" id="nickname" class="board-input" placeholder="닉네임" maxlength="20" />
-        <div contenteditable="true" id="boardContent" class="board-contenteditable"
-             role="textbox" aria-multiline="true"
-             data-placeholder="자유롭게 글을 남겨주세요"
-             oninput="onPostInput()"></div>
-        <div class="board-gif-row">
-          <button class="board-gif-btn" onclick="document.getElementById('postGifFile').click()">🖼️ GIF/사진 첨부</button>
-          <span class="board-gif-name" id="postGifName" style="font-size:12px;color:#475569;margin-left:8px;"></span>
-        </div>
-        <input type="file" id="postGifFile" accept="image/*" style="display:none;"
-               onchange="handleGifFile(this,'postGifPreview','postGifStored','postGifName')" />
-        <input type="hidden" id="postGifStored" value="" />
-        <img id="postGifPreview" class="board-gif-preview" style="display:none;" />
+        <textarea id="boardContent" class="board-contenteditable" placeholder="자유롭게 글을 남겨주세요" maxlength="300" oninput="onPostInput()" style="resize:none;height:100px;"></textarea>
         <div class="board-form-footer">
           <span class="board-char-count" id="charCount">0 / 300</span>
           <button class="board-submit" onclick="submitPost()">등록</button>
