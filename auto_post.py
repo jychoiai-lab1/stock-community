@@ -16,7 +16,7 @@ MARKET_TICKERS = {
     'SPX (S&P500)':   '^GSPC',
     'VIX (공포지수)':  '^VIX',
     'USD/JPY':         'USDJPY=X',
-    'JPY/X':           'JPY=X',
+    'DXY (달러인덱스)': 'DX=F',
     'BTC/USDT':        'BTC-USD',
 }
 
@@ -31,7 +31,7 @@ CHART_KEYS = {
     '^GSPC':    'SPX',
     '^VIX':     'VIX',
     'USDJPY=X': 'USDJPY',
-    'JPY=X':    'JPYX',
+    'DX=F':     'DXY',
     'BTC-USD':  'BTC',
     'URA':      'URA',
 }
