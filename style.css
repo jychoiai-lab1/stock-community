@@ -251,3 +251,20 @@ html { scroll-behavior: smooth; }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 .modal-overlay.active .modal { animation: modal-in 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+
+
+/* ===== DOCX 업로드 콘텐츠 스타일 ===== */
+.modal-body h2 { font-size: 20px; font-weight: 700; color: #e2e8f0; margin: 24px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #2d3748; }
+.modal-body h3 { font-size: 17px; font-weight: 600; color: #cbd5e1; margin: 20px 0 8px; }
+.modal-body h4 { font-size: 15px; font-weight: 600; color: #94a3b8; margin: 16px 0 6px; }
+.modal-body p  { margin: 8px 0; line-height: 1.75; color: #cbd5e1; }
+.modal-body strong { color: #f1f5f9; font-weight: 700; }
+.modal-body em     { color: #93c5fd; font-style: italic; }
+.modal-body img    { max-width: 100%; border-radius: 6px; margin: 10px 0; display: block; }
+
+.docx-table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; }
+.docx-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.docx-table th { background: #1e2535; color: #60a5fa; font-weight: 600; padding: 10px 12px; text-align: left; border: 1px solid #2d3748; }
+.docx-table td { padding: 9px 12px; border: 1px solid #2d3748; color: #cbd5e1; vertical-align: top; line-height: 1.5; }
+.docx-table tr:nth-child(even) td { background: #0f1520; }
+.docx-table tr:hover td { background: #1a2234; }

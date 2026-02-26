@@ -87,7 +87,7 @@ async function loadPosts() {
   var postsCount = document.getElementById('postsCount');
   try {
     if (db) {
-      var res = await db.from('posts').select('*').order('created_at', { ascending: false });
+      var res = await db.from('posts').select('*').ilike('category', '%브리핑%').order('created_at', { ascending: false });
       if (res.error) throw res.error;
       allPosts = res.data || [];
     } else {
@@ -253,50 +253,46 @@ async function loadEventsCalendar() {
 }
 loadEventsCalendar();
 
+// 탭별 카테고리 포스트 로딩
+var tabPostsLoaded = {};
+var tabCategoryMap = {
+  'us':     '🇺🇸 미국주식',
+  'kr':     '🇰🇷 국내주식',
+  'crypto': '🪙 암호화폐'
+};
+
+async function loadTabPosts(tabName) {
+  var category = tabCategoryMap[tabName];
+  if (!category) return;
+  var listEl = document.getElementById(tabName + 'PostList');
+  if (!listEl) return;
+  try {
+    if (!db) return;
+    var res = await db.from('posts').select('*').eq('category', category).order('created_at', { ascending: false });
+    if (res.error) throw res.error;
+    var posts = res.data || [];
+    if (posts.length === 0) {
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">아직 게시글이 없어요</div></div>';
+    } else {
+      posts.forEach(function(p) {
+        if (!allPosts.find(function(ap){ return ap.id === p.id; })) allPosts.push(p);
+      });
+      listEl.innerHTML = posts.map(createPostCard).join('');
+    }
+  } catch(e) {
+    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + e.message + '</div></div>';
+    console.error('탭 포스트 오류:', e);
+  }
+}
+
 // 탭 전환
 function switchTab(name, btn) {
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.style.display = 'none'; });
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('tab-' + name).style.display = '';
   btn.classList.add('active');
+  if (!tabPostsLoaded[name] && tabCategoryMap[name]) {
+    tabPostsLoaded[name] = true;
+    loadTabPosts(name);
+  }
 }
-
-// 홈 주식 탭 (미국 / 국내 / 암호화폐)
-function createStockCard(s) {
-  return '<div class="stock-card">' +
-    '<div class="stock-name">' + s.name + ' <span class="stock-ticker">' + s.ticker + '</span></div>' +
-    '<div class="stock-price">' + s.price + '</div>' +
-    '<div class="stock-change ' + (s.is_up ? 'up' : 'down') + '">' + s.change_val + ' (' + s.change_pct + ')</div>' +
-    '</div>';
-}
-
-async function loadHomeStocks() {
-  try {
-    if (!db) return;
-    var res = await db.from('stock_prices').select('*').order('id');
-    if (res.error || !res.data) return;
-    var data = res.data;
-
-    var us = data.filter(function(s){ return s.market === 'US'; });
-    var kr = data.filter(function(s){ return s.market === 'KR'; });
-    var crypto = data.filter(function(s){ return s.market === 'CRYPTO'; });
-
-    var empty = '<p style="color:#64748b;padding:16px">데이터 없음</p>';
-    var usEl = document.getElementById('homeUsStocks');
-    var krEl = document.getElementById('homeKrStocks');
-    var cryptoEl = document.getElementById('homeCryptoStocks');
-    if (usEl) usEl.innerHTML = us.length ? us.map(createStockCard).join('') : empty;
-    if (krEl) krEl.innerHTML = kr.length ? kr.map(createStockCard).join('') : empty;
-    if (cryptoEl) cryptoEl.innerHTML = crypto.length ? crypto.map(createStockCard).join('') : empty;
-
-    if (data.length && data[0].updated_at) {
-      var d = new Date(data[0].updated_at);
-      var updStr = '최근 업데이트: ' + d.toLocaleString('ko-KR');
-      ['homeStocksUpdated','homeKrUpdated','homeCryptoUpdated'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.textContent = updStr;
-      });
-    }
-  } catch(e) { console.error('홈주식 오류:', e); }
-}
-loadHomeStocks();
