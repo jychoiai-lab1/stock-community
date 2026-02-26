@@ -21,32 +21,18 @@ def capture_and_upload():
             user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36'
         )
         page = context.new_page()
-        page.goto(FINVIZ_URL, wait_until='load', timeout=60000)
-        time.sleep(4)  # 맵 렌더링 대기
+        page.goto(FINVIZ_URL, wait_until='domcontentloaded', timeout=60000)
 
-        # 팝업 닫기
-        try:
-            page.keyboard.press('Escape')
-            time.sleep(0.5)
-        except Exception:
-            pass
-        try:
-            # Finviz 프리미엄 팝업 닫기 버튼
-            close_btn = page.query_selector('a.modal-close, button.modal-close, [class*="popup"] [class*="close"], #dismiss-button')
-            if close_btn:
-                close_btn.click()
-                time.sleep(0.5)
-        except Exception:
-            pass
-        # JS로 팝업/오버레이 강제 제거
-        page.evaluate("""
-            document.querySelectorAll('[class*="popup"], [class*="modal"], [class*="overlay"], [id*="popup"], [id*="modal"]')
-                .forEach(el => el.remove());
-        """)
-        time.sleep(1)
+        # 캔버스 맵 렌더링 대기
+        page.wait_for_selector('canvas.chart', timeout=20000)
+        time.sleep(3)
 
-        # 맵 영역만 캡처
-        screenshot = page.screenshot(full_page=False)
+        # 히트맵 캔버스만 캡처
+        map_el = page.query_selector('#map_base_sec, canvas.chart')
+        if map_el:
+            screenshot = map_el.screenshot()
+        else:
+            screenshot = page.screenshot(full_page=False)
         browser.close()
 
     print(f"  캡처 완료 ({len(screenshot):,} bytes)")
