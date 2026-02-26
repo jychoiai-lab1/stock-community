@@ -30,9 +30,15 @@
       <div class="ticker-refresh-note">🕐 1시간마다 자동 갱신</div>
       <div class="layout">
         <div class="main-col">
-          <section class="posts-section">
+          <!-- 탭 바 -->
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('briefing', this)">브리핑</button>
+            <button class="tab-btn" onclick="switchTab('crypto', this)">🪙 암호화폐</button>
+          </div>
+
+          <!-- 브리핑 탭 -->
+          <section class="tab-panel" id="tab-briefing">
             <div class="posts-header">
-              <h2 class="section-title">브리핑</h2>
               <div style="display:flex;align-items:center;gap:10px;">
                 <span class="refresh-note">🕒 매일 3시 갱신</span>
                 <span class="posts-count" id="postsCount"></span>
@@ -40,6 +46,14 @@
             </div>
             <div class="post-list" id="postList">
               <div class="loading-spinner"><div class="spinner"></div><p>불러오는 중...</p></div>
+            </div>
+          </section>
+
+          <!-- 암호화폐 탭 (준비 중) -->
+          <section class="tab-panel" id="tab-crypto" style="display:none">
+            <div class="empty-state" style="padding:80px 20px;">
+              <div class="empty-state-icon">🪙</div>
+              <div class="empty-state-text">준비 중입니다</div>
             </div>
           </section>
         </div>

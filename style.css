@@ -52,6 +52,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 
 .ticker-refresh-note { text-align: right; font-size: 11px; color: #475569; margin-top: 4px; margin-bottom: 4px; }
 
+/* ===== 탭 바 ===== */
+.tab-bar { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 1px solid #2d3748; padding-bottom: 0; }
+.tab-btn { background: none; border: none; color: #64748b; font-size: 14px; font-weight: 600; padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; border-radius: 6px 6px 0 0; }
+.tab-btn:hover { color: #e2e8f0; background: #1e2535; }
+.tab-btn.active { color: #60a5fa; border-bottom-color: #60a5fa; }
+
 /* ===== 게시글 섹션 ===== */
 .posts-section { margin-top: 8px; }
 .posts-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }

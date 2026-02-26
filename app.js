@@ -252,3 +252,11 @@ async function loadEventsCalendar() {
   }
 }
 loadEventsCalendar();
+
+// 탭 전환
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.style.display = 'none'; });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('tab-' + name).style.display = '';
+  btn.classList.add('active');
+}
