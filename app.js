@@ -266,8 +266,9 @@ async function loadTabPosts(tabName) {
   if (!category) return;
   var listEl = document.getElementById(tabName + 'PostList');
   if (!listEl) return;
+  listEl.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>불러오는 중...</p></div>';
   try {
-    if (!db) return;
+    if (!db) throw new Error('DB 연결 안됨');
     var res = await db.from('posts').select('*').eq('category', category).order('created_at', { ascending: false });
     if (res.error) throw res.error;
     var posts = res.data || [];
@@ -279,7 +280,9 @@ async function loadTabPosts(tabName) {
       });
       listEl.innerHTML = posts.map(createPostCard).join('');
     }
+    tabPostsLoaded[tabName] = true;
   } catch(e) {
+    tabPostsLoaded[tabName] = false;
     listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + e.message + '</div></div>';
     console.error('탭 포스트 오류:', e);
   }
@@ -292,7 +295,6 @@ function switchTab(name, btn) {
   document.getElementById('tab-' + name).style.display = '';
   btn.classList.add('active');
   if (!tabPostsLoaded[name] && tabCategoryMap[name]) {
-    tabPostsLoaded[name] = true;
     loadTabPosts(name);
   }
 }
