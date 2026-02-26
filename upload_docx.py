@@ -12,7 +12,14 @@ upload_docx.py - DOCX 파일을 겁쟁이리서치 탭에 업로드
 
 import sys
 import os
+import io
 import uuid
+
+# Windows 콘솔 UTF-8 출력 설정
+if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 from docx import Document
 from docx.oxml.ns import qn
 from supabase import create_client
@@ -85,10 +92,10 @@ def process_run(run_xml, image_rels, supabase) -> str:
                 img_bytes = rel.target_part.blob
                 ct = rel.target_part.content_type
                 url = upload_image(supabase, img_bytes, ct)
-                print(f"    📷 이미지 업로드: {url.split('/')[-1]}")
+                print(f"    [이미지] {url.split('/')[-1]}")
                 return f'<img src="{url}" style="max-width:100%;margin:10px 0;border-radius:4px;" />'
             except Exception as e:
-                print(f"    ⚠️  이미지 업로드 실패: {e}")
+                print(f"    [경고] 이미지 업로드 실패: {e}")
                 return ""
 
     # 일반 텍스트
@@ -222,46 +229,46 @@ def main():
     if len(sys.argv) >= 2:
         doc_path = sys.argv[1].strip('"').strip("'")
     else:
-        doc_path = input("📄 DOCX 파일 경로: ").strip().strip('"').strip("'")
+        doc_path = input("[파일] DOCX 경로: ").strip().strip('"').strip("'")
 
     if not os.path.exists(doc_path):
-        print(f"❌ 파일을 찾을 수 없음: {doc_path}")
+        print(f"[오류] 파일을 찾을 수 없음: {doc_path}")
         sys.exit(1)
 
-    print(f"✅ 파일 확인: {os.path.basename(doc_path)}")
+    print(f"[확인] {os.path.basename(doc_path)}")
 
     # ── 탭 선택 ─────────────────────────────────────
     print()
-    print("📂 어떤 탭에 올릴까요?")
+    print("[탭 선택] 어디에 올릴까요?")
     for k, v in TAB_OPTIONS.items():
         print(f"  {k}. {v}")
 
-    choice = input("번호 선택: ").strip()
+    choice = input("번호: ").strip()
     if choice not in TAB_OPTIONS:
-        print("❌ 잘못된 번호")
+        print("[오류] 잘못된 번호")
         sys.exit(1)
 
     category = TAB_OPTIONS[choice]
 
     # ── 제목 입력 ────────────────────────────────────
     print()
-    title = input("✏️  제목: ").strip()
+    title = input("[제목] : ").strip()
     if not title:
-        print("❌ 제목을 입력해야 합니다")
+        print("[오류] 제목을 입력해야 합니다")
         sys.exit(1)
 
     # ── 변환 & 업로드 ─────────────────────────────────
     print()
-    print("⚙️  DOCX 변환 중... (이미지는 자동 업로드됩니다)")
+    print("[변환 중] DOCX 변환 + 이미지 업로드...")
     supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
     try:
         html_content = docx_to_html(doc_path, supabase)
     except Exception as e:
-        print(f"❌ 변환 오류: {e}")
+        print(f"[오류] 변환 실패: {e}")
         sys.exit(1)
 
-    print(f"📤 '{category}' 탭에 게시물 업로드 중...")
+    print(f"[업로드] '{category}' 탭에 게시 중...")
     try:
         result = supabase.table("posts").insert({
             "category": category,
@@ -272,13 +279,13 @@ def main():
 
         if result.data:
             post_id = result.data[0]["id"]
-            print(f"✅ 업로드 완료! (게시물 ID: {post_id})")
-            print(f"   탭: {category}")
-            print(f"   제목: {title}")
+            print(f"[완료] 업로드 성공! (ID: {post_id})")
+            print(f"  탭: {category}")
+            print(f"  제목: {title}")
         else:
-            print("❌ 업로드 실패 (응답 데이터 없음)")
+            print("[오류] 업로드 실패 (응답 데이터 없음)")
     except Exception as e:
-        print(f"❌ 업로드 오류: {e}")
+        print(f"[오류] 업로드 실패: {e}")
         sys.exit(1)
 
 
