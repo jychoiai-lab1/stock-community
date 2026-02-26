@@ -22,7 +22,28 @@ def capture_and_upload():
         )
         page = context.new_page()
         page.goto(FINVIZ_URL, wait_until='load', timeout=60000)
-        time.sleep(5)  # 맵 완전 렌더링 대기
+        time.sleep(4)  # 맵 렌더링 대기
+
+        # 팝업 닫기
+        try:
+            page.keyboard.press('Escape')
+            time.sleep(0.5)
+        except Exception:
+            pass
+        try:
+            # Finviz 프리미엄 팝업 닫기 버튼
+            close_btn = page.query_selector('a.modal-close, button.modal-close, [class*="popup"] [class*="close"], #dismiss-button')
+            if close_btn:
+                close_btn.click()
+                time.sleep(0.5)
+        except Exception:
+            pass
+        # JS로 팝업/오버레이 강제 제거
+        page.evaluate("""
+            document.querySelectorAll('[class*="popup"], [class*="modal"], [class*="overlay"], [id*="popup"], [id*="modal"]')
+                .forEach(el => el.remove());
+        """)
+        time.sleep(1)
 
         # 맵 영역만 캡처
         screenshot = page.screenshot(full_page=False)
