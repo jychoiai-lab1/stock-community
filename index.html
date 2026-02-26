@@ -32,6 +32,8 @@
           <!-- 탭 바 -->
           <div class="tab-bar">
             <button class="tab-btn active" onclick="switchTab('briefing', this)">브리핑</button>
+            <button class="tab-btn" onclick="switchTab('us', this)">🇺🇸 미국주식</button>
+            <button class="tab-btn" onclick="switchTab('kr', this)">🇰🇷 국내주식</button>
             <button class="tab-btn" onclick="switchTab('crypto', this)">🪙 암호화폐</button>
           </div>
 
@@ -48,11 +50,27 @@
             </div>
           </section>
 
-          <!-- 암호화폐 탭 (준비 중) -->
+          <!-- 미국주식 탭 -->
+          <section class="tab-panel" id="tab-us" style="display:none">
+            <p class="stocks-updated" id="homeStocksUpdated" style="margin-bottom:12px;"></p>
+            <div class="stock-grid" id="homeUsStocks">
+              <div class="loading-spinner"><div class="spinner"></div></div>
+            </div>
+          </section>
+
+          <!-- 국내주식 탭 -->
+          <section class="tab-panel" id="tab-kr" style="display:none">
+            <p class="stocks-updated" id="homeKrUpdated" style="margin-bottom:12px;"></p>
+            <div class="stock-grid" id="homeKrStocks">
+              <div class="loading-spinner"><div class="spinner"></div></div>
+            </div>
+          </section>
+
+          <!-- 암호화폐 탭 -->
           <section class="tab-panel" id="tab-crypto" style="display:none">
-            <div class="empty-state" style="padding:80px 20px;">
-              <div class="empty-state-icon">🪙</div>
-              <div class="empty-state-text">준비 중입니다</div>
+            <p class="stocks-updated" id="homeCryptoUpdated" style="margin-bottom:12px;"></p>
+            <div class="stock-grid" id="homeCryptoStocks">
+              <div class="loading-spinner"><div class="spinner"></div></div>
             </div>
           </section>
         </div>

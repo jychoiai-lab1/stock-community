@@ -260,3 +260,43 @@ function switchTab(name, btn) {
   document.getElementById('tab-' + name).style.display = '';
   btn.classList.add('active');
 }
+
+// 홈 주식 탭 (미국 / 국내 / 암호화폐)
+function createStockCard(s) {
+  return '<div class="stock-card">' +
+    '<div class="stock-name">' + s.name + ' <span class="stock-ticker">' + s.ticker + '</span></div>' +
+    '<div class="stock-price">' + s.price + '</div>' +
+    '<div class="stock-change ' + (s.is_up ? 'up' : 'down') + '">' + s.change_val + ' (' + s.change_pct + ')</div>' +
+    '</div>';
+}
+
+async function loadHomeStocks() {
+  try {
+    if (!db) return;
+    var res = await db.from('stock_prices').select('*').order('id');
+    if (res.error || !res.data) return;
+    var data = res.data;
+
+    var us = data.filter(function(s){ return s.market === 'US'; });
+    var kr = data.filter(function(s){ return s.market === 'KR'; });
+    var crypto = data.filter(function(s){ return s.market === 'CRYPTO'; });
+
+    var empty = '<p style="color:#64748b;padding:16px">데이터 없음</p>';
+    var usEl = document.getElementById('homeUsStocks');
+    var krEl = document.getElementById('homeKrStocks');
+    var cryptoEl = document.getElementById('homeCryptoStocks');
+    if (usEl) usEl.innerHTML = us.length ? us.map(createStockCard).join('') : empty;
+    if (krEl) krEl.innerHTML = kr.length ? kr.map(createStockCard).join('') : empty;
+    if (cryptoEl) cryptoEl.innerHTML = crypto.length ? crypto.map(createStockCard).join('') : empty;
+
+    if (data.length && data[0].updated_at) {
+      var d = new Date(data[0].updated_at);
+      var updStr = '최근 업데이트: ' + d.toLocaleString('ko-KR');
+      ['homeStocksUpdated','homeKrUpdated','homeCryptoUpdated'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = updStr;
+      });
+    }
+  } catch(e) { console.error('홈주식 오류:', e); }
+}
+loadHomeStocks();
