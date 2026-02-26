@@ -113,8 +113,12 @@
   </main>
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
     <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-drag-handle"></div>
       <button class="modal-close" onclick="closeModal()">✕</button>
       <div class="modal-content" id="modalContent"></div>
+      <div class="modal-footer-close">
+        <button onclick="closeModal()">닫기</button>
+      </div>
     </div>
   </div>
   <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>

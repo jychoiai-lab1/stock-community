@@ -200,7 +200,58 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 .an-opinion.up { background: #3b1219; color: #fca5a5; border: 1px solid #7f1d1d; }
 .an-opinion.down { background: #1e3a5f; color: #93c5fd; border: 1px solid #1d4ed8; }
 
-@media (max-width: 480px) { .stock-grid { grid-template-columns: 1fr; } .modal { padding: 20px; } .ema-row { gap: 4px; } }
+/* 드래그 핸들 — 데스크탑에서는 숨김 */
+.modal-drag-handle { display: none; }
+/* 하단 닫기 버튼 — 데스크탑에서는 숨김 */
+.modal-footer-close { display: none; }
+
+@media (max-width: 480px) {
+  .stock-grid { grid-template-columns: 1fr; }
+  .ema-row { gap: 4px; }
+
+  /* 모달을 하단 시트로 변환 */
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal {
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    width: 100%;
+    padding: 12px 20px 0;
+    display: flex;
+    flex-direction: column;
+  }
+  /* 드래그 핸들 표시 */
+  .modal-drag-handle {
+    display: block;
+    width: 40px; height: 4px;
+    background: #3d4f6b;
+    border-radius: 2px;
+    margin: 0 auto 14px;
+    flex-shrink: 0;
+  }
+  /* 기존 X 버튼 숨기고 하단 버튼으로 대체 */
+  .modal-close { display: none; }
+  /* 모달 콘텐츠 영역 스크롤 */
+  .modal-content { overflow-y: auto; flex: 1; padding-bottom: 8px; }
+  /* 하단 닫기 버튼 */
+  .modal-footer-close {
+    display: block;
+    flex-shrink: 0;
+    padding: 12px 0 24px;
+    border-top: 1px solid #2d3748;
+  }
+  .modal-footer-close button {
+    width: 100%;
+    padding: 14px;
+    background: #1e2535;
+    color: #94a3b8;
+    border: 1px solid #2d3748;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .modal-footer-close button:active { background: #2d3748; color: #e2e8f0; }
+}
 
 /* ===== 공포·탐욕 지수 위젯 ===== */
 .fg-svg { width: 100%; display: block; margin: 2px 0; }
