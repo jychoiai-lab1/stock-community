@@ -3,11 +3,11 @@
 body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Pretendard', sans-serif; background: #0e1117; color: #e2e8f0; line-height: 1.5; }
 
 /* ===== 헤더 ===== */
-.header { position: sticky; top: 0; z-index: 100; background: #161b27; border-bottom: 1px solid #2d3748; height: 56px; }
+.header { position: sticky; top: 0; z-index: 100; background: rgba(14, 17, 23, 0.78); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); height: 56px; transition: background 0.3s; }
 .header-inner { max-width: 1000px; margin: 0 auto; padding: 0 20px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
 .logo { font-size: 18px; font-weight: 700; color: #60a5fa; letter-spacing: -0.3px; }
 .nav { display: flex; gap: 4px; }
-.nav-link { text-decoration: none; color: #94a3b8; font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: all 0.15s; }
+.nav-link { text-decoration: none; color: #94a3b8; font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 .nav-link:hover { background: #1e2535; color: #e2e8f0; }
 .nav-link.active { color: #60a5fa; background: #1e3a5f; }
 
@@ -23,7 +23,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 /* ===== 사이드바 ===== */
 .sidebar { width: 196px; flex-shrink: 0; position: sticky; top: 72px; background: #161b27; border: 1px solid #2d3748; border-radius: 16px; padding: 16px; }
 .sidebar-title { font-size: 13px; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #2d3748; }
-.sidebar-ticker { padding: 10px 0; border-bottom: 1px solid #1e2535; cursor: pointer; border-radius: 8px; transition: background 0.15s; margin: 0 -8px; padding: 10px 8px; }
+.sidebar-ticker { padding: 10px 0; border-bottom: 1px solid #1e2535; cursor: pointer; border-radius: 8px; transition: background 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); margin: 0 -8px; padding: 10px 8px; }
+.sidebar-ticker:hover { transform: translateX(4px); }
 .sidebar-ticker:last-child { border-bottom: none; }
 .sidebar-ticker:hover { background: #1e2535; }
 .sidebar-ticker-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
@@ -56,8 +57,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 .refresh-note { font-size: 12px; color: #475569; }
 
 /* ===== 게시글 카드 ===== */
-.post-card { background: #161b27; border-radius: 16px; padding: 20px; margin-bottom: 8px; cursor: pointer; border: 1px solid #2d3748; transition: all 0.15s; }
-.post-card:hover { border-color: #60a5fa; box-shadow: 0 4px 20px rgba(96,165,250,0.12); transform: translateY(-1px); }
+.post-card { background: #161b27; border-radius: 16px; padding: 20px; margin-bottom: 8px; cursor: pointer; border: 1px solid #2d3748; transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.post-card:hover { border-color: #60a5fa; box-shadow: 0 8px 32px rgba(96,165,250,0.16); transform: translateY(-4px); }
 .post-category { display: inline-block; font-size: 11px; font-weight: 600; color: #60a5fa; background: #1e3a5f; padding: 3px 8px; border-radius: 6px; margin-bottom: 10px; }
 .post-title { font-size: 16px; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; line-height: 1.4; }
 .post-preview { font-size: 14px; color: #94a3b8; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -184,3 +185,31 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 .an-opinion.down { background: #1e3a5f; color: #93c5fd; border: 1px solid #1d4ed8; }
 
 @media (max-width: 480px) { .stock-grid { grid-template-columns: 1fr; } .modal { padding: 20px; } .ema-row { gap: 4px; } }
+
+/* ===== Apple-like Scroll Animations ===== */
+html { scroll-behavior: smooth; }
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 페이지 진입 시 헤더/메인 슬라이드 */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.main { animation: page-enter 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+
+/* 모달 열림 애니메이션 */
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-overlay.active .modal { animation: modal-in 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
