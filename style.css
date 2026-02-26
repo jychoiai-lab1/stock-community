@@ -101,6 +101,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 .stock-change.down { color: #60a5fa; }
 .stock-change.flat { color: #64748b; }
 
+/* ===== Finviz 맵 ===== */
+.finviz-map-wrap { background: #161b27; border: 1px solid #2d3748; border-radius: 16px; overflow: hidden; margin-bottom: 24px; }
+.finviz-map-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #2d3748; }
+.finviz-map-title { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+.finviz-map-note { font-size: 11px; color: #475569; }
+.finviz-map-img { width: 100%; display: block; }
+
 /* ===== 자유게시판 ===== */
 .board-form { background: #161b27; border: 1px solid #2d3748; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
 .board-input { width: 100%; background: #0e1117; border: 1px solid #2d3748; border-radius: 10px; padding: 10px 14px; color: #e2e8f0; font-size: 14px; margin-bottom: 10px; outline: none; }
