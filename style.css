@@ -218,6 +218,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
     padding: 12px 20px 0;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
   }
   /* 드래그 핸들 표시 */
   .modal-drag-handle {
@@ -231,7 +232,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
   /* 기존 X 버튼 숨기고 하단 버튼으로 대체 */
   .modal-close { display: none; }
   /* 모달 콘텐츠 영역 스크롤 */
-  .modal-content { overflow-y: auto; flex: 1; padding-bottom: 8px; }
+  .modal-content { overflow-y: auto; overflow-x: hidden; flex: 1; min-height: 0; padding-bottom: 8px; }
   /* 하단 닫기 버튼 */
   .modal-footer-close {
     display: block;
@@ -311,7 +312,8 @@ html { scroll-behavior: smooth; }
 .modal-body p  { margin: 8px 0; line-height: 1.75; color: #cbd5e1; }
 .modal-body strong { color: #f1f5f9; font-weight: 700; }
 .modal-body em     { color: #93c5fd; font-style: italic; }
-.modal-body img    { max-width: 100%; border-radius: 6px; margin: 10px 0; display: block; }
+.modal-body img    { max-width: 100%; width: 100%; height: auto; border-radius: 6px; margin: 10px 0; display: block; }
+.modal-body * { max-width: 100%; box-sizing: border-box; word-break: break-word; }
 
 .docx-table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; }
 .docx-table { width: 100%; border-collapse: collapse; font-size: 13px; }
