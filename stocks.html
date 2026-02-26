@@ -24,6 +24,20 @@
         <h2 class="section-title">오늘의 주식 현황</h2>
         <p class="stocks-updated" id="stocksUpdated">데이터 로딩 중...</p>
 
+        <!-- Barchart 섹터 퍼포먼스 -->
+        <div class="finviz-map-wrap">
+          <div class="finviz-map-header">
+            <span class="finviz-map-title">📈 S&P500 섹터 퍼포먼스</span>
+            <span class="finviz-map-note">Today · 5D · 1M · 3M · Barchart</span>
+          </div>
+          <img
+            src="https://miyrssfrjvhwswjylahw.supabase.co/storage/v1/object/public/images/barchart_sectors.png"
+            alt="Barchart Sector Performance"
+            class="finviz-map-img"
+            onerror="this.parentElement.style.display='none'"
+          />
+        </div>
+
         <!-- Finviz 섹터 히트맵 -->
         <div class="finviz-map-wrap">
           <div class="finviz-map-header">
