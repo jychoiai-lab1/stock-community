@@ -157,6 +157,13 @@ def process_paragraph(para_xml, image_rels, supabase) -> str:
     if not content.strip():
         return ""
 
+    # 수평선 문자(─, ━, ─ 등)로만 이루어진 단락은 <hr>로 변환
+    stripped = content.replace("&amp;", "").replace("&lt;", "").replace("&gt;", "")
+    stripped = stripped.replace("<strong>", "").replace("</strong>", "")
+    stripped = stripped.replace("<em>", "").replace("</em>", "")
+    if stripped and all(c in "─━―─—–\u2500\u2501\u2014\u2013 " for c in stripped):
+        return "<hr>"
+
     return f"<{tag}>{content}</{tag}>"
 
 
