@@ -59,7 +59,7 @@ MARKET_TICKERS = {
 
 # 기술적 분석 대상 종목 (여기에 추가/수정하세요)
 ANALYSIS_TICKERS = {
-    'NTR (뉴트리엔)': 'NTR',
+    'Opendoor Technologies': 'OPEN',
 }
 
 # yfinance 티커 → chart_data 키 매핑
