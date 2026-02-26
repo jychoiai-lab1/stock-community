@@ -310,6 +310,16 @@ STOCK_PRICES = {
         '테슬라':       'TSLA',
         '아마존':       'AMZN',
         '구글':         'GOOGL',
+    },
+    'CRYPTO': {
+        '비트코인':     'BTC-USD',
+        '이더리움':     'ETH-USD',
+        '솔라나':       'SOL-USD',
+        'XRP':          'XRP-USD',
+        'BNB':          'BNB-USD',
+        '도지코인':     'DOGE-USD',
+        '에이다':       'ADA-USD',
+        '아발란체':     'AVAX-USD',
     }
 }
 
@@ -330,13 +340,16 @@ def update_stock_prices(client):
                 if market == 'KR':
                     price_str = f"{curr:,.0f}원"
                     chg_str = f"{sign}{curr - prev:,.0f}"
+                elif market == 'CRYPTO':
+                    price_str = f"${curr:,.4f}" if curr < 1 else f"${curr:,.2f}"
+                    chg_str = f"{sign}${abs(curr - prev):,.4f}" if curr < 1 else f"{sign}${abs(curr - prev):,.2f}"
                 else:
                     price_str = f"${curr:,.2f}"
                     chg_str = f"{sign}${abs(curr - prev):,.2f}"
                 rows.append({
                     'market': market,
                     'name': name,
-                    'ticker': ticker.replace('.KS',''),
+                    'ticker': ticker.replace('.KS','').replace('-USD',''),
                     'price': price_str,
                     'change_val': chg_str,
                     'change_pct': f"{sign}{chg:.2f}%",

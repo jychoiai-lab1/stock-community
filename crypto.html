@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>주식 현황 - 겁쟁이리서치</title>
+  <title>암호화폐 - 겁쟁이리서치</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -13,8 +13,8 @@
       <div class="logo">📈 겁쟁이리서치</div>
       <nav class="nav">
         <a href="index.html" class="nav-link">홈</a>
-        <a href="stocks.html" class="nav-link active">주식 현황</a>
-        <a href="crypto.html" class="nav-link">암호화폐</a>
+        <a href="stocks.html" class="nav-link">주식 현황</a>
+        <a href="crypto.html" class="nav-link active">암호화폐</a>
         <a href="board.html" class="nav-link">자유게시판</a>
       </nav>
     </div>
@@ -22,22 +22,18 @@
   <main class="main">
     <div class="container">
       <section class="stocks-section">
-        <h2 class="section-title">오늘의 주식 현황</h2>
-        <p class="stocks-updated" id="stocksUpdated">데이터 로딩 중...</p>
+        <h2 class="section-title">암호화폐 현황</h2>
+        <p class="stocks-updated" id="cryptoUpdated">데이터 로딩 중...</p>
         <div class="market-block">
-          <h3 class="market-title">🇰🇷 한국 시장</h3>
-          <div class="stock-grid" id="krStocks"><div class="loading-spinner"><div class="spinner"></div></div></div>
-        </div>
-        <div class="market-block">
-          <h3 class="market-title">🇺🇸 미국 시장</h3>
-          <div class="stock-grid" id="usStocks"><div class="loading-spinner"><div class="spinner"></div></div></div>
+          <h3 class="market-title">🪙 주요 코인</h3>
+          <div class="stock-grid" id="cryptoGrid"><div class="loading-spinner"><div class="spinner"></div></div></div>
         </div>
       </section>
     </div>
   </main>
   <script src="config.js"></script>
   <script src="auth.js"></script>
-  <script src="stocks.js"></script>
+  <script src="crypto.js"></script>
   <script src="animations.js"></script>
 </body>
 </html>
