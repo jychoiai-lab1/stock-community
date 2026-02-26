@@ -263,13 +263,16 @@ var tabCategoryMap = {
 
 async function loadTabPosts(tabName) {
   var category = tabCategoryMap[tabName];
-  if (!category) return;
+  console.log('[탭] loadTabPosts 시작:', tabName, '| 카테고리:', category, '| db:', !!db);
+  if (!category) { console.log('[탭] category 없음'); return; }
   var listEl = document.getElementById(tabName + 'PostList');
-  if (!listEl) return;
+  if (!listEl) { console.log('[탭] listEl 없음'); return; }
   listEl.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>불러오는 중...</p></div>';
   try {
     if (!db) throw new Error('DB 연결 안됨');
+    console.log('[탭] Supabase 쿼리 시작...');
     var res = await db.from('posts').select('*').eq('category', category).order('created_at', { ascending: false });
+    console.log('[탭] 쿼리 완료 | 오류:', res.error, '| 건수:', res.data && res.data.length);
     if (res.error) throw res.error;
     var posts = res.data || [];
     if (posts.length === 0) {
@@ -284,7 +287,7 @@ async function loadTabPosts(tabName) {
   } catch(e) {
     tabPostsLoaded[tabName] = false;
     listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + e.message + '</div></div>';
-    console.error('탭 포스트 오류:', e);
+    console.error('[탭] 오류:', e);
   }
 }
 
@@ -294,6 +297,7 @@ function switchTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('tab-' + name).style.display = '';
   btn.classList.add('active');
+  console.log('[탭] switchTab:', name, '| loaded:', tabPostsLoaded[name]);
   if (!tabPostsLoaded[name] && tabCategoryMap[name]) {
     loadTabPosts(name);
   }
