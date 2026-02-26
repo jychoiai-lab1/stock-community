@@ -41,6 +41,22 @@ TAB_OPTIONS = {
     "3": "🪙 암호화폐",
 }
 
+# 한국어 탭 이름 → 카테고리 매핑
+TAB_NAME_MAP = {
+    "미국주식": "🇺🇸 미국주식",
+    "미국": "🇺🇸 미국주식",
+    "us": "🇺🇸 미국주식",
+    "국내주식": "🇰🇷 국내주식",
+    "국내": "🇰🇷 국내주식",
+    "한국": "🇰🇷 국내주식",
+    "kr": "🇰🇷 국내주식",
+    "암호화폐": "🪙 암호화폐",
+    "코인": "🪙 암호화폐",
+    "crypto": "🪙 암호화폐",
+}
+
+REPORTS_DIR = r"C:\Users\asdf\webtest\reports"
+
 # ── 이미지 content-type → 확장자 ──────────────────────────────────────────────
 EXT_MAP = {
     "image/png":  "png",
@@ -232,9 +248,21 @@ def main():
     print("  겁쟁이리서치 DOCX 업로더")
     print("=" * 50)
 
+    import argparse
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--tab",   type=str, default=None)
+    parser.add_argument("--file",  type=str, default=None)
+    parser.add_argument("--title", type=str, default=None)
+    # 위치 인수(기존 방식 호환)
+    parser.add_argument("positional", nargs="?", default=None)
+    args, _ = parser.parse_known_args()
+
     # ── DOCX 파일 경로 ──────────────────────────────
-    if len(sys.argv) >= 2:
-        doc_path = sys.argv[1].strip('"').strip("'")
+    if args.file:
+        fname = args.file if args.file.endswith(".docx") else args.file + ".docx"
+        doc_path = os.path.join(REPORTS_DIR, fname)
+    elif args.positional:
+        doc_path = args.positional.strip('"').strip("'")
     else:
         doc_path = input("[파일] DOCX 경로: ").strip().strip('"').strip("'")
 
@@ -245,21 +273,29 @@ def main():
     print(f"[확인] {os.path.basename(doc_path)}")
 
     # ── 탭 선택 ─────────────────────────────────────
-    print()
-    print("[탭 선택] 어디에 올릴까요?")
-    for k, v in TAB_OPTIONS.items():
-        print(f"  {k}. {v}")
-
-    choice = input("번호: ").strip()
-    if choice not in TAB_OPTIONS:
-        print("[오류] 잘못된 번호")
-        sys.exit(1)
-
-    category = TAB_OPTIONS[choice]
+    if args.tab:
+        category = TAB_NAME_MAP.get(args.tab.strip().lower().replace(" ", ""))
+        if not category:
+            print(f"[오류] 알 수 없는 탭: {args.tab}")
+            print("  사용 가능: 미국주식, 국내주식, 암호화폐")
+            sys.exit(1)
+    else:
+        print()
+        print("[탭 선택] 어디에 올릴까요?")
+        for k, v in TAB_OPTIONS.items():
+            print(f"  {k}. {v}")
+        choice = input("번호: ").strip()
+        if choice not in TAB_OPTIONS:
+            print("[오류] 잘못된 번호")
+            sys.exit(1)
+        category = TAB_OPTIONS[choice]
 
     # ── 제목 입력 ────────────────────────────────────
-    print()
-    title = input("[제목] : ").strip()
+    if args.title:
+        title = args.title.strip()
+    else:
+        print()
+        title = input("[제목] : ").strip()
     if not title:
         print("[오류] 제목을 입력해야 합니다")
         sys.exit(1)
