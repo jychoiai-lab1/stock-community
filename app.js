@@ -183,3 +183,72 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModa
 var tickers = {kospi:'2,650 +0.32%', kosdaq:'870 +0.78%', sp500:'5,123 +0.82%', nasdaq:'16,234 +1.21%', dow:'38,765 +0.35%'};
 Object.keys(tickers).forEach(function(id){ var el=document.getElementById(id); if(el){el.textContent=tickers[id]; el.className='ticker-value up';} });
 loadPosts();
+
+// 공포·탐욕 지수
+async function loadFearGreed() {
+  try {
+    if (!db) return;
+    var res = await db.from('fear_greed').select('*').order('updated_at', { ascending: false }).limit(1);
+    if (res.error || !res.data || !res.data.length) return;
+    var value = res.data[0].value;
+    var updated_at = res.data[0].updated_at;
+    var needle = document.getElementById('fgNeedle');
+    var valEl = document.getElementById('fgValue');
+    var labelEl = document.getElementById('fgLabel');
+    var updEl = document.getElementById('fgUpdated');
+    if (!needle) return;
+    var theta = Math.PI - (value / 100) * Math.PI;
+    var nx = (50 + 38 * Math.cos(theta)).toFixed(1);
+    var ny = (54 - 38 * Math.sin(theta)).toFixed(1);
+    needle.setAttribute('x2', nx);
+    needle.setAttribute('y2', ny);
+    var label, color;
+    if (value <= 20) { label = '극도의 공포'; color = '#f87171'; }
+    else if (value <= 40) { label = '공포'; color = '#fb923c'; }
+    else if (value <= 60) { label = '중립'; color = '#fbbf24'; }
+    else if (value <= 80) { label = '탐욕'; color = '#a3e635'; }
+    else { label = '극도의 탐욕'; color = '#4ade80'; }
+    valEl.textContent = value;
+    valEl.style.color = color;
+    labelEl.textContent = label;
+    labelEl.style.color = color;
+    if (updEl && updated_at) {
+      var d = new Date(updated_at);
+      updEl.textContent = (d.getMonth()+1) + '/' + d.getDate() + ' 업데이트';
+    }
+  } catch(e) { console.error('공포탐욕 오류:', e); }
+}
+loadFearGreed();
+
+// 주요 일정 캘린더
+async function loadEventsCalendar() {
+  var list = document.getElementById('calList');
+  if (!list) return;
+  try {
+    if (!db) { list.innerHTML = '<div class="cal-empty">연결 안됨</div>'; return; }
+    var today = new Date().toISOString().split('T')[0];
+    var futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 30);
+    var future = futureDate.toISOString().split('T')[0];
+    var res = await db.from('events_calendar').select('*').gte('event_date', today).lte('event_date', future).order('event_date').limit(8);
+    if (res.error) throw res.error;
+    if (!res.data || !res.data.length) {
+      list.innerHTML = '<div class="cal-empty">등록된 일정이 없어요</div>';
+      return;
+    }
+    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var TYPE_LABELS = { fomc:'FOMC', earnings:'실적', indicator:'지표', general:'기타' };
+    list.innerHTML = res.data.map(function(e) {
+      var d = new Date(e.event_date + 'T00:00:00');
+      var typeLabel = TYPE_LABELS[e.type] || e.type;
+      return '<div class="cal-item">' +
+        '<div class="cal-date-badge"><span class="cal-month">' + MONTHS[d.getMonth()] + '</span><span class="cal-day">' + d.getDate() + '</span></div>' +
+        '<div class="cal-info"><span class="cal-type ' + e.type + '">' + typeLabel + '</span><div class="cal-event-title">' + e.title + '</div></div>' +
+        '</div>';
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="cal-empty">등록된 일정이 없어요</div>';
+    console.error('캘린더 오류:', e);
+  }
+}
+loadEventsCalendar();

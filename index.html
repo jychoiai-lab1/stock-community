@@ -43,9 +43,40 @@
           </section>
         </div>
         <aside class="sidebar">
-          <div class="sidebar-title">🔬 특별 분석 종목</div>
-          <div id="specialTickerList">
-            <div class="loading-spinner"><div class="spinner"></div></div>
+          <!-- 공포·탐욕 지수 -->
+          <div class="widget-box">
+            <div class="widget-title">😰 공포·탐욕 지수</div>
+            <svg viewBox="0 0 100 58" class="fg-svg">
+              <defs>
+                <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#f87171"/>
+                  <stop offset="50%" stop-color="#fbbf24"/>
+                  <stop offset="100%" stop-color="#4ade80"/>
+                </linearGradient>
+              </defs>
+              <path d="M 10 54 A 40 40 0 0 1 90 54" fill="none" stroke="#1e2535" stroke-width="9" stroke-linecap="round"/>
+              <path d="M 10 54 A 40 40 0 0 1 90 54" fill="none" stroke="url(#gaugeGrad)" stroke-width="9" stroke-linecap="round" opacity="0.85"/>
+              <line id="fgNeedle" x1="50" y1="54" x2="50" y2="16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="50" cy="54" r="3.5" fill="#161b27"/>
+              <circle cx="50" cy="54" r="2" fill="white"/>
+            </svg>
+            <div class="fg-center">
+              <span class="fg-value" id="fgValue">--</span>
+              <span class="fg-label" id="fgLabel">로딩 중</span>
+            </div>
+            <div class="fg-updated" id="fgUpdated"></div>
+          </div>
+          <!-- 주요 일정 -->
+          <div class="widget-box">
+            <div class="widget-title">📅 주요 일정</div>
+            <div id="calList"><div class="cal-empty">로딩 중...</div></div>
+          </div>
+          <!-- 특별 분석 종목 -->
+          <div class="widget-box">
+            <div class="widget-title">🔬 특별 분석 종목</div>
+            <div id="specialTickerList">
+              <div class="loading-spinner" style="padding:16px 0"><div class="spinner"></div></div>
+            </div>
           </div>
         </aside>
       </div>
