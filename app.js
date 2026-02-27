@@ -97,7 +97,7 @@ async function loadSpecialTickers() {
   var list = document.getElementById('specialTickerList');
   if (!list) return;
   try {
-    var res = await db.from('special_tickers').select('*').order('first_date', { ascending: false });
+    var res = await db.from('special_tickers').select('*').order('first_date', { ascending: false }).limit(4);
     if (res.error) throw res.error;
     if (!res.data || !res.data.length) {
       list.innerHTML = '<div class="sidebar-empty">아직 없음</div>';
