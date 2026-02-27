@@ -301,6 +301,30 @@ async function loadEventsCalendar() {
 }
 loadEventsCalendar();
 
+// 오늘 방문자 카운트
+async function loadVisitCount() {
+  var el = document.getElementById('visitCount');
+  if (!el || !db) return;
+  try {
+    var today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
+    var storageKey = 'visited_' + today;
+    // 오늘 처음 방문한 경우 카운트 증가
+    if (!localStorage.getItem(storageKey)) {
+      var res = await db.from('daily_visits').select('id, count').eq('date', today).single();
+      if (res.data) {
+        await db.from('daily_visits').update({ count: res.data.count + 1 }).eq('date', today);
+      } else {
+        await db.from('daily_visits').insert({ date: today, count: 1 });
+      }
+      localStorage.setItem(storageKey, '1');
+    }
+    // 최신 카운트 표시
+    var res2 = await db.from('daily_visits').select('count').eq('date', today).single();
+    if (res2.data) el.textContent = res2.data.count.toLocaleString();
+  } catch(e) { console.error('방문자 오류:', e); }
+}
+loadVisitCount();
+
 // 탭별 카테고리 포스트 로딩
 var tabPostsLoaded = {};
 var tabCategoryMap = {
