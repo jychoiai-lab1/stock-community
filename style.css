@@ -88,7 +88,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 
 /* ===== 주식 현황 ===== */
 .stocks-section { margin-top: 8px; }
-.stocks-updated { font-size: 13px; color: #64748b; margin-bottom: 24px; margin-top: 4px; }
+.stocks-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.stocks-updated { font-size: 13px; color: #64748b; margin-bottom: 8px; margin-top: 0; }
+.refresh-status { font-size: 12px; color: #94a3b8; margin-bottom: 16px; margin-top: 0; min-height: 16px; }
+.refresh-btn { background: #1e3a5f; border: 1px solid #3b82f6; border-radius: 10px; color: #93c5fd; font-size: 13px; font-weight: 600; padding: 8px 14px; cursor: pointer; transition: background 0.2s; }
+.refresh-btn:hover:not(:disabled) { background: #1d4ed8; color: #fff; }
+.refresh-btn.loading { background: #1e293b; border-color: #475569; color: #64748b; cursor: not-allowed; }
+.refresh-btn.used { background: #14291a; border-color: #22c55e; color: #86efac; cursor: not-allowed; }
 .market-block { margin-bottom: 32px; }
 .market-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: #f1f5f9; }
 .stock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -328,3 +334,117 @@ html { scroll-behavior: smooth; }
 .docx-table td { padding: 9px 12px; border: 1px solid #2d3748; color: #cbd5e1; vertical-align: top; line-height: 1.5; }
 .docx-table tr:nth-child(even) td { background: #0f1520; }
 .docx-table tr:hover td { background: #1a2234; }
+
+/* ===== 토스트 알림 ===== */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: #1e2535;
+  color: #e2e8f0;
+  padding: 11px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  border: 1px solid #2d3748;
+  white-space: nowrap;
+  max-width: 80vw;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.toast.toast-show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.toast-success { border-color: #22c55e; color: #86efac; }
+.toast.toast-error   { border-color: #ef4444; color: #fca5a5; }
+.toast.toast-info    { border-color: #60a5fa; color: #93c5fd; }
+
+/* ===== 맨 위로 버튼 ===== */
+.back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: #1e3a5f;
+  border: 1px solid #3b82f6;
+  border-radius: 50%;
+  color: #60a5fa;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 80;
+  transition: all 0.25s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.back-to-top.visible { display: flex; }
+.back-to-top:hover { background: #1d4ed8; color: #fff; transform: translateY(-2px); }
+
+/* ===== 모바일 하단 네비게이션 ===== */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(14,17,23,0.95);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid #2d3748;
+  z-index: 90;
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
+}
+.mobile-nav-items { display: flex; justify-content: space-around; }
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 24px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.mobile-nav-item.active { color: #60a5fa; }
+.mobile-nav-icon { font-size: 22px; line-height: 1; }
+
+/* ===== 댓글 인라인 액션 ===== */
+.comment-action-btn {
+  background: none;
+  border: none;
+  color: #475569;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.comment-action-btn:hover { color: #94a3b8; background: #1e2535; }
+.comment-action-btn.del:hover { color: #f87171; }
+.comment-cancel-btn {
+  background: none;
+  border: 1px solid #2d3748;
+  border-radius: 10px;
+  padding: 7px;
+  font-size: 14px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.comment-cancel-btn:hover { border-color: #475569; color: #94a3b8; }
+
+/* ===== 좋아요 눌린 상태 ===== */
+.board-like.liked { border-color: #f87171; color: #f87171; }
+
+@media (max-width: 720px) {
+  .mobile-nav { display: block; }
+  .main { padding-bottom: 80px; }
+  .back-to-top { bottom: 76px; }
+  .toast { bottom: 80px; }
+}

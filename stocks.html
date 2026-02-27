@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>주식 현황 - 겁쟁이리서치</title>
+  <meta name="description" content="S&P500 섹터 히트맵, 코스피 마켓맵 등 오늘의 주식 현황을 한눈에" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="겁쟁이리서치" />
+  <meta property="og:title" content="주식 현황 - 겁쟁이리서치" />
+  <meta property="og:description" content="S&P500 섹터 히트맵, 코스피 마켓맵 등 오늘의 주식 현황" />
+  <meta property="og:url" content="https://stock-community-woad.vercel.app/stocks.html" />
+  <meta name="twitter:card" content="summary" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -72,9 +79,24 @@
       </section>
     </div>
   </main>
+  <!-- 모바일 하단 네비게이션 -->
+  <nav class="mobile-nav">
+    <div class="mobile-nav-items">
+      <a href="index.html" class="mobile-nav-item">
+        <span class="mobile-nav-icon">🏠</span>홈
+      </a>
+      <a href="stocks.html" class="mobile-nav-item active">
+        <span class="mobile-nav-icon">📊</span>주식현황
+      </a>
+      <a href="board.html" class="mobile-nav-item">
+        <span class="mobile-nav-icon">💬</span>게시판
+      </a>
+    </div>
+  </nav>
   <script src="config.js"></script>
   <script src="auth.js"></script>
   <script src="stocks.js"></script>
   <script src="animations.js"></script>
+  <script src="toast.js"></script>
 </body>
 </html>
