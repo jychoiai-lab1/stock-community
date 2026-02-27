@@ -205,6 +205,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 .an-opinion { margin-top: 12px; padding: 12px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; line-height: 1.6; }
 .an-opinion.up { background: #3b1219; color: #fca5a5; border: 1px solid #7f1d1d; }
 .an-opinion.down { background: #1e3a5f; color: #93c5fd; border: 1px solid #1d4ed8; }
+.an-opinion.neutral { background: #1e2535; color: #94a3b8; border: 1px solid #2d3748; }
+.ret-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.ret-item { flex: 1; min-width: 48px; background: #0e1117; border: 1px solid #2d3748; border-radius: 8px; padding: 7px 6px; text-align: center; }
+.ret-label { display: block; font-size: 10px; color: #475569; margin-bottom: 3px; }
+.ret-val { font-size: 13px; font-weight: 700; }
 
 /* 드래그 핸들 — 데스크탑에서는 숨김 */
 .modal-drag-handle { display: none; }

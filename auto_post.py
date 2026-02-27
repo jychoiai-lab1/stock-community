@@ -292,6 +292,195 @@ def analyze_ticker_html(name, ticker):
         return f'<p class="an-error">분석 오류: {e}</p>'
 
 # =============================================
+# 특별종목 중기 모멘텀 분석 (HTML 반환)
+# =============================================
+def analyze_special_html(name, ticker):
+    try:
+        # 일봉 1년치
+        data = yf.download(ticker, period='1y', interval='1d', progress=False, auto_adjust=True)
+        if len(data) < 60:
+            return '<p class="an-error">데이터 부족</p>'
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+
+        close = data['Close'].squeeze()
+        volume = data['Volume'].squeeze() if 'Volume' in data.columns else None
+        curr = float(close.iloc[-1])
+
+        # ── 멀티 기간 수익률 ──
+        def pct(n):
+            if len(close) < n + 1:
+                return None
+            old = float(close.iloc[-(n+1)])
+            return ((curr - old) / old) * 100
+
+        ret_5   = pct(5)
+        ret_21  = pct(21)
+        ret_63  = pct(63)
+        ret_126 = pct(126)
+
+        def fmt_ret(v, label):
+            if v is None:
+                return ''
+            cls = 'up' if v >= 0 else 'down'
+            sign = '+' if v >= 0 else ''
+            return f'<div class="ret-item"><span class="ret-label">{label}</span><span class="ret-val {cls}">{sign}{v:.1f}%</span></div>'
+
+        ret_html = (
+            '<div class="ret-row">'
+            + fmt_ret(ret_5,   '1주')
+            + fmt_ret(ret_21,  '1달')
+            + fmt_ret(ret_63,  '3달')
+            + fmt_ret(ret_126, '6달')
+            + '</div>'
+        )
+
+        # ── 52주 고저가 대비 위치 ──
+        high52 = float(close.max())
+        low52  = float(close.min())
+        pos52  = (curr - low52) / (high52 - low52) * 100 if high52 != low52 else 50
+
+        # ── EMA 정배열 판단 ──
+        emas = {p: calc_ema(close, p) for p in [20, 50, 100, 200] if len(close) >= p}
+        ema_vals = {p: float(v.iloc[-1]) for p, v in emas.items()}
+
+        above = [p for p, v in ema_vals.items() if curr > v]
+        below = [p for p, v in ema_vals.items() if curr < v]
+
+        if len(above) == len(ema_vals):
+            ema_align = '✅ 전 EMA 위 — 강한 정배열'
+            ema_class = 'up'
+        elif len(below) == len(ema_vals):
+            ema_align = '⚠️ 전 EMA 아래 — 역배열'
+            ema_class = 'down'
+        else:
+            ema_align = f'현재가 EMA {",".join(map(str,sorted(above)))} 위 / EMA {",".join(map(str,sorted(below)))} 아래'
+            ema_class = 'neutral'
+
+        ema_items = "".join([
+            f'<span class="ema-item">EMA{p}<b>{v:,.2f}</b></span>'
+            for p, v in sorted(ema_vals.items())
+        ])
+
+        # EMA 크로스 신호
+        cross_signals = check_ema_cross(close) if len(close) >= 200 else []
+        cross_html = (
+            "".join([f'<div class="signal-badge {"dead" if "데드" in s else "golden"}">{s.strip()}</div>' for s in cross_signals])
+            if cross_signals else '<span class="an-neutral">최근 크로스 없음</span>'
+        )
+
+        # ── 주봉 RSI ──
+        weekly = yf.download(ticker, period='2y', interval='1wk', progress=False, auto_adjust=True)
+        if isinstance(weekly.columns, pd.MultiIndex):
+            weekly.columns = weekly.columns.get_level_values(0)
+        wclose = weekly['Close'].squeeze() if len(weekly) >= 20 else None
+        if wclose is not None and len(wclose) >= 14:
+            rsi_w = float(calc_rsi(wclose).iloc[-1])
+            if rsi_w >= 70:
+                rsi_class, rsi_comment = 'up', '과매수 — 단기 조정 가능성'
+            elif rsi_w >= 55:
+                rsi_class, rsi_comment = 'up', '강세 유지 중'
+            elif rsi_w >= 45:
+                rsi_class, rsi_comment = 'neutral', '중립 구간'
+            elif rsi_w >= 30:
+                rsi_class, rsi_comment = 'down', '약세 흐름'
+            else:
+                rsi_class, rsi_comment = 'down', '과매도 — 반등 가능성'
+            rsi_label = '주봉 RSI'
+        else:
+            rsi_w = float(calc_rsi(close).iloc[-1])
+            rsi_class = 'up' if rsi_w >= 55 else ('down' if rsi_w <= 45 else 'neutral')
+            rsi_comment = '과매수' if rsi_w >= 70 else ('과매도' if rsi_w <= 30 else '중립')
+            rsi_label = 'RSI(14)'
+
+        # ── 거래량 트렌드 (4주 vs 10주 평균) ──
+        if volume is not None and len(volume) >= 50:
+            vol4  = float(volume.iloc[-20:].mean())
+            vol10 = float(volume.iloc[-50:].mean())
+            vol_ratio = vol4 / vol10 if vol10 > 0 else 1
+            if vol_ratio >= 1.3:
+                vol_html = f'<span class="up">🔥 거래량 급증 (4주평균 {vol_ratio:.1f}x 10주평균)</span>'
+            elif vol_ratio >= 1.1:
+                vol_html = f'<span class="up">↑ 거래량 증가 중 ({vol_ratio:.1f}x)</span>'
+            elif vol_ratio <= 0.7:
+                vol_html = f'<span class="down">↓ 거래량 감소 중 ({vol_ratio:.1f}x)</span>'
+            else:
+                vol_html = f'<span class="neutral">보통 ({vol_ratio:.1f}x)</span>'
+        else:
+            vol_html = '<span class="neutral">N/A</span>'
+
+        # ── SPX 대비 상대 강도 (3달) ──
+        try:
+            spx = yf.download('^GSPC', period='6mo', interval='1d', progress=False, auto_adjust=True)
+            spx_close = spx['Close'].squeeze()
+            spx_ret = ((float(spx_close.iloc[-1]) - float(spx_close.iloc[-63])) / float(spx_close.iloc[-63])) * 100
+            rs_diff = (ret_63 or 0) - spx_ret
+            if rs_diff > 5:
+                rs_html = f'<span class="up">SPX 대비 +{rs_diff:.1f}%p 아웃퍼폼 🏆</span>'
+            elif rs_diff < -5:
+                rs_html = f'<span class="down">SPX 대비 {rs_diff:.1f}%p 언더퍼폼</span>'
+            else:
+                rs_html = f'<span class="neutral">SPX와 유사 ({rs_diff:+.1f}%p)</span>'
+        except Exception:
+            rs_html = '<span class="neutral">N/A</span>'
+
+        # ── 중기 모멘텀 점수 ──
+        score = 0
+        if ret_21  is not None and ret_21  > 0: score += 1
+        if ret_63  is not None and ret_63  > 0: score += 1
+        if ret_126 is not None and ret_126 > 0: score += 1
+        if len(above) >= len(ema_vals) * 0.75:  score += 2
+        if rsi_w >= 50:                          score += 1
+        if pos52 >= 60:                          score += 1
+
+        if score >= 6:
+            opinion, op_class = '중기 강한 상승 모멘텀. 추세 추종 유효.', 'up'
+        elif score >= 4:
+            opinion, op_class = '중기 상승 흐름 유지 중. 눌림 시 매수 고려.', 'up'
+        elif score >= 3:
+            opinion, op_class = '중기 모멘텀 혼조. 방향 확인 후 대응 권장.', 'neutral'
+        elif score >= 1:
+            opinion, op_class = '중기 약세 흐름. 회복 신호 대기 필요.', 'down'
+        else:
+            opinion, op_class = '중기 하락 압력 지속. 포지션 축소 고려.', 'down'
+
+        return f'''
+<div class="an-price">
+  <span class="an-curr">{curr:,.2f}</span>
+  <span style="font-size:11px;color:#64748b;">52주 범위 내 상위 {pos52:.0f}% 위치</span>
+</div>
+<div class="an-section">
+  <div class="an-label">📅 기간별 수익률</div>
+  {ret_html}
+</div>
+<div class="an-section">
+  <div class="an-label">📊 EMA 구조</div>
+  <div class="ema-row">{ema_items}</div>
+  <div class="an-row" style="margin-top:6px"><span class="{ema_class}">{ema_align}</span></div>
+  <div class="an-label" style="margin-top:8px">크로스 신호</div>
+  {cross_html}
+</div>
+<div class="an-section">
+  <div class="an-label">📈 {rsi_label}</div>
+  <div class="an-row">
+    <div class="rsi-bar-wrap"><div class="rsi-bar" style="width:{min(rsi_w,100):.0f}%"></div></div>
+    <span class="{rsi_class}">{rsi_w:.1f} — {rsi_comment}</span>
+  </div>
+</div>
+<div class="an-section">
+  <div class="an-label">📦 거래량 트렌드</div>
+  {vol_html}
+</div>
+<div class="an-section">
+  <div class="an-label">⚖️ SPX 대비 상대강도 (3달)</div>
+  {rs_html}
+</div>
+<div class="an-opinion {op_class}">💬 {opinion}</div>'''
+
+    except Exception as e:
+        return f'<p class="an-error">분석 오류: {e}</p>'
+
+# =============================================
 # 주식 현황 데이터 저장
 # =============================================
 STOCK_PRICES = {
@@ -431,7 +620,7 @@ def main():
         print(f"    {name} 특별분석 중...")
         save_special_ticker(client, name, ticker)
         chart_div = get_chart_div(ticker)
-        analysis_html = analyze_ticker_html(name, ticker)
+        analysis_html = analyze_special_html(name, ticker)
         report_text = read_report(ticker)
         report_html = ''
         if report_text:
@@ -443,7 +632,7 @@ def main():
 </div>'''
         special_sections += f'''
 <div class="ticker-section special">
-  <h3 class="ticker-title">⭐ {name} — 오늘의 특별 분석</h3>
+  <h3 class="ticker-title">⭐ {name} — 중기 모멘텀 분석</h3>
   {chart_div}
   <div class="analysis-box">
     {analysis_html}
