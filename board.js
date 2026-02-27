@@ -46,6 +46,7 @@ async function loadBoard() {
         '<div class="board-card-footer">' +
           '<button class="board-like' + (liked ? ' liked' : '') + '" onclick="likePost(' + p.id + ')">❤️ ' + (p.likes || 0) + '</button>' +
           '<button class="board-comment-btn" onclick="toggleComments(' + p.id + ')">💬 댓글 ' + commentCount + '</button>' +
+          '<button class="post-share-btn" onclick="shareBoardPost(' + p.id + ')" style="margin-left:auto;">🔗</button>' +
         '</div>' +
         '<div class="board-comments-wrap" id="comments-' + p.id + '" style="display:none;">' +
           '<div class="board-comments-list" id="clist-' + p.id + '"></div>' +
@@ -260,6 +261,22 @@ async function submitPost() {
 }
 
 // ── 좋아요 (중복 방지) ────────────────────────────────────────────────────────
+// ── 게시판 공유 (앵커 링크) ───────────────────────────────────────────────────
+async function shareBoardPost(id) {
+  var url = location.href.split('?')[0].split('#')[0] + '#bcard-' + id;
+  if (navigator.share) {
+    try { await navigator.share({ title: '겁쟁이리서치 게시판', url: url }); return; } catch(e) { if (e.name === 'AbortError') return; }
+  }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() { showToast('링크가 복사됐습니다 🔗', 'success'); });
+  } else {
+    var el = document.createElement('textarea');
+    el.value = url; el.style.cssText = 'position:fixed;opacity:0;';
+    document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+    showToast('링크가 복사됐습니다 🔗', 'success');
+  }
+}
+
 async function likePost(id) {
   var key = 'liked_' + id;
   if (localStorage.getItem(key)) {

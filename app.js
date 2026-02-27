@@ -17,7 +17,43 @@ function stripHtml(html) {
 }
 function createPostCard(post) {
   var preview = stripHtml(post.content).slice(0, 80) + '...';
-  return '<div class="post-card" onclick="openPost(' + post.id + ')"><div class="post-category">' + post.category + '</div><div class="post-title">' + post.title + '</div><div class="post-preview">' + preview + '</div><div class="post-meta"><span class="post-date">' + formatDate(post.created_at) + '</span><span class="post-stat">👁 ' + (post.views||0) + '</span></div></div>';
+  return '<div class="post-card" onclick="openPost(' + post.id + ')">' +
+    '<div class="post-category">' + post.category + '</div>' +
+    '<div class="post-title">' + post.title + '</div>' +
+    '<div class="post-preview">' + preview + '</div>' +
+    '<div class="post-meta">' +
+      '<span class="post-date">' + formatDate(post.created_at) + '</span>' +
+      '<span style="display:flex;align-items:center;gap:10px;">' +
+        '<span class="post-stat">👁 ' + (post.views||0) + '</span>' +
+        '<button class="post-share-btn" onclick="event.stopPropagation();sharePost(' + post.id + ')">🔗</button>' +
+      '</span>' +
+    '</div>' +
+  '</div>';
+}
+
+// ── 공유 기능 ─────────────────────────────────────────────────────────────────
+function getShareUrl(postId) {
+  var base = location.origin + location.pathname.split('?')[0].replace(/index\.html$/, '');
+  return base + 'index.html?post=' + postId;
+}
+async function sharePost(id) {
+  var post = allPosts.find(function(p){ return p.id === id; });
+  var title = post ? post.title : '겁쟁이리서치';
+  var url = getShareUrl(id);
+  if (navigator.share) {
+    try { await navigator.share({ title: title, url: url }); return; } catch(e) { if (e.name === 'AbortError') return; }
+  }
+  copyLink(url);
+}
+function copyLink(url) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() { showToast('링크가 복사됐습니다 🔗', 'success'); });
+  } else {
+    var el = document.createElement('textarea');
+    el.value = url; el.style.cssText = 'position:fixed;opacity:0;';
+    document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+    showToast('링크가 복사됐습니다 🔗', 'success');
+  }
 }
 async function loadTicker() {
   var tape = document.getElementById('tickerTrack');
@@ -100,6 +136,9 @@ async function loadPosts() {
       postList.innerHTML = allPosts.map(createPostCard).join('');
       postsCount.textContent = '총 ' + allPosts.length + '개';
     }
+    // 공유 링크로 진입 시 해당 포스트 자동 오픈
+    var sharedId = new URLSearchParams(location.search).get('post');
+    if (sharedId) openPost(parseInt(sharedId));
   } catch(err) {
     postList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">오류: ' + err.message + '</div></div>';
   }
@@ -150,13 +189,23 @@ async function initLWCharts() {
     console.error('차트 로딩 오류:', err);
   }
 }
-function openPost(id) {
+async function openPost(id) {
   var post = allPosts.find(function(p){ return p.id === id; });
+  // 메모리에 없으면 DB에서 직접 fetch (공유 링크로 진입 시)
+  if (!post && db) {
+    try {
+      var res = await db.from('posts').select('*').eq('id', id).single();
+      if (res.data) { post = res.data; allPosts.push(post); }
+    } catch(e) {}
+  }
   if (!post) return;
   document.getElementById('modalContent').innerHTML =
     '<div class="modal-category">' + post.category + '</div>' +
     '<div class="modal-title">' + post.title + '</div>' +
-    '<div class="modal-date">' + formatDate(post.created_at) + '</div>' +
+    '<div class="modal-date">' +
+      '<span>' + formatDate(post.created_at) + '</span>' +
+      '<button class="post-share-btn" onclick="sharePost(' + id + ')" style="font-size:13px;padding:4px 10px;">🔗 공유</button>' +
+    '</div>' +
     '<div class="modal-body">' + post.content + '</div>';
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -165,7 +214,6 @@ function openPost(id) {
   var newViews = (post.views || 0) + 1;
   post.views = newViews;
   db.from('posts').update({ views: newViews }).eq('id', id).then(function() {
-    // 카드에 표시된 조회수도 갱신
     var cards = document.querySelectorAll('.post-card');
     cards.forEach(function(card) {
       if (card.getAttribute('onclick') === 'openPost(' + id + ')') {
