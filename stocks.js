@@ -3,7 +3,8 @@ function forceReloadImages() {
   var t = Date.now();
   document.querySelectorAll('.finviz-map-img').forEach(function(img) {
     var base = img.src.split('?')[0];
-    img.src = base + '?t=' + t;
+    img.src = '';
+    setTimeout(function() { img.src = base + '?t=' + t; }, 50);
   });
 }
 
