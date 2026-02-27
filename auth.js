@@ -1,5 +1,4 @@
 (function() {
-  return; // 비밀번호 게이트 비활성화
   if (sessionStorage.getItem('auth') === 'ok') return;
 
   // 오버레이 생성
