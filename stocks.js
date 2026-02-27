@@ -19,19 +19,22 @@ function setRefreshBtn(state, msg) {
   if (status) status.textContent = msg || '';
 }
 
-// ── 하루 1회 제한 ─────────────────────────────────────────────────────────────
-function getToday7am() {
-  var d = new Date();
-  d.setHours(7, 0, 0, 0);
-  return d;
-}
+// ── 3시간 쿨타임 ─────────────────────────────────────────────────────────────
+var COOLDOWN_MS = 3 * 60 * 60 * 1000; // 3시간
+
 function canPressRefresh() {
   var stored = localStorage.getItem('stockRefresh');
   if (!stored) return true;
-  return new Date(JSON.parse(stored).pressedAt) < getToday7am();
+  return Date.now() - new Date(JSON.parse(stored).pressedAt).getTime() >= COOLDOWN_MS;
 }
 function markRefreshUsed() {
   localStorage.setItem('stockRefresh', JSON.stringify({ pressedAt: new Date().toISOString() }));
+}
+function getRemainingMinutes() {
+  var stored = localStorage.getItem('stockRefresh');
+  if (!stored) return 0;
+  var elapsed = Date.now() - new Date(JSON.parse(stored).pressedAt).getTime();
+  return Math.ceil((COOLDOWN_MS - elapsed) / 60000);
 }
 
 // ── 갱신 버튼 클릭 핸들러 ────────────────────────────────────────────────────
@@ -78,6 +81,10 @@ async function handleRefresh() {
 // ── 페이지 로드 시 버튼 초기 상태 설정 ───────────────────────────────────────
 (function() {
   if (!canPressRefresh()) {
-    setRefreshBtn('used', '오늘 갱신 완료. 내일 오전 7시 초기화.');
+    var mins = getRemainingMinutes();
+    var msg = mins >= 60
+      ? Math.ceil(mins / 60) + '시간 후 갱신 가능'
+      : mins + '분 후 갱신 가능';
+    setRefreshBtn('used', msg);
   }
 })();
