@@ -164,11 +164,16 @@ function startDelete(commentId) {
     '</div>';
 }
 
+var ADMIN_PW = '0618';
+
 async function confirmDelete(commentId, postId) {
   var pw = document.getElementById('del-pw-' + commentId).value.trim();
   if (!pw) { showToast('비밀번호를 입력해주세요', 'error'); return; }
   try {
-    var res = await db.from('board_comments').delete().eq('id', commentId).eq('password', pw).select();
+    var query = db.from('board_comments').delete().eq('id', commentId);
+    // 관리자 비밀번호면 password 조건 없이 삭제
+    if (pw !== ADMIN_PW) query = query.eq('password', pw);
+    var res = await query.select();
     if (res.error) throw res.error;
     if (!res.data || !res.data.length) { showToast('비밀번호가 틀렸습니다', 'error'); return; }
     showToast('댓글이 삭제됐습니다', 'success');
