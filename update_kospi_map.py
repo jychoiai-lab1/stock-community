@@ -52,33 +52,14 @@ def capture_and_upload():
         }""")
         time.sleep(1)
 
-        # 마켓맵 컨테이너 탐색 (canvas, svg, 또는 지도 div)
-        selectors = [
-            'canvas',
-            '#marketmap',
-            '.marketmap',
-            '[class*="marketmap"]',
-            '[class*="market-map"]',
-            '[id*="map"]',
-            '.map-wrap',
-            '#map',
-        ]
-
-        screenshot = None
-        for sel in selectors:
-            try:
-                el = page.query_selector(sel)
-                if el and el.is_visible():
-                    box = el.bounding_box()
-                    if box and box['width'] > 200 and box['height'] > 200:
-                        screenshot = el.screenshot()
-                        print(f"  요소 캡처 성공: {sel} ({box['width']:.0f}x{box['height']:.0f})")
-                        break
-            except Exception:
-                continue
-
-        if not screenshot:
-            print("  개별 요소 캡처 실패 → 전체 페이지 캡처")
+        # 히트맵 본체만 캡처 (.fiq-marketmap)
+        el = page.query_selector('.fiq-marketmap')
+        if el and el.is_visible():
+            box = el.bounding_box()
+            screenshot = el.screenshot()
+            print(f"  히트맵 캡처 성공: {box['width']:.0f}x{box['height']:.0f}")
+        else:
+            print("  fiq-marketmap 없음 → 전체 페이지 캡처")
             screenshot = page.screenshot(full_page=False)
 
         browser.close()
