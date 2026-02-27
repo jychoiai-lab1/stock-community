@@ -21,8 +21,14 @@
   <main class="main">
     <div class="container">
       <section class="stocks-section">
-        <h2 class="section-title">오늘의 주식 현황</h2>
+        <div class="stocks-header">
+          <h2 class="section-title">오늘의 주식 현황</h2>
+          <button class="refresh-btn" id="refreshBtn" onclick="handleRefresh()">
+            <span id="refreshBtnText">🔄 히트맵 갱신</span>
+          </button>
+        </div>
         <p class="stocks-updated" id="stocksUpdated">데이터 로딩 중...</p>
+        <p class="refresh-status" id="refreshStatus"></p>
 
         <!-- Barchart 섹터 퍼포먼스 -->
         <div class="finviz-map-wrap">
@@ -51,9 +57,18 @@
             onerror="this.parentElement.style.display='none'"
           />
         </div>
-        <div class="market-block">
-          <h3 class="market-title">🇰🇷 한국 시장</h3>
-          <div class="stock-grid" id="krStocks"><div class="loading-spinner"><div class="spinner"></div></div></div>
+        <!-- 코스피 마켓맵 -->
+        <div class="finviz-map-wrap">
+          <div class="finviz-map-header">
+            <span class="finviz-map-title">🇰🇷 코스피 마켓맵</span>
+            <span class="finviz-map-note">매일 자동 갱신 · 한국경제</span>
+          </div>
+          <img
+            src="https://miyrssfrjvhwswjylahw.supabase.co/storage/v1/object/public/images/kospi_map.png"
+            alt="코스피 마켓맵"
+            class="finviz-map-img"
+            onerror="this.parentElement.style.display='none'"
+          />
         </div>
         <div class="market-block">
           <h3 class="market-title">🇺🇸 미국 시장</h3>
