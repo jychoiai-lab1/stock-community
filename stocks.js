@@ -1,41 +1,83 @@
-function createStockCard(s) {
-  return '<div class="stock-card">' +
-    '<div class="stock-name">' + s.name + ' <span class="stock-ticker">' + s.ticker + '</span></div>' +
-    '<div class="stock-price">' + s.price + '</div>' +
-    '<div class="stock-change ' + (s.is_up ? 'up' : 'down') + '">' + s.change_val + ' (' + s.change_pct + ')</div>' +
-    '</div>';
+// ── 히트맵 이미지 강제 새로고침 ───────────────────────────────────────────────
+function forceReloadImages() {
+  var t = Date.now();
+  document.querySelectorAll('.finviz-map-img').forEach(function(img) {
+    var base = img.src.split('?')[0];
+    img.src = base + '?t=' + t;
+  });
 }
 
-async function loadStocks() {
-  var krEl = document.getElementById('krStocks');
-  var usEl = document.getElementById('usStocks');
-  var updatedEl = document.getElementById('stocksUpdated');
+// ── 갱신 버튼 상태 제어 ───────────────────────────────────────────────────────
+function setRefreshBtn(state, msg) {
+  var btn    = document.getElementById('refreshBtn');
+  var txt    = document.getElementById('refreshBtnText');
+  var status = document.getElementById('refreshStatus');
+  if (state === 'ready')   { btn.disabled = false; btn.classList.remove('used','loading'); txt.textContent = '🔄 히트맵 갱신'; }
+  if (state === 'loading') { btn.disabled = true;  btn.classList.add('loading');           txt.textContent = '⏳ 갱신 중...'; }
+  if (state === 'used')    { btn.disabled = true;  btn.classList.remove('loading'); btn.classList.add('used'); txt.textContent = '✅ 갱신 완료'; }
+  if (state === 'error')   { btn.disabled = true;  btn.classList.remove('loading'); btn.classList.add('used'); txt.textContent = '⚠️ 갱신 오류'; }
+  if (status) status.textContent = msg || '';
+}
+
+// ── 하루 1회 제한 ─────────────────────────────────────────────────────────────
+function getToday7am() {
+  var d = new Date();
+  d.setHours(7, 0, 0, 0);
+  return d;
+}
+function canPressRefresh() {
+  var stored = localStorage.getItem('stockRefresh');
+  if (!stored) return true;
+  return new Date(JSON.parse(stored).pressedAt) < getToday7am();
+}
+function markRefreshUsed() {
+  localStorage.setItem('stockRefresh', JSON.stringify({ pressedAt: new Date().toISOString() }));
+}
+
+// ── 갱신 버튼 클릭 핸들러 ────────────────────────────────────────────────────
+async function handleRefresh() {
+  if (!canPressRefresh()) return;
+  if (!db) { setRefreshBtn('error', 'DB 연결 없음'); return; }
+
+  markRefreshUsed();
+  setRefreshBtn('loading', '요청 전송 중...');
 
   try {
-    if (db) {
-      var res = await db.from('stock_prices').select('*').order('id');
-      if (res.error) throw res.error;
-      var data = res.data || [];
+    var ins = await db.from('refresh_trigger').insert({ status: 'pending' }).select().single();
+    if (ins.error) throw ins.error;
+    var triggerId = ins.data.id;
+    setRefreshBtn('loading', '이미지 생성 중... (최대 3분 소요)');
 
-      var kr = data.filter(function(s){ return s.market === 'KR'; });
-      var us = data.filter(function(s){ return s.market === 'US'; });
-
-      krEl.innerHTML = kr.length ? kr.map(createStockCard).join('') : '<p style="color:#64748b;padding:16px">데이터 없음</p>';
-      usEl.innerHTML = us.length ? us.map(createStockCard).join('') : '<p style="color:#64748b;padding:16px">데이터 없음</p>';
-
-      if (data.length > 0) {
-        var updated = new Date(data[0].updated_at);
-        updatedEl.textContent = '최근 업데이트: ' + updated.toLocaleString('ko-KR');
+    var attempts = 0;
+    var poll = setInterval(async function() {
+      attempts++;
+      try {
+        var res = await db.from('refresh_trigger').select('status').eq('id', triggerId).single();
+        if (res.data) {
+          if (res.data.status === 'done') {
+            clearInterval(poll);
+            forceReloadImages();
+            setRefreshBtn('used', '히트맵이 업데이트됐습니다.');
+          } else if (res.data.status === 'error') {
+            clearInterval(poll);
+            setRefreshBtn('error', '갱신 중 오류가 발생했습니다.');
+          }
+        }
+      } catch(e) {}
+      if (attempts >= 36) {
+        clearInterval(poll);
+        setRefreshBtn('error', '응답 시간 초과. 잠시 후 새로고침 해보세요.');
       }
-    } else {
-      updatedEl.textContent = 'Supabase 연결 필요';
-      krEl.innerHTML = '<p style="color:#64748b;padding:16px">연결 대기 중...</p>';
-      usEl.innerHTML = '<p style="color:#64748b;padding:16px">연결 대기 중...</p>';
-    }
-  } catch(err) {
-    updatedEl.textContent = '오류: ' + err.message;
-    console.error(err);
+    }, 5000);
+
+  } catch(e) {
+    setRefreshBtn('error', '요청 실패: ' + e.message);
   }
 }
 
-loadStocks();
+// ── 페이지 로드 시 버튼 초기 상태 설정 ───────────────────────────────────────
+(function() {
+  if (!canPressRefresh()) {
+    setRefreshBtn('used', '오늘 갱신 완료. 내일 오전 7시 초기화.');
+  }
+})();
