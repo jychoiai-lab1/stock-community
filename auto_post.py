@@ -584,8 +584,12 @@ def post_to_supabase(client, title, content):
 # 메인
 # =============================================
 def main():
-    today = datetime.now().strftime('%Y년 %m월 %d일')
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] 브리핑 생성 시작...")
+    now = datetime.now()
+    if now.weekday() >= 5:  # 5=토, 6=일
+        print(f"[{now.strftime('%H:%M:%S')}] 주말({['월','화','수','목','금','토','일'][now.weekday()]})이므로 브리핑을 건너뜁니다.")
+        return
+    today = now.strftime('%Y년 %m월 %d일')
+    print(f"[{now.strftime('%H:%M:%S')}] 브리핑 생성 시작...")
     client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
     print("  주식 현황 업데이트 중...")
