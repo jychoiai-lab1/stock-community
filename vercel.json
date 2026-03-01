@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/post/:id", "destination": "/api/post?id=:id" }
+  ]
+}

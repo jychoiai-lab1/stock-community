@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0e1117"/>
+      <stop offset="100%" stop-color="#161b27"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="300" fill="url(#glow)"/>
+
+  <!-- 좌측 강조 바 -->
+  <rect x="0" y="0" width="7" height="630" fill="#60a5fa"/>
+
+  <!-- 그리드 패턴 (장식) -->
+  <g opacity="0.05" stroke="#60a5fa" stroke-width="1">
+    <line x1="0" y1="105" x2="1200" y2="105"/>
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="0" y1="525" x2="1200" y2="525"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- 차트 라인 (장식) -->
+  <polyline
+    points="700,480 750,420 800,450 860,360 920,390 970,300 1030,330 1100,240 1160,270 1200,210"
+    fill="none" stroke="#60a5fa" stroke-width="3" opacity="0.2"/>
+  <polyline
+    points="700,530 750,500 800,510 860,460 920,480 970,400 1030,430 1100,350 1160,370 1200,310"
+    fill="none" stroke="#f87171" stroke-width="2" opacity="0.15"/>
+
+  <!-- 로고 영역 -->
+  <text x="80" y="115" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="32" fill="#60a5fa" font-weight="700" letter-spacing="1">겁쟁이리서치</text>
+  <text x="80" y="150" font-family="Arial, sans-serif" font-size="20" fill="#4a5568" letter-spacing="2">STOCK RESEARCH COMMUNITY</text>
+
+  <!-- 구분선 -->
+  <line x1="80" y1="175" x2="1120" y2="175" stroke="#2d3748" stroke-width="1"/>
+
+  <!-- 메인 텍스트 -->
+  <text x="80" y="290" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="68" fill="white" font-weight="800">주식 리서치</text>
+  <text x="80" y="375" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="68" fill="white" font-weight="800">분석 커뮤니티</text>
+
+  <!-- 태그들 -->
+  <rect x="80" y="415" width="130" height="38" rx="6" fill="#1e3a5f"/>
+  <text x="145" y="440" font-family="sans-serif" font-size="18" fill="#60a5fa" text-anchor="middle">🇺🇸 미국주식</text>
+
+  <rect x="224" y="415" width="130" height="38" rx="6" fill="#1e2a1e"/>
+  <text x="289" y="440" font-family="sans-serif" font-size="18" fill="#4ade80" text-anchor="middle">🇰🇷 국내주식</text>
+
+  <rect x="368" y="415" width="130" height="38" rx="6" fill="#2a1e2a"/>
+  <text x="433" y="440" font-family="sans-serif" font-size="18" fill="#c084fc" text-anchor="middle">🪙 암호화폐</text>
+
+  <rect x="512" y="415" width="130" height="38" rx="6" fill="#1e2535"/>
+  <text x="577" y="440" font-family="sans-serif" font-size="18" fill="#94a3b8" text-anchor="middle">📊 브리핑</text>
+
+  <!-- 하단 바 -->
+  <rect x="0" y="590" width="1200" height="40" fill="#161b27"/>
+  <text x="80" y="617" font-family="Arial, sans-serif" font-size="18" fill="#4a5568">stock-community-woad.vercel.app</text>
+  <text x="1120" y="617" font-family="Arial, sans-serif" font-size="18" fill="#4a5568" text-anchor="end">매일 브리핑 · 심층 분석</text>
+</svg>

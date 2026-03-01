@@ -33,8 +33,7 @@ function createPostCard(post) {
 
 // ── 공유 기능 ─────────────────────────────────────────────────────────────────
 function getShareUrl(postId) {
-  var base = location.origin + location.pathname.split('?')[0].replace(/index\.html$/, '');
-  return base + 'index.html?post=' + postId;
+  return location.origin + '/post/' + postId;
 }
 async function sharePost(id) {
   var post = allPosts.find(function(p){ return p.id === id; });
