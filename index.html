@@ -126,6 +126,12 @@
       </div>
     </div>
   </main>
+  <!-- 공유 메뉴 드롭다운 -->
+  <div class="share-menu" id="shareMenu">
+    <button class="share-menu-item" id="shareMenuNative" onclick="doNativeShare()">📤 공유하기</button>
+    <button class="share-menu-item" onclick="doCopyLink()">🔗 URL 복사</button>
+  </div>
+
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-drag-handle"></div>

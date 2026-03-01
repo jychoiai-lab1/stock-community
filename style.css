@@ -462,6 +462,38 @@ html { scroll-behavior: smooth; }
   line-height: 1;
 }
 .post-share-btn:hover { border-color: #60a5fa; color: #60a5fa; }
+.post-share-btn.active { border-color: #60a5fa; color: #60a5fa; background: #1e3a5f; }
+
+/* ===== 공유 메뉴 드롭다운 ===== */
+.share-menu {
+  display: none;
+  position: fixed;
+  background: #1e2535;
+  border: 1px solid #2d3748;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  z-index: 9999;
+  min-width: 160px;
+  overflow: hidden;
+}
+.share-menu.active { display: block; }
+.share-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 11px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #2d3748;
+  color: #cbd5e1;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+.share-menu-item:last-child { border-bottom: none; }
+.share-menu-item:hover { background: #2d3748; color: #f1f5f9; }
 
 /* 모달 날짜 줄 - 공유버튼 정렬 */
 .modal-date { display: flex; justify-content: space-between; align-items: center; }

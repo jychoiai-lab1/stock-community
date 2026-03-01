@@ -25,7 +25,7 @@ function createPostCard(post) {
       '<span class="post-date">' + formatDate(post.created_at) + '</span>' +
       '<span style="display:flex;align-items:center;gap:10px;">' +
         '<span class="post-stat">👁 ' + (post.views||0) + '</span>' +
-        '<button class="post-share-btn" onclick="event.stopPropagation();sharePost(' + post.id + ')">🔗</button>' +
+        '<button class="post-share-btn" onclick="event.stopPropagation();sharePost(this,' + post.id + ')">🔗</button>' +
       '</span>' +
     '</div>' +
   '</div>';
@@ -35,15 +35,48 @@ function createPostCard(post) {
 function getShareUrl(postId) {
   return location.origin + '/post/' + postId;
 }
-async function sharePost(id) {
+var _shareData = { url: '', title: '', btn: null };
+function sharePost(btn, id) {
   var post = allPosts.find(function(p){ return p.id === id; });
-  var title = post ? post.title : '겁쟁이리서치';
-  var url = getShareUrl(id);
-  if (navigator.share) {
-    try { await navigator.share({ title: title, url: url }); return; } catch(e) { if (e.name === 'AbortError') return; }
-  }
-  copyLink(url);
+  _shareData.url = getShareUrl(id);
+  _shareData.title = post ? post.title : '겁쟁이리서치';
+  _shareData.btn = btn;
+  var menu = document.getElementById('shareMenu');
+  var nativeItem = document.getElementById('shareMenuNative');
+  if (nativeItem) nativeItem.style.display = navigator.share ? 'flex' : 'none';
+  var rect = btn.getBoundingClientRect();
+  menu.style.top = (rect.bottom + 6) + 'px';
+  menu.style.left = rect.left + 'px';
+  menu.classList.add('active');
+  btn.classList.add('active');
+  // 화면 우측 벗어나면 오른쪽 정렬
+  requestAnimationFrame(function() {
+    var mr = menu.getBoundingClientRect();
+    if (mr.right > window.innerWidth - 8) {
+      menu.style.left = (rect.right - menu.offsetWidth) + 'px';
+    }
+    if (mr.bottom > window.innerHeight - 8) {
+      menu.style.top = (rect.top - menu.offsetHeight - 6) + 'px';
+    }
+  });
 }
+function closeShareMenu() {
+  var menu = document.getElementById('shareMenu');
+  if (!menu) return;
+  menu.classList.remove('active');
+  if (_shareData.btn) { _shareData.btn.classList.remove('active'); _shareData.btn = null; }
+}
+async function doNativeShare() {
+  closeShareMenu();
+  try { await navigator.share({ title: _shareData.title, url: _shareData.url }); } catch(e) {}
+}
+function doCopyLink() {
+  closeShareMenu();
+  copyLink(_shareData.url);
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#shareMenu') && !e.target.closest('.post-share-btn')) closeShareMenu();
+});
 function copyLink(url) {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(function() { showToast('링크가 복사됐습니다 🔗', 'success'); });
@@ -203,7 +236,7 @@ async function openPost(id) {
     '<div class="modal-title">' + post.title + '</div>' +
     '<div class="modal-date">' +
       '<span>' + formatDate(post.created_at) + '</span>' +
-      '<button class="post-share-btn" onclick="sharePost(' + id + ')" style="font-size:13px;padding:4px 10px;">🔗 공유</button>' +
+      '<button class="post-share-btn" onclick="sharePost(this,' + id + ')" style="font-size:13px;padding:4px 10px;">🔗 공유</button>' +
     '</div>' +
     '<div class="modal-body">' + post.content + '</div>';
   document.getElementById('modalOverlay').classList.add('active');
