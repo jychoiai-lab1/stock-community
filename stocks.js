@@ -50,7 +50,7 @@ async function handleRefresh() {
     var ins = await db.from('refresh_trigger').insert({ status: 'pending' }).select().single();
     if (ins.error) throw ins.error;
     var triggerId = ins.data.id;
-    setRefreshBtn('loading', '이미지 생성 중... (최대 3분 소요)');
+    setRefreshBtn('loading', '이미지 생성 중... (최대 5분 소요)');
 
     var attempts = 0;
     var poll = setInterval(async function() {
@@ -68,7 +68,7 @@ async function handleRefresh() {
           }
         }
       } catch(e) {}
-      if (attempts >= 36) {
+      if (attempts >= 60) {
         clearInterval(poll);
         setRefreshBtn('error', '응답 시간 초과. 잠시 후 새로고침 해보세요.');
       }
