@@ -80,7 +80,7 @@ def capture_and_upload():
     print(f"  업로드 완료: {public_url}")
 
 if __name__ == '__main__':
-    import traceback, sys
+    import traceback, sys, os
     LOG = r'C:\Users\asdf\webtest\logs\barchart.log'
     os.makedirs(os.path.dirname(LOG), exist_ok=True)
     try:
