@@ -57,6 +57,16 @@ TAB_NAME_MAP = {
 
 REPORTS_DIR = r"C:\Users\asdf\webtest\reports"
 
+# ── 법적 면책 조항 ──────────────────────────────────────────────────────────────
+DISCLAIMER_HTML = (
+    '<div style="background:#1a2236;border:1px solid #2d3748;border-left:3px solid #f59e0b;'
+    'padding:10px 14px;margin-bottom:20px;border-radius:4px;font-size:0.8em;color:#9ca3af;">'
+    '⚠️ 본 게시물은 투자 참고 목적으로 작성된 것으로, <strong>투자 권유가 아닙니다.</strong> '
+    '모든 투자 결정은 투자자 본인의 판단과 책임 하에 이루어져야 하며, '
+    '본 내용을 근거로 한 투자 손실에 대해 당사는 책임을 지지 않습니다.'
+    '</div>'
+)
+
 # ── 이미지 content-type → 확장자 ──────────────────────────────────────────────
 EXT_MAP = {
     "image/png":  "png",
@@ -306,7 +316,7 @@ def main():
     supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
     try:
-        html_content = docx_to_html(doc_path, supabase)
+        html_content = DISCLAIMER_HTML + "\n" + docx_to_html(doc_path, supabase)
     except Exception as e:
         print(f"[오류] 변환 실패: {e}")
         sys.exit(1)
