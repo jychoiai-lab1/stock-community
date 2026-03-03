@@ -51,6 +51,18 @@ def capture_and_upload():
     print(f"  업로드 완료: {public_url}")
 
 if __name__ == '__main__':
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] Finviz 맵 업데이트 중...")
-    capture_and_upload()
-    print("Done!")
+    import traceback, sys, os
+    LOG = r'C:\Users\asdf\webtest\logs\finviz.log'
+    os.makedirs(os.path.dirname(LOG), exist_ok=True)
+    try:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] Finviz 맵 업데이트 중...")
+        capture_and_upload()
+        print("Done!")
+        with open(LOG, 'a', encoding='utf-8') as f:
+            f.write(f"[{datetime.now()}] SUCCESS\n")
+    except Exception as e:
+        msg = traceback.format_exc()
+        print(msg)
+        with open(LOG, 'a', encoding='utf-8') as f:
+            f.write(f"[{datetime.now()}] ERROR\n{msg}\n")
+        sys.exit(1)

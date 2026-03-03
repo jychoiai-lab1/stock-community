@@ -79,6 +79,18 @@ async function handleRefresh() {
   }
 }
 
+// ── 페이지 로드 시 날짜 기반 캐시버스터 적용 ─────────────────────────────────
+(function() {
+  var d = new Date();
+  var today = d.getFullYear()
+    + ('0' + (d.getMonth() + 1)).slice(-2)
+    + ('0' + d.getDate()).slice(-2);
+  document.querySelectorAll('.finviz-map-img').forEach(function(img) {
+    var base = img.src.split('?')[0];
+    img.src = base + '?d=' + today;
+  });
+})();
+
 // ── 페이지 로드 시 버튼 초기 상태 설정 ───────────────────────────────────────
 (function() {
   if (!canPressRefresh()) {
