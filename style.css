@@ -748,3 +748,204 @@ svg { display: block; }
   .modal-drag-handle { display: block; }
   .modal-overlay { padding: 0; align-items: flex-end; }
 }
+
+/* ══════════════════════════════════════════════
+   LEGACY / COMPATIBILITY — app.js·board.js 호환
+   ══════════════════════════════════════════════ */
+
+/* 모달 .active alias */
+.modal-overlay.active { display: flex; align-items: flex-start; justify-content: center; }
+.modal-category { font-size: 11.5px; font-weight: 700; color: var(--blue); letter-spacing:.04em; text-transform:uppercase; margin-bottom: 8px; }
+.modal-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.4; }
+.modal-date {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--text2);
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-body { font-size: 14.5px; line-height: 1.85; color: var(--text2); }
+.modal-body h1, .modal-body h2, .modal-body h3 { color: var(--text); margin: 20px 0 10px; font-weight: 700; }
+.modal-body p  { margin-bottom: 12px; }
+.modal-body strong { color: var(--text); font-weight: 700; }
+.modal-body table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; }
+.modal-body th { background: var(--surface2); padding: 8px 12px; text-align: left; font-weight: 600; border: 1px solid var(--border); color: var(--text); }
+.modal-body td { padding: 8px 12px; border: 1px solid var(--border); color: var(--text2); }
+.modal-body img { max-width: 100%; border-radius: var(--radius-sm); margin: 12px 0; }
+.lw-chart { width: 100%; min-height: 300px; margin: 12px 0; border-radius: var(--radius-sm); overflow: hidden; }
+
+/* 공유 메뉴 .active alias */
+.share-menu.active { display: block; }
+
+/* loading-spinner (legacy) */
+.loading-spinner { display: flex; align-items: center; gap: 10px; padding: 24px 0; color: var(--text3); font-size: 13px; }
+.loading-spinner p { margin: 0; color: var(--text3); }
+
+/* Empty state */
+.empty-state-icon { font-size: 28px; margin-bottom: 8px; }
+.empty-state-text { font-size: 13.5px; }
+
+/* Post card 추가 클래스 */
+.post-preview { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 10px; }
+.post-date { font-size: 12px; color: var(--text3); }
+.post-stat { font-size: 12px; color: var(--text3); }
+.refresh-note { font-size: 12px; color: var(--text3); }
+
+/* ── 사이드바 특별 분석 종목 ── */
+.sidebar-empty { font-size: 13px; color: var(--text3); padding: 6px 0; }
+.sidebar-ticker {
+  padding: 10px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.sidebar-ticker:hover { border-color: var(--blue); background: var(--border); }
+.sidebar-ticker:last-child { margin-bottom: 0; }
+.sidebar-ticker-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+.sidebar-ticker-symbol { font-size: 14px; font-weight: 800; color: var(--blue); }
+.sidebar-ticker-date   { font-size: 11px; color: var(--text3); }
+.sidebar-ticker-name   { font-size: 12px; color: var(--text2); }
+
+/* ── 사이드바 캘린더 (app.js 렌더링 방식) ── */
+.widget-card .cal-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.widget-card .cal-item:last-child { border-bottom: none; }
+.cal-date-badge {
+  width: 36px; flex-shrink: 0; text-align: center;
+  background: var(--surface2);
+  border-radius: var(--radius-xs);
+  padding: 5px 4px;
+}
+.cal-month { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text3); letter-spacing:.04em; }
+.cal-day   { display: block; font-size: 17px; font-weight: 800; color: var(--text); line-height: 1.1; }
+.cal-info  { flex: 1; min-width: 0; }
+.cal-event-title { font-size: 12.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+.cal-type {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 7px; border-radius: 20px;
+}
+.cal-type.fomc      { background: var(--red-dim);   color: var(--red); }
+.cal-type.earnings  { background: var(--amber-dim); color: var(--amber); }
+.cal-type.indicator { background: var(--blue-dim);  color: var(--blue); }
+.cal-type.general   { background: var(--surface2);  color: var(--text3); }
+
+/* ── 게시판 ── */
+.board-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.board-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  color: var(--text);
+  font-family: inherit;
+  display: block;
+  transition: border-color .15s;
+  outline: none;
+}
+.board-input:focus { border-color: var(--blue); }
+.board-input::placeholder { color: var(--text3); }
+.board-contenteditable {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  color: var(--text);
+  font-family: inherit;
+  display: block;
+  transition: border-color .15s;
+  outline: none;
+}
+.board-contenteditable:focus { border-color: var(--blue); }
+.board-contenteditable::placeholder { color: var(--text3); }
+.board-form-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+.board-char-count  { font-size: 12px; color: var(--text3); }
+.board-submit {
+  padding: 9px 22px;
+  background: var(--blue);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: opacity .15s;
+}
+.board-submit:hover    { opacity: .85; }
+.board-submit:disabled { opacity: .4; cursor: not-allowed; }
+
+.board-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  transition: border-color .2s;
+}
+.board-card:hover { border-color: var(--border2); }
+.board-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.board-nickname { font-size: 13.5px; font-weight: 700; color: var(--text); }
+.board-time     { font-size: 11.5px; color: var(--text3); }
+.board-card-content { font-size: 14px; color: var(--text2); line-height: 1.75; margin-bottom: 12px; word-break: break-word; white-space: pre-wrap; }
+.board-card-footer  { display: flex; align-items: center; gap: 8px; }
+
+.board-like {
+  padding: 5px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 12.5px; font-weight: 600;
+  color: var(--text2);
+  transition: all .15s;
+}
+.board-like:hover, .board-like.liked {
+  background: var(--red-dim); border-color: var(--red); color: var(--red);
+}
+.board-comment-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 12.5px; font-weight: 600;
+  color: var(--text2);
+  transition: all .15s;
+}
+.board-comment-btn:hover { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+
+.board-comments-wrap { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.board-comments-list { margin-bottom: 12px; }
+.board-comment { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.board-comment:last-child { border-bottom: none; }
+.board-comment-header { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.board-comment-nick    { font-size: 12.5px; font-weight: 700; color: var(--text); }
+.board-comment-content { font-size: 13.5px; color: var(--text2); line-height: 1.6; word-break: break-word; white-space: pre-wrap; }
+
+.comment-action-btn {
+  padding: 3px 8px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-xs);
+  font-size: 11px; color: var(--text3);
+  transition: all .15s;
+}
+.comment-action-btn:hover { color: var(--text); background: var(--surface2); }
+.comment-action-btn.del:hover { color: var(--red); border-color: var(--red); background: var(--red-dim); }
+.comment-cancel-btn {
+  padding: 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600;
+  color: var(--text2);
+  transition: background .15s;
+}
+.comment-cancel-btn:hover { background: var(--border2); }
