@@ -1,0 +1,7 @@
+yfinance
+supabase
+scrapling
+openai
+python-docx
+requests
+anthropic

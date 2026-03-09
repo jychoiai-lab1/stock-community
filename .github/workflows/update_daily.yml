@@ -18,10 +18,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
       - name: 패키지 설치
-        run: pip install yfinance supabase scrapling openai python-docx requests anthropic
+        run: pip install -r requirements.txt
 
       - name: 매크로 지표 업데이트
         run: python -X utf8 update_macro.py
