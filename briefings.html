@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>브리핑 — 겁쟁이리서치</title>
+  <meta name="description" content="매일 브리핑, 미국·국내주식, 암호화폐 분석" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span>겁쟁이리서치</span>
+      </a>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">대시보드</a>
+        <a href="briefings.html" class="nav-link active">브리핑</a>
+        <a href="board.html" class="nav-link">게시판</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="briefings-layout">
+        <!-- 메인 컨텐츠 -->
+        <div class="briefings-main">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('briefing', this)">📊 브리핑</button>
+            <button class="tab-btn" onclick="switchTab('us', this)">🇺🇸 미국주식</button>
+            <button class="tab-btn" onclick="switchTab('kr', this)">🇰🇷 국내주식</button>
+            <button class="tab-btn" onclick="switchTab('crypto', this)">🪙 암호화폐</button>
+          </div>
+
+          <section class="tab-panel" id="tab-briefing">
+            <div class="posts-meta">
+              <span class="refresh-note">매일 오전 3시 자동 갱신</span>
+              <span id="postsCount"></span>
+            </div>
+            <div class="post-list" id="postList">
+              <div class="loading-state"><div class="spinner"></div><span>불러오는 중...</span></div>
+            </div>
+          </section>
+
+          <section class="tab-panel hidden" id="tab-us">
+            <div class="post-list" id="usPostList">
+              <div class="loading-state"><div class="spinner"></div><span>불러오는 중...</span></div>
+            </div>
+          </section>
+
+          <section class="tab-panel hidden" id="tab-kr">
+            <div class="post-list" id="krPostList">
+              <div class="loading-state"><div class="spinner"></div><span>불러오는 중...</span></div>
+            </div>
+          </section>
+
+          <section class="tab-panel hidden" id="tab-crypto">
+            <div class="post-list" id="cryptoPostList">
+              <div class="loading-state"><div class="spinner"></div><span>불러오는 중...</span></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- 사이드바 -->
+        <aside class="briefings-sidebar">
+          <div class="widget-card">
+            <div class="widget-title">😰 공포·탐욕 지수</div>
+            <svg viewBox="0 0 100 58" class="fg-svg">
+              <defs>
+                <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ff5252"/>
+                  <stop offset="50%" stop-color="#f5a623"/>
+                  <stop offset="100%" stop-color="#26d97f"/>
+                </linearGradient>
+              </defs>
+              <path d="M 10 54 A 40 40 0 0 1 90 54" fill="none" stroke="#1e2030" stroke-width="9" stroke-linecap="round"/>
+              <path d="M 10 54 A 40 40 0 0 1 90 54" fill="none" stroke="url(#gaugeGrad)" stroke-width="9" stroke-linecap="round" opacity="0.9"/>
+              <line id="fgNeedle" x1="50" y1="54" x2="50" y2="16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="50" cy="54" r="3.5" fill="#12121a"/>
+              <circle cx="50" cy="54" r="2" fill="white"/>
+            </svg>
+            <div class="fg-center">
+              <span class="fg-value" id="fgValue">--</span>
+              <span class="fg-label" id="fgLabel">로딩 중</span>
+            </div>
+            <div class="fg-updated" id="fgUpdated"></div>
+          </div>
+
+          <div class="widget-card">
+            <div class="widget-title">📅 주요 일정</div>
+            <div id="calList"><div class="cal-empty">로딩 중...</div></div>
+          </div>
+
+          <div class="widget-card">
+            <div class="widget-title">🔬 특별 분석 종목</div>
+            <div id="specialTickerList"><div class="loading-state" style="padding:16px 0"><div class="spinner"></div></div></div>
+          </div>
+
+          <div class="widget-card">
+            <div class="widget-title">👥 오늘 방문자</div>
+            <div class="visit-count-wrap">
+              <span class="visit-count-num" id="visitCount">--</span>
+              <span class="visit-count-label">명</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- 공유 메뉴 -->
+  <div class="share-menu" id="shareMenu">
+    <button class="share-menu-item" id="shareMenuNative" onclick="doNativeShare()">📤 공유하기</button>
+    <button class="share-menu-item" onclick="doCopyLink()">🔗 URL 복사</button>
+  </div>
+
+  <!-- 게시물 모달 -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-drag-handle"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-content" id="modalContent"></div>
+      <div class="modal-footer-close">
+        <button onclick="closeModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모바일 하단 네비 -->
+  <nav class="mobile-nav">
+    <a href="index.html" class="mobile-nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      대시보드
+    </a>
+    <a href="briefings.html" class="mobile-nav-item active">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      브리핑
+    </a>
+    <a href="board.html" class="mobile-nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      게시판
+    </a>
+  </nav>
+
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+  <script src="animations.js"></script>
+  <script src="toast.js"></script>
+</body>
+</html>

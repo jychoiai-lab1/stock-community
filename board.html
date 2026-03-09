@@ -17,15 +17,18 @@
 <body>
   <header class="header">
     <div class="header-inner">
-      <div class="logo">📈 겁쟁이리서치</div>
+      <a href="index.html" class="logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        겁쟁이리서치
+      </a>
       <nav class="nav">
-        <a href="index.html" class="nav-link">홈</a>
-        <a href="stocks.html" class="nav-link">주식 현황</a>
-        <a href="board.html" class="nav-link active">자유게시판</a>
+        <a href="index.html" class="nav-link">대시보드</a>
+        <a href="briefings.html" class="nav-link">브리핑</a>
+        <a href="board.html" class="nav-link active">게시판</a>
       </nav>
     </div>
   </header>
-  <main class="main">
+  <main class="main-content">
     <div class="container">
       <!-- 글쓰기 폼 -->
       <div class="board-form">
@@ -43,19 +46,19 @@
       </div>
     </div>
   </main>
-  <!-- 모바일 하단 네비게이션 -->
   <nav class="mobile-nav">
-    <div class="mobile-nav-items">
-      <a href="index.html" class="mobile-nav-item">
-        <span class="mobile-nav-icon">🏠</span>홈
-      </a>
-      <a href="stocks.html" class="mobile-nav-item">
-        <span class="mobile-nav-icon">📊</span>주식현황
-      </a>
-      <a href="board.html" class="mobile-nav-item active">
-        <span class="mobile-nav-icon">💬</span>게시판
-      </a>
-    </div>
+    <a href="index.html" class="mobile-nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      대시보드
+    </a>
+    <a href="briefings.html" class="mobile-nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      브리핑
+    </a>
+    <a href="board.html" class="mobile-nav-item active">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      게시판
+    </a>
   </nav>
   <script src="config.js"></script>
   <script src="auth.js"></script>
