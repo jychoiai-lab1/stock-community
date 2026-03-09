@@ -1,0 +1,36 @@
+name: 시장 데이터 자동 갱신 (30분)
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # 매 30분
+  workflow_dispatch:           # 수동 실행 버튼
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 패키지 설치
+        run: pip install yfinance supabase scrapling
+
+      - name: 주요 지수 업데이트
+        run: python -X utf8 update_ticker.py
+
+      - name: 주요 종목 업데이트
+        run: python -X utf8 update_stock_prices.py
+
+      - name: 섹터 퍼포먼스 업데이트
+        run: python -X utf8 update_sector.py
+
+      - name: 공포·탐욕 지수 업데이트
+        run: python -X utf8 update_fear_greed.py
