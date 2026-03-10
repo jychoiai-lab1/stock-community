@@ -155,26 +155,36 @@ def get_chart_div(ticker):
     return f'<div class="lw-chart" data-key="{key}"></div>'
 
 # =============================================
-# 시장 등락률
+# 시장 등락률 (HTML)
 # =============================================
-def get_market_overview():
-    lines = []
+def get_market_overview_html():
+    items = []
     for name, ticker in MARKET_TICKERS.items():
         try:
             data = yf.download(ticker, period='2d', interval='1d', progress=False, auto_adjust=True)
             if len(data) < 2:
-                lines.append(f"  {name}: 데이터 없음")
                 continue
             close = data['Close'].squeeze()
             prev = float(close.iloc[-2])
             curr = float(close.iloc[-1])
             chg = ((curr - prev) / prev) * 100
-            arrow = "▲" if chg >= 0 else "▼"
-            sign = "+" if chg >= 0 else ""
-            lines.append(f"  {name}: {curr:,.2f}  {arrow} {sign}{chg:.2f}%")
-        except Exception as e:
-            lines.append(f"  {name}: 오류({e})")
-    return "\n".join(lines)
+            is_up = chg >= 0
+            arrow = "▲" if is_up else "▼"
+            sign = "+" if is_up else ""
+            color = "#f87171" if is_up else "#60a5fa"
+            items.append(
+                f'<div style="display:flex;justify-content:space-between;align-items:center;'
+                f'padding:9px 0;border-bottom:1px solid #1e2030;">'
+                f'<span style="color:#94a3b8;font-size:13px;">{name}</span>'
+                f'<div>'
+                f'<span style="color:#e2e8f0;font-size:14px;font-weight:600;">{curr:,.2f}</span>'
+                f'<span style="color:{color};font-size:13px;margin-left:10px;">{arrow} {sign}{chg:.2f}%</span>'
+                f'</div>'
+                f'</div>'
+            )
+        except Exception:
+            pass
+    return '<div style="padding:4px 0;">' + ''.join(items) + '</div>'
 
 # =============================================
 # 기술적 분석 (HTML 반환)
@@ -246,14 +256,31 @@ def analyze_ticker_html(name, ticker):
         else:
             vol_html = '<span class="neutral">N/A</span>'
 
-        # 종합 의견
-        bullish = sum([chg > 0, rsi_val < 60, macd_val > sig_val])
-        if bullish >= 2:
-            opinion = "단기 강세 흐름. 추세 유지 여부 확인 필요."
-            op_class = "up"
-        else:
-            opinion = "단기 약세 흐름. 지지선 확인 후 진입 고려."
+        # 종합 의견 — EMA50/200 기준 추세 맥락 반영
+        e50_val  = float(emas[50].iloc[-1])  if 50  in emas else None
+        e200_val = float(emas[200].iloc[-1]) if 200 in emas else None
+        above_e50  = e50_val  is not None and curr_close > e50_val
+        above_e200 = e200_val is not None and curr_close > e200_val
+        macd_up = macd_val > sig_val
+
+        if chg > 0 and not above_e50:
+            opinion = "하락추세 속 단기 반등. 추세 전환 확인 전 신뢰도 낮음."
             op_class = "down"
+        elif chg > 0 and above_e50 and not above_e200:
+            opinion = "중기 반등 중이나 장기 하락추세 유지. 저항 확인 필요."
+            op_class = "neutral"
+        elif above_e200 and above_e50 and macd_up:
+            opinion = "단기·중기 상승추세 유지. 모멘텀 지속 여부 주시."
+            op_class = "up"
+        elif above_e200 and not macd_up:
+            opinion = "장기 추세 양호하나 단기 모멘텀 약화. 지지선 확인 필요."
+            op_class = "neutral"
+        elif not above_e50 and not macd_up:
+            opinion = "단기·중기 하락 압력 지속. 반등 시 저항 가능성 유의."
+            op_class = "down"
+        else:
+            opinion = "혼조 국면. 방향성 확인 후 대응 권장."
+            op_class = "neutral"
 
         return f'''
 <div class="an-price">
@@ -424,25 +451,25 @@ def analyze_special_html(name, ticker):
         except Exception:
             rs_html = '<span class="neutral">N/A</span>'
 
-        # ── 중기 모멘텀 점수 ──
-        score = 0
-        if ret_21  is not None and ret_21  > 0: score += 1
-        if ret_63  is not None and ret_63  > 0: score += 1
-        if ret_126 is not None and ret_126 > 0: score += 1
-        if len(above) >= len(ema_vals) * 0.75:  score += 2
-        if rsi_w >= 50:                          score += 1
-        if pos52 >= 60:                          score += 1
+        # ── 중기 모멘텀 판단 — 조건 기반 ──
+        e50_v  = ema_vals.get(50)
+        e200_v = ema_vals.get(200)
+        above_e50  = e50_v  is not None and curr > e50_v
+        above_e200 = e200_v is not None and curr > e200_v
+        ret_pos = sum(1 for r in [ret_21, ret_63, ret_126] if r is not None and r > 0)
 
-        if score >= 6:
-            opinion, op_class = '중기 강한 상승 모멘텀. 추세 추종 유효.', 'up'
-        elif score >= 4:
-            opinion, op_class = '중기 상승 흐름 유지 중. 눌림 시 매수 고려.', 'up'
-        elif score >= 3:
-            opinion, op_class = '중기 모멘텀 혼조. 방향 확인 후 대응 권장.', 'neutral'
-        elif score >= 1:
-            opinion, op_class = '중기 약세 흐름. 회복 신호 대기 필요.', 'down'
+        if above_e200 and above_e50 and ret_pos >= 2 and rsi_w >= 50:
+            opinion, op_class = '중기 상승추세 유지 중. 추세 추종 유효.', 'up'
+        elif above_e200 and above_e50 and ret_pos >= 1:
+            opinion, op_class = '중기 추세 양호이나 모멘텀 다소 약화. 눌림 구간 주시.', 'up'
+        elif above_e200 and not above_e50:
+            opinion, op_class = '장기 추세는 유지되나 중기 조정 진행 중. 지지선 확인 필요.', 'neutral'
+        elif not above_e200 and above_e50 and ret_pos >= 2:
+            opinion, op_class = '장기 하락추세 속 중기 반등. 장기 추세 전환 확인 전 경계.', 'neutral'
+        elif not above_e200 and not above_e50:
+            opinion, op_class = '중기·장기 하락 압력 지속. 반등 시 저항 가능성 높음.', 'down'
         else:
-            opinion, op_class = '중기 하락 압력 지속. 포지션 축소 고려.', 'down'
+            opinion, op_class = '방향성 불명확. 추세 확인 후 대응 권장.', 'neutral'
 
         return f'''
 <div class="an-price">
@@ -596,7 +623,7 @@ def main():
     update_stock_prices(client)
 
     print("  시장 데이터 수집 중...")
-    market = get_market_overview()
+    market_html = get_market_overview_html()
 
     print("  차트 데이터 저장 중...")
     for name, ticker in MARKET_TICKERS.items():
@@ -648,7 +675,7 @@ def main():
     content = (
         '<div class="briefing">'
         '<h3>🌍 주요 시장 현황</h3>'
-        f'<pre>{market}</pre>'
+        f'{market_html}'
         '<h3>📈 지수별 차트 & 분석</h3>'
         f'{market_sections}'
         + (f'<h3>🔬 특별 종목 분석</h3>{special_sections}' if special_sections else '')
