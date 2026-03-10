@@ -28,7 +28,3 @@ jobs:
       - name: 경제 캘린더 업데이트
         run: python -X utf8 update_calendar.py
 
-      - name: AI 브리핑 생성
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python -X utf8 auto_briefing.py

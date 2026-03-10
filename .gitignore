@@ -2,3 +2,5 @@ reports/
 screenshot/
 *.pyc
 __pycache__/
+.vercel
+.env*.local

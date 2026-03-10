@@ -1,6 +1,6 @@
 import json
+import requests
 from datetime import datetime
-from scrapling.fetchers import Fetcher
 from supabase import create_client
 
 SUPABASE_URL = 'https://miyrssfrjvhwswjylahw.supabase.co'
@@ -30,12 +30,12 @@ def fetch_and_save(client):
 
     for url in FF_URLS:
         try:
-            page = Fetcher.get(url, stealthy_headers=True)
-            if page.status != 200:
-                print(f"  HTTP {page.status} ({url.split('/')[-1]})")
+            resp = requests.get(url, timeout=15, headers={'User-Agent': 'Mozilla/5.0'})
+            if resp.status_code != 200:
+                print(f"  HTTP {resp.status_code} ({url.split('/')[-1]})")
                 continue
 
-            events = json.loads(page.body)
+            events = resp.json()
             print(f"  {url.split('/')[-1]}: {len(events)} events")
 
             for ev in events:

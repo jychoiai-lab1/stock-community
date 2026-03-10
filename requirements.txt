@@ -4,4 +4,3 @@ scrapling
 openai
 python-docx
 requests
-anthropic

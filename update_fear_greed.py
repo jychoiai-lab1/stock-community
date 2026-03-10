@@ -1,6 +1,5 @@
-import json
+import requests
 from datetime import datetime
-from scrapling.fetchers import Fetcher
 from supabase import create_client
 
 SUPABASE_URL = 'https://miyrssfrjvhwswjylahw.supabase.co'
@@ -9,8 +8,9 @@ SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 CNN_URL = 'https://production.dataviz.cnn.io/index/fearandgreed/graphdata'
 
 def update_fear_greed(client):
-    page = Fetcher.get(CNN_URL, stealthy_headers=True)
-    data = json.loads(page.body)
+    resp = requests.get(CNN_URL, timeout=15, headers={'User-Agent': 'Mozilla/5.0'})
+    resp.raise_for_status()
+    data = resp.json()
     fg = data['fear_and_greed']
 
     score = int(round(float(fg['score'])))
