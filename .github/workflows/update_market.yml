@@ -1,4 +1,4 @@
-name: 시장 데이터 자동 갱신 (30분)
+name: 섹터 & 공탐 갱신 (30분)
 
 on:
   schedule:
@@ -21,12 +21,6 @@ jobs:
 
       - name: 패키지 설치
         run: pip install -r requirements.txt
-
-      - name: 주요 지수 업데이트
-        run: python -X utf8 update_ticker.py
-
-      - name: 주요 종목 업데이트
-        run: python -X utf8 update_stock_prices.py
 
       - name: 섹터 퍼포먼스 업데이트
         run: python -X utf8 update_sector.py
