@@ -37,7 +37,7 @@
 
 function checkAuth() {
   var input = document.getElementById('authInput').value;
-  if (input === '1130') {
+  if (input === '1018') {
     sessionStorage.setItem('auth', 'ok');
     document.getElementById('authOverlay').remove();
   } else {
