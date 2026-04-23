@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>양자컴퓨터 섹터 입문 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #0a0b0f;
+  --bg-card: #12131a;
+  --bg-card-hover: #181924;
+  --bg-surface: #1a1b24;
+  --bg-accent: rgba(99,179,237,0.06);
+  --text-primary: #e8e6e1;
+  --text-secondary: #8a8b95;
+  --text-tertiary: #55566a;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --blue: #63b3ed;
+  --blue-dim: rgba(99,179,237,0.15);
+  --green: #68d391;
+  --green-dim: rgba(104,211,145,0.12);
+  --amber: #f6ad55;
+  --amber-dim: rgba(246,173,85,0.12);
+  --red: #fc8181;
+  --red-dim: rgba(252,129,129,0.12);
+  --purple: #b794f4;
+  --purple-dim: rgba(183,148,244,0.12);
+  --teal: #4fd1c5;
+  --teal-dim: rgba(79,209,197,0.12);
+  --radius: 10px;
+  --radius-lg: 16px;
+  --font-body: 'Noto Sans KR', -apple-system, sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+::selection { background: var(--blue-dim); color: var(--blue); }
+
+/* ─── HEADER ─── */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,11,15,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.logo {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--blue);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.logo span { color: var(--text-tertiary); }
+
+/* ─── NAV TABS ─── */
+.nav-strip {
+  position: fixed;
+  top: 56px; left: 0; right: 0;
+  z-index: 99;
+  background: rgba(10,11,15,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.nav-strip::-webkit-scrollbar { display: none; }
+
+.nav-tabs {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 2px;
+  min-width: max-content;
+}
+
+.nav-tab {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.25s;
+  letter-spacing: 0.3px;
+}
+
+.nav-tab:hover { color: var(--text-secondary); }
+
+.nav-tab.active {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 16px; right: 16px;
+  height: 2px;
+  background: var(--blue);
+  border-radius: 2px 2px 0 0;
+}
+
+/* ─── MAIN CONTENT ─── */
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 130px 24px 80px;
+}
+
+/* ─── SECTIONS ─── */
+.section {
+  display: none;
+  animation: sectionIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section.active { display: block; }
+
+@keyframes sectionIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── SECTION HEADER ─── */
+.sec-header {
+  margin-bottom: 40px;
+}
+
+.sec-number {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--blue);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.sec-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+}
+
+.sec-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-top: 12px;
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 16px;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-accent-left {
+  border-left: 3px solid;
+  border-radius: var(--radius-lg);
+}
+
+/* ─── ANALOGY BOX ─── */
+.analogy {
+  background: var(--bg-accent);
+  border: 1px solid rgba(99,179,237,0.1);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.analogy-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--blue);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.analogy-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+.analogy-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-top: 10px;
+}
+
+/* ─── TAGS ─── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+.tag-blue { background: var(--blue-dim); color: var(--blue); }
+.tag-green { background: var(--green-dim); color: var(--green); }
+.tag-amber { background: var(--amber-dim); color: var(--amber); }
+.tag-red { background: var(--red-dim); color: var(--red); }
+.tag-purple { background: var(--purple-dim); color: var(--purple); }
+.tag-teal { background: var(--teal-dim); color: var(--teal); }
+
+/* ─── METRICS ─── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.metric {
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -1px;
+}
+
+.metric-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ─── PRINCIPLE ITEMS ─── */
+.principle {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+.principle-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.principle-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.principle-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ─── PROGRESS BARS ─── */
+.prog-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.prog-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  min-width: 80px;
+}
+
+.prog-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.prog-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.prog-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  min-width: 48px;
+  text-align: right;
+}
+
+/* ─── TIMELINE ─── */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 20px 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: var(--border-hover);
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.tl-item:last-child { margin-bottom: 0; }
+
+.tl-dot {
+  position: absolute;
+  left: -27px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid;
+}
+
+.tl-year {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.tl-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.tl-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ─── LOSS METER ─── */
+.loss-block {
+  margin: 14px 0;
+}
+
+.loss-label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loss-bar-track {
+  height: 24px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loss-bar-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--bg-deep);
+  min-width: fit-content;
+}
+
+/* ─── COMPARE TABLE ─── */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.compare-table th {
+  text-align: center;
+  font-weight: 500;
+  padding: 12px 10px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-hover);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.compare-table th:first-child { text-align: left; }
+
+.compare-table td {
+  padding: 12px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.compare-table td:first-child {
+  text-align: left;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.compare-table tr:last-child td { border-bottom: none; }
+
+/* ─── GRID LAYOUTS ─── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .sec-title { font-size: 26px; }
+  .main { padding: 120px 16px 60px; }
+  .card { padding: 20px; }
+}
+
+/* ─── NOTE BOX ─── */
+.note {
+  background: var(--amber-dim);
+  border: 1px solid rgba(246,173,85,0.15);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--amber);
+  margin: 20px 0;
+}
+
+/* ─── CHECKLIST ─── */
+.check-item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.check-item:last-child { border-bottom: none; }
+
+.check-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+
+.check-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.check-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ─── STATUS DOTS ─── */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.btn {
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-hover);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.btn:hover { background: var(--bg-surface); border-color: var(--text-tertiary); }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--blue-dim);
+  color: var(--blue);
+  border-color: rgba(99,179,237,0.2);
+}
+
+.btn-primary:hover {
+  background: rgba(99,179,237,0.2);
+}
+
+/* ─── VS BOX ─── */
+.vs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.vs-side {
+  padding: 24px;
+  text-align: center;
+}
+
+.vs-side:first-child { border-right: 1px solid var(--border); }
+
+.vs-icon { font-size: 36px; margin-bottom: 12px; }
+
+.vs-label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.vs-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  border-top: 1px solid var(--border);
+}
+
+/* ─── APPROACH CARDS ─── */
+.approach-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 12px;
+  transition: border-color 0.3s;
+}
+
+.approach-card:hover { border-color: var(--border-hover); }
+
+.approach-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.approach-title {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.approach-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.approach-meta {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.glow-line {
+  width: 48px;
+  height: 2px;
+  border-radius: 1px;
+  margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">Quantum<span> / 입문 가이드</span></div>
+    <span style="font-size:12px;color:var(--text-tertiary)">Based on Xanadu ($XNDU) Analysis</span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav-strip">
+  <div class="nav-tabs" id="navTabs"></div>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="main"></main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  이 가이드는 공개된 Nature 논문 및 SEC 공시 자료를 기반으로 작성된 교육용 문서입니다. 투자 권유가 아닙니다.
+</footer>
+
+<script>
+const sections = [
+  {
+    tab: "양자컴퓨터란?",
+    num: "01",
+    title: "양자컴퓨터란 무엇인가",
+    subtitle: "0과 1을 동시에 가지는 컴퓨터. 비트 대신 큐빗을 씁니다.",
+    color: "--blue",
+    content: `
+      <div class="analogy">
+        <div class="analogy-label">핵심 개념</div>
+        <div class="analogy-text">일반 컴퓨터는 <strong>스위치</strong>로 작동합니다. 켜짐(1) 아니면 꺼짐(0). 이걸 <strong>비트(bit)</strong>라고 해요.</div>
+        <div class="analogy-sub">양자컴퓨터는 <strong>큐빗(qubit)</strong>을 씁니다. 0과 1을 <em>동시에</em> 가질 수 있어요. 동전을 손바닥 위에 놓으면 앞면 또는 뒷면이지만, 공중에서 회전 중일 땐 앞면이면서 뒷면인 상태 — 그게 큐빗입니다.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">비유로 이해하기: 미로 찾기</div>
+        <div class="vs-grid">
+          <div class="vs-side">
+            <div class="vs-icon">🚶</div>
+            <div class="vs-label" style="color:var(--blue)">일반 컴퓨터</div>
+            <div class="vs-desc">한 사람이 미로를 한 길씩 순서대로 시도합니다. 길이 100개면 최악의 경우 100번 시도.</div>
+          </div>
+          <div class="vs-side">
+            <div class="vs-icon">👥</div>
+            <div class="vs-label" style="color:var(--green)">양자컴퓨터</div>
+            <div class="vs-desc">분신술처럼 모든 길을 <em>동시에</em> 탐색합니다. 100개 길을 한 번에. 이걸 <strong>중첩</strong>이라 해요.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">양자컴퓨터의 3가지 핵심 원리</div>
+        <div class="principle">
+          <div class="principle-num" style="background:var(--blue-dim);color:var(--blue)">1</div>
+          <div>
+            <div class="principle-title">중첩 (Superposition)</div>
+            <div class="principle-desc">0과 1을 동시에 가지는 상태. 큐빗 N개면 2의 N제곱 가지 상태를 동시에 표현할 수 있습니다. 큐빗 300개면 우주의 원자 수보다 많은 상태를 한 번에 다룹니다.</div>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-num" style="background:var(--green-dim);color:var(--green)">2</div>
+          <div>
+            <div class="principle-title">얽힘 (Entanglement)</div>
+            <div class="principle-desc">두 큐빗이 연결되면, 하나를 측정하면 다른 하나의 상태도 즉시 결정됩니다. 거리와 무관해요. 아인슈타인이 "유령 같은 원격 작용"이라고 불렀던 현상입니다.</div>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-num" style="background:var(--amber-dim);color:var(--amber)">3</div>
+          <div>
+            <div class="principle-title">간섭 (Interference)</div>
+            <div class="principle-desc">정답 확률은 높이고, 오답 확률은 낮추는 기술. 파도의 보강/상쇄 간섭과 같은 원리입니다. 양자 알고리즘은 결국 이 간섭을 정교하게 조율하는 작업이에요.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy">
+        <div class="analogy-label">왜 모든 문제에 빠른 건 아닌가?</div>
+        <div class="analogy-text">양자컴퓨터는 "모든 걸 빠르게 하는 마법 기계"가 아닙니다.</div>
+        <div class="analogy-sub">엑셀 정리, 웹 서핑 같은 일상 작업은 일반 컴퓨터가 더 빠릅니다. 양자컴퓨터는 <strong>특정 유형</strong>의 문제 — 분자 시뮬레이션, 암호 해독, 최적화 문제 — 에서만 압도적으로 빠릅니다. 열쇠가 맞는 자물쇠에만 쓸 수 있는 거예요.</div>
+      </div>
+    `
+  },
+  {
+    tab: "왜 어려운가",
+    num: "02",
+    title: "왜 이렇게 어려운가",
+    subtitle: "큐빗은 비누방울처럼 연약합니다. 아무 자극에도 무너져요.",
+    color: "--red",
+    content: `
+      <div class="analogy">
+        <div class="analogy-label">비유</div>
+        <div class="analogy-text">비누방울을 떠올려 보세요. 아름답지만 바람만 불어도, 손가락만 닿아도 터집니다. 큐빗이 딱 그래요.</div>
+        <div class="analogy-sub">온도, 진동, 전자기파, 심지어 우주 방사선까지 — 아무 외부 자극이 큐빗의 양자 상태를 무너뜨립니다. 이걸 <strong>디코히어런스(decoherence)</strong>라 합니다.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">양자컴퓨터의 4대 난관</div>
+
+        <div class="principle">
+          <div class="principle-num" style="background:var(--red-dim);color:var(--red)">1</div>
+          <div>
+            <div class="principle-title">오류율이 매우 높다</div>
+            <div class="principle-desc">일반 CPU의 에러율은 10⁻¹⁵. 현재 큐빗은 10⁻³. 무려 <strong>1조 배</strong> 차이입니다.</div>
+            <div style="margin-top:12px">
+              <div class="prog-row">
+                <span class="prog-label">일반 CPU</span>
+                <div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div>
+                <span class="prog-val" style="color:var(--green)">99.99%</span>
+              </div>
+              <div class="prog-row">
+                <span class="prog-label">현재 큐빗</span>
+                <div class="prog-track"><div class="prog-fill" style="width:85%;background:var(--red)"></div></div>
+                <span class="prog-val" style="color:var(--red)">99.9%</span>
+              </div>
+              <div class="prog-row">
+                <span class="prog-label">FT 목표</span>
+                <div class="prog-track"><div class="prog-fill" style="width:98%;background:var(--blue)"></div></div>
+                <span class="prog-val" style="color:var(--blue)">99.99%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="principle">
+          <div class="principle-num" style="background:var(--amber-dim);color:var(--amber)">2</div>
+          <div>
+            <div class="principle-title">극한 환경이 필요하다</div>
+            <div class="principle-desc">초전도 방식은 <strong>-273.14°C</strong>(절대영도 근처)가 필요합니다. 우주 공간(-270°C)보다 차가워야 해요. 냉각기 한 대가 수십억 원입니다.</div>
+          </div>
+        </div>
+
+        <div class="principle">
+          <div class="principle-num" style="background:var(--blue-dim);color:var(--blue)">3</div>
+          <div>
+            <div class="principle-title">스케일링이 안 된다</div>
+            <div class="principle-desc">큐빗 수를 2배 늘리면 제어 복잡도는 4배. 현재 최대 ~1,000 큐빗인데, 실용적 문제를 풀려면 <strong>수백만</strong> 큐빗이 필요합니다.</div>
+          </div>
+        </div>
+
+        <div class="principle">
+          <div class="principle-num" style="background:var(--purple-dim);color:var(--purple)">4</div>
+          <div>
+            <div class="principle-title">결함허용(Fault Tolerance)을 아직 달성하지 못했다</div>
+            <div class="principle-desc">에러를 실시간으로 잡아내고 복구하는 능력. 비행기가 엔진 하나 고장나도 비행을 계속하는 것처럼. <strong>모든 양자 기업의 궁극적 목표</strong>입니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>NISQ 시대</strong> — 현재 양자컴퓨터는 Noisy Intermediate-Scale Quantum(시끄럽고 중간 규모) 단계에 있습니다. 실용적 문제를 풀려면 이 NISQ를 넘어 결함허용(FT) 단계에 도달해야 합니다. 모든 상장 양자 기업이 이 단계를 향해 경주 중이에요.
+      </div>
+    `
+  },
+  {
+    tab: "만드는 방식",
+    num: "03",
+    title: "양자컴퓨터를 만드는 4가지 방식",
+    subtitle: "큐빗을 만드는 재료가 다릅니다. 자동차 엔진이 가솔린, 디젤, 전기로 나뉘듯.",
+    color: "--teal",
+    content: `
+      <div class="approach-card" style="border-left:3px solid var(--blue)">
+        <div class="approach-header">
+          <div class="approach-title">1. 초전도 (Superconducting)</div>
+          <span class="tag tag-blue">가장 앞서 있음</span>
+        </div>
+        <div class="approach-desc">전류가 저항 없이 흐르는 초전도 회로로 큐빗을 만듭니다. 반도체 공정과 유사해서 스케일링에 유리하지만, 극저온(-273°C)이 필요합니다.</div>
+        <div class="approach-meta">대표: <strong style="color:var(--text-primary)">Google, IBM, Rigetti (RGTI)</strong></div>
+        <div style="margin-top:10px">
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">게이트 속도</span>
+            <div class="prog-track"><div class="prog-fill" style="width:92%;background:var(--blue)"></div></div>
+            <span class="prog-val">최고</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">정밀도</span>
+            <div class="prog-track"><div class="prog-fill" style="width:70%;background:var(--blue)"></div></div>
+            <span class="prog-val">높음</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">확장성</span>
+            <div class="prog-track"><div class="prog-fill" style="width:75%;background:var(--blue)"></div></div>
+            <span class="prog-val">양호</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="approach-card" style="border-left:3px solid var(--green)">
+        <div class="approach-header">
+          <div class="approach-title">2. 이온 트랩 (Trapped Ion)</div>
+          <span class="tag tag-green">정밀도 최고</span>
+        </div>
+        <div class="approach-desc">개별 원자를 전자기장으로 공중에 가두고 레이저로 제어합니다. 게이트 정밀도가 가장 높지만 속도가 느리고 스케일링 난이도가 높습니다.</div>
+        <div class="approach-meta">대표: <strong style="color:var(--text-primary)">IonQ (IONQ), Quantinuum</strong> (Honeywell 자회사)</div>
+        <div style="margin-top:10px">
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">게이트 속도</span>
+            <div class="prog-track"><div class="prog-fill" style="width:35%;background:var(--green)"></div></div>
+            <span class="prog-val">느림</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">정밀도</span>
+            <div class="prog-track"><div class="prog-fill" style="width:95%;background:var(--green)"></div></div>
+            <span class="prog-val">최고</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">확장성</span>
+            <div class="prog-track"><div class="prog-fill" style="width:45%;background:var(--green)"></div></div>
+            <span class="prog-val">어려움</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="approach-card" style="border-left:3px solid var(--amber)">
+        <div class="approach-header">
+          <div class="approach-title">3. 광자 (Photonic)</div>
+          <span class="tag tag-amber">상온 가능, loss가 과제</span>
+        </div>
+        <div class="approach-desc">빛 알갱이(광자)로 큐빗을 만듭니다. 상온 작동 가능하고 광통신 인프라와 호환되지만, 빛이 새는 문제(optical loss)가 최대 난관입니다.</div>
+        <div class="approach-meta">대표: <strong style="color:var(--text-primary)">Xanadu (XNDU), PsiQuantum</strong> (비상장)</div>
+        <div style="margin-top:10px">
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">게이트 속도</span>
+            <div class="prog-track"><div class="prog-fill" style="width:78%;background:var(--amber)"></div></div>
+            <span class="prog-val">빠름</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">정밀도</span>
+            <div class="prog-track"><div class="prog-fill" style="width:40%;background:var(--amber)"></div></div>
+            <span class="prog-val">개선 중</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label" style="font-size:12px">확장성</span>
+            <div class="prog-track"><div class="prog-fill" style="width:85%;background:var(--amber)"></div></div>
+            <span class="prog-val">높음</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="approach-card" style="border-left:3px solid var(--purple)">
+        <div class="approach-header">
+          <div class="approach-title">4. 양자 어닐링 (Quantum Annealing)</div>
+          <span class="tag tag-purple">특수 용도</span>
+        </div>
+        <div class="approach-desc">범용이 아닌 <strong>최적화 문제 전용</strong>. 물류, 스케줄링 등에 적합하지만, 진정한 양자컴퓨터인지 학계에서 논쟁이 있습니다.</div>
+        <div class="approach-meta">대표: <strong style="color:var(--text-primary)">D-Wave (QBTS)</strong></div>
+      </div>
+
+      <div class="analogy">
+        <div class="analogy-label">비유: 자동차 경주</div>
+        <div class="analogy-text" style="font-size:14px">
+          <strong style="color:var(--blue)">초전도</strong> = F1 (가장 빠르지만 극한 조건 필요)<br>
+          <strong style="color:var(--green)">이온트랩</strong> = 정밀 레이싱카 (정확하지만 느림)<br>
+          <strong style="color:var(--amber)">광자</strong> = 전기차 (잠재력 크지만 충전 인프라 부족)<br>
+          <strong style="color:var(--purple)">어닐링</strong> = 랠리카 (특정 코스에서만 강함)
+        </div>
+      </div>
+    `
+  },
+  {
+    tab: "기업 비교",
+    num: "04",
+    title: "주요 상장 기업 비교",
+    subtitle: "나스닥에 상장된 양자컴퓨터 기업 4곳. 전부 SPAC으로 상장했고, 전부 아직 결함허용을 달성하지 못했습니다.",
+    color: "--purple",
+    content: `
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">상장 양자 기업</div>
+          <div class="metric-value" style="color:var(--purple)">4개</div>
+          <div class="metric-sub">IONQ, RGTI, QBTS, XNDU</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">공통점</div>
+          <div class="metric-value" style="font-size:18px">전부 SPAC</div>
+          <div class="metric-sub">기술 로드맵 기반 평가</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">FT 달성</div>
+          <div class="metric-value" style="color:var(--red)">0개</div>
+          <div class="metric-sub">결함허용 달성 기업 없음</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">기업별 비교표</div>
+        <div style="overflow-x:auto">
+          <table class="compare-table">
+            <thead>
+              <tr><th></th><th>IONQ</th><th>RGTI</th><th>XNDU</th><th>QBTS</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>방식</td>
+                <td><span class="tag tag-green" style="font-size:10px">이온트랩</span></td>
+                <td><span class="tag tag-blue" style="font-size:10px">초전도</span></td>
+                <td><span class="tag tag-amber" style="font-size:10px">광자</span></td>
+                <td><span class="tag tag-purple" style="font-size:10px">어닐링</span></td>
+              </tr>
+              <tr><td>상장년도</td><td>2021</td><td>2022</td><td>2026</td><td>2022</td></tr>
+              <tr><td>강점</td><td>게이트 정밀도</td><td>빠른 게이트</td><td>상온 + 스케일링</td><td>실제 고객 보유</td></tr>
+              <tr><td>약점</td><td>속도 느림</td><td>극저온 필요</td><td>loss 큼</td><td>범용 아님</td></tr>
+              <tr><td>Nature 본지</td><td>일부</td><td>일부</td><td style="color:var(--amber);font-weight:500">3편</td><td>—</td></tr>
+              <tr><td>FT 달성</td>
+                <td style="color:var(--red)">미달</td>
+                <td style="color:var(--red)">미달</td>
+                <td style="color:var(--red)">미달</td>
+                <td style="color:var(--text-tertiary)">해당없음</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">SPAC 상장이란?</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.8">
+          SPAC(기업인수목적회사)은 빈 껍데기 회사가 먼저 상장한 뒤, 실제 기업과 합병하는 우회 상장 방식입니다. 양자 기업처럼 매출이 없는 초기 기업이 자주 사용합니다.
+          <br><br>
+          <strong style="color:var(--text-primary)">주의점:</strong> SPAC 상장 후 주가가 크게 흔들리는 경우가 많습니다. D-Wave는 신탁 투자자의 97%가 상환을 요청해서 $900만만 남았던 사례도 있어요.
+        </div>
+      </div>
+
+      <div class="note">
+        핵심: 이 기업들은 전부 프리레버뉴 또는 극초기 매출 단계입니다. 주가는 "미래 기술이 성공할 것인가"에 대한 기대로 움직입니다.
+      </div>
+    `
+  },
+  {
+    tab: "Xanadu 분석",
+    num: "05",
+    title: "Xanadu ($XNDU) 깊이 보기",
+    subtitle: "광자 양자컴퓨터 세계 최초 상장 기업. Nature 3편의 여정과 남은 과제.",
+    color: "--amber",
+    content: `
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">현재 주가</div>
+          <div class="metric-value" style="color:var(--text-primary)">$8.96</div>
+          <div class="metric-sub" style="color:var(--red)">상장가 $10 대비 -10.4%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">기업가치 (EV)</div>
+          <div class="metric-value" style="color:var(--text-primary)">~$31억</div>
+          <div class="metric-sub">Pro forma 기준</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">연 매출 (2025)</div>
+          <div class="metric-value" style="color:var(--amber)">$460만</div>
+          <div class="metric-sub">SW/클라우드, HW 매출 0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Nature 논문 3편의 여정</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:var(--blue);background:var(--blue-dim)"></div>
+            <div class="tl-year">2022</div>
+            <div class="tl-title" style="color:var(--blue)">Borealis — "광자로 양자 우위가 가능한가?"</div>
+            <div class="tl-desc">실험실 장비(벌크 광학)로 양자 우위 시연. 슈퍼컴퓨터로 9,000년 걸리는 계산을 <strong>36마이크로초</strong>에 수행. 하지만 칩이 아니라 스케일업 불가능.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:var(--green);background:var(--green-dim)"></div>
+            <div class="tl-year">2025.02</div>
+            <div class="tl-title" style="color:var(--green)">Aurora — "칩으로 옮길 수 있는가?"</div>
+            <div class="tl-desc">칩 35개를 광섬유로 연결한 모듈형 시스템. 서버 랙 4개 규모. <strong>864억 모드</strong>의 양자 상태를 2시간 연속 생성. 하지만 빛 손실이 56~95%로, 목표(1%) 대비 한참 부족.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:var(--amber);background:var(--amber-dim)"></div>
+            <div class="tl-year">2025.06</div>
+            <div class="tl-title" style="color:var(--amber)">GKP 큐빗 — "결함허용 큐빗을 만들 수 있는가?"</div>
+            <div class="tl-desc">맞춤형 칩에서 결함허용 큐빗의 원형을 생성. 품질 점수 <strong>0.62 dB</strong> vs 합격선 <strong>9.75 dB</strong>. 같은 칩에서 loss만 줄이면 이론적으로 달성 가능.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--red)">핵심 문제: Optical Loss (빛 손실)</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px">
+          수도관에 물 100L를 보냈을 때 몇 L가 도착하는지로 비유하면:
+        </div>
+
+        <div class="loss-block">
+          <div class="loss-label"><span style="color:var(--blue)">Borealis (2022)</span> <span style="color:var(--text-tertiary);font-weight:400;font-size:12px">실험실</span></div>
+          <div class="loss-bar-track">
+            <div class="loss-bar-fill" style="width:33%;background:linear-gradient(90deg,var(--red),#e85d24)">33L</div>
+          </div>
+        </div>
+
+        <div class="loss-block">
+          <div class="loss-label"><span style="color:var(--green)">Aurora (2025)</span> <span style="color:var(--text-tertiary);font-weight:400;font-size:12px">칩 시스템</span></div>
+          <div class="loss-bar-track">
+            <div class="loss-bar-fill" style="width:44%;background:linear-gradient(90deg,var(--amber),#e8a030)">44L</div>
+          </div>
+        </div>
+
+        <div class="loss-block">
+          <div class="loss-label"><span style="color:var(--amber)">GKP (2025)</span> <span style="color:var(--text-tertiary);font-weight:400;font-size:12px">맞춤 칩</span></div>
+          <div class="loss-bar-track">
+            <div class="loss-bar-fill" style="width:80%;background:linear-gradient(90deg,var(--blue),#4da6e8)">80L</div>
+          </div>
+        </div>
+
+        <div class="loss-block">
+          <div class="loss-label"><span style="color:var(--green)">목표: Fault Tolerance</span></div>
+          <div class="loss-bar-track">
+            <div class="loss-bar-fill" style="width:99.5%;background:linear-gradient(90deg,var(--green),#7ce8a8)">99.5L</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:var(--text-secondary);line-height:1.7">
+          3년간 33L → 80L로 개선했지만, 99.5L까지 약 <strong style="color:var(--text-primary)">40배</strong> 추가 개선이 필요합니다. 새로운 물리학이 필요한 건 아니고, 반도체 공정 정밀도의 문제입니다.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Xanadu의 차별화 요소</div>
+        <div class="principle">
+          <div class="principle-num" style="background:var(--teal-dim);color:var(--teal);font-size:11px">SW</div>
+          <div>
+            <div class="principle-title">PennyLane</div>
+            <div class="principle-desc">양자 프로그래밍 오픈소스 라이브러리. Google, IBM, IonQ 등 <strong>모든 양자 하드웨어</strong>에서 작동. 양자계의 PyTorch를 지향합니다.</div>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-num" style="background:var(--green-dim);color:var(--green);font-size:11px">$</div>
+          <div>
+            <div class="principle-title">정부 지원</div>
+            <div class="principle-desc"><strong>CAD$3.9억</strong> (~US$2.8억) 규모의 캐나다 정부 양자 제조 인프라 지원 협상 중 (Project OPTIMISM).</div>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-num" style="background:var(--amber-dim);color:var(--amber);font-size:11px">CEO</div>
+          <div>
+            <div class="principle-title">창업자 지배력</div>
+            <div class="principle-desc">CEO Weedbrook가 의결권 기준 <strong>51.8%</strong> 보유. 180일 lock-up (~2026년 9월) 후 매도 가능.</div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    tab: "투자 체크리스트",
+    num: "06",
+    title: "양자 섹터 투자 체크리스트",
+    subtitle: "양자 섹터는 실적이 아니라 기술 마일스톤으로 움직입니다.",
+    color: "--green",
+    content: `
+      <div class="analogy">
+        <div class="analogy-label">핵심 원칙</div>
+        <div class="analogy-text">"매출이 얼마냐"가 아니라 <strong>"어떤 기술 단계를 넘었느냐"</strong>가 주가를 결정합니다.</div>
+        <div class="analogy-sub">반도체 초기(1960년대)와 비슷합니다. 당시에도 매출보다 기술 마일스톤이 기업 가치를 좌우했어요. 양자 섹터는 지금 그 단계에 있습니다.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">확인해야 할 5가지</div>
+
+        <div class="check-item">
+          <div class="check-num">01</div>
+          <div class="check-title">Fault Tolerance 달성 시점</div>
+          <div class="check-desc">결함허용이 되어야 실용적 문제를 풀 수 있습니다. 각 기업의 FT 로드맵과 중간 마일스톤 달성 여부를 추적하세요. 현재는 <strong>어느 기업도 달성하지 못했습니다</strong>.</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-num">02</div>
+          <div class="check-title">캐시 런웨이 (Cash Runway)</div>
+          <div class="check-desc">기술 완성에 수년이 걸리는데 돈이 먼저 떨어지면 끝입니다. "현재 현금 ÷ 분기 소진율 = 몇 분기 버틸 수 있나"를 계산하세요. 정부 보조금과 추가 자금 조달 계획도 확인.</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-num">03</div>
+          <div class="check-title">Nature/Science급 논문 게재</div>
+          <div class="check-desc">양자컴퓨터는 아직 과학적 증명이 필요한 단계. 최고 학술지에 하드웨어 실증 논문을 내는 것은 기술력의 가장 객관적인 지표입니다. Google QAI와 Xanadu가 이 면에서 가장 강합니다.</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-num">04</div>
+          <div class="check-title">파트너십과 고객</div>
+          <div class="check-desc">AWS, Google Cloud 등 클라우드 업체와의 협력, PoC(개념검증) 고객 확보 여부. 기술이 좋아도 생태계가 없으면 상용화가 어렵습니다.</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-num">05</div>
+          <div class="check-title">SPAC Lock-up 해제 일정</div>
+          <div class="check-desc">SPAC 상장 기업은 lock-up 기간(보통 180일) 후 대주주 매도가 가능합니다. 해제 시점에 주가 변동이 클 수 있어요.</div>
+        </div>
+      </div>
+
+      <div class="card" style="border:1px solid rgba(99,179,237,0.2)">
+        <div class="card-title" style="color:var(--blue)">Xanadu에 적용하면?</div>
+        <div class="status-row"><div class="dot" style="background:var(--red)"></div> <span><strong>FT:</strong> 미달성. loss 40배 개선 필요</span></div>
+        <div class="status-row"><div class="dot" style="background:var(--amber)"></div> <span><strong>캐시:</strong> SPAC ~$3억 조달 + CAD$3.9억 정부 지원 협상 중</span></div>
+        <div class="status-row"><div class="dot" style="background:var(--green)"></div> <span><strong>논문:</strong> Nature 본지 3편 (업계 최상위 수준)</span></div>
+        <div class="status-row"><div class="dot" style="background:var(--green)"></div> <span><strong>파트너:</strong> AWS, Google, GlobalFoundries, imec 등</span></div>
+        <div class="status-row"><div class="dot" style="background:var(--amber)"></div> <span><strong>Lock-up:</strong> ~2026년 9월 해제 (CEO 51.8% 의결권)</span></div>
+      </div>
+
+      <div class="note">
+        <strong>경고:</strong> 양자 섹터 전체에 적용됩니다. 이 분야의 모든 기업은 아직 "기술이 실제로 될 것인가"라는 근본적 불확실성 위에 있습니다. 분산 투자와 포지션 사이징에 주의하세요. 2019년 Nature 기사에서 Xanadu CEO가 말했던 "too much hype"는 여전히 유효한 경고일 수 있습니다.
+      </div>
+
+      <div class="card" style="text-align:center;padding:32px">
+        <div style="font-size:14px;color:var(--text-secondary);margin-bottom:16px">이 가이드는 <strong>상편</strong>입니다.<br>하편에서는 10개 부품별 정량 분석과 PsiQuantum 비교가 다뤄집니다.</div>
+        <div style="font-family:var(--font-mono);font-size:20px;color:var(--text-tertiary);letter-spacing:4px">TO BE CONTINUED</div>
+      </div>
+    `
+  }
+];
+
+// Render
+const navEl = document.getElementById('navTabs');
+const mainEl = document.getElementById('main');
+
+sections.forEach((s, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'nav-tab' + (i === 0 ? ' active' : '');
+  btn.textContent = s.tab;
+  btn.onclick = () => showSection(i);
+  navEl.appendChild(btn);
+
+  const div = document.createElement('div');
+  div.className = 'section' + (i === 0 ? ' active' : '');
+  div.innerHTML = `
+    <div class="sec-header">
+      <div class="sec-number">${s.num}</div>
+      <div class="glow-line" style="background:var(${s.color})"></div>
+      <h2 class="sec-title">${s.title}</h2>
+      <p class="sec-subtitle">${s.subtitle}</p>
+    </div>
+    ${s.content}
+    <div class="bottom-nav">
+      <button class="btn" onclick="showSection(${i > 0 ? i - 1 : sections.length - 1})" ${i === 0 ? 'style="visibility:hidden"' : ''}>&larr; 이전</button>
+      <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-tertiary)">${i + 1} / ${sections.length}</span>
+      <button class="btn btn-primary" onclick="showSection(${i < sections.length - 1 ? i + 1 : 0})">${i < sections.length - 1 ? '다음 &rarr;' : '처음으로'}</button>
+    </div>
+  `;
+  mainEl.appendChild(div);
+});
+
+function showSection(idx) {
+  document.querySelectorAll('.nav-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i === idx));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
