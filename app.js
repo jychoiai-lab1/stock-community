@@ -16,7 +16,8 @@ function stripHtml(html) {
   return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 function createPostCard(post) {
-  var preview = stripHtml(post.content).slice(0, 80) + '...';
+  var isIframe = post.content && post.content.indexOf('__IFRAME__:') === 0;
+  var preview = isIframe ? post.title : stripHtml(post.content).slice(0, 80) + '...';
   return '<div class="post-card" onclick="openPost(' + post.id + ')">' +
     '<div class="post-category">' + post.category + '</div>' +
     '<div class="post-title">' + post.title + '</div>' +
@@ -231,17 +232,33 @@ async function openPost(id) {
     } catch(e) {}
   }
   if (!post) return;
-  document.getElementById('modalContent').innerHTML =
-    '<div class="modal-category">' + post.category + '</div>' +
-    '<div class="modal-title">' + post.title + '</div>' +
-    '<div class="modal-date">' +
-      '<span>' + formatDate(post.created_at) + '</span>' +
-      '<button class="post-share-btn" onclick="sharePost(this,' + id + ')" style="font-size:13px;padding:4px 10px;">🔗 공유</button>' +
-    '</div>' +
-    '<div class="modal-body">' + post.content + '</div>';
+  var isIframe = post.content && post.content.indexOf('__IFRAME__:') === 0;
+  var modal = document.querySelector('.modal');
+  if (isIframe) {
+    var iframeSrc = post.content.replace('__IFRAME__:', '');
+    document.getElementById('modalContent').innerHTML =
+      '<div class="modal-category">' + post.category + '</div>' +
+      '<div class="modal-title">' + post.title + '</div>' +
+      '<div class="modal-date">' +
+        '<span>' + formatDate(post.created_at) + '</span>' +
+        '<button class="post-share-btn" onclick="sharePost(this,' + id + ')" style="font-size:13px;padding:4px 10px;">🔗 공유</button>' +
+      '</div>' +
+      '<iframe class="modal-iframe" src="' + iframeSrc + '"></iframe>';
+    modal.classList.add('modal-iframe-mode');
+  } else {
+    document.getElementById('modalContent').innerHTML =
+      '<div class="modal-category">' + post.category + '</div>' +
+      '<div class="modal-title">' + post.title + '</div>' +
+      '<div class="modal-date">' +
+        '<span>' + formatDate(post.created_at) + '</span>' +
+        '<button class="post-share-btn" onclick="sharePost(this,' + id + ')" style="font-size:13px;padding:4px 10px;">🔗 공유</button>' +
+      '</div>' +
+      '<div class="modal-body">' + post.content + '</div>';
+    modal.classList.remove('modal-iframe-mode');
+  }
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
-  setTimeout(initLWCharts, 100);
+  if (!isIframe) setTimeout(initLWCharts, 100);
   // 조회수 +1
   var newViews = (post.views || 0) + 1;
   post.views = newViews;
@@ -258,6 +275,8 @@ async function openPost(id) {
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('active');
   document.body.style.overflow = '';
+  var modal = document.querySelector('.modal');
+  if (modal) modal.classList.remove('modal-iframe-mode');
 }
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
 var tickers = {kospi:'2,650 +0.32%', kosdaq:'870 +0.78%', sp500:'5,123 +0.82%', nasdaq:'16,234 +1.21%', dow:'38,765 +0.35%'};
@@ -362,7 +381,8 @@ var tabPostsLoaded = {};
 var tabCategoryMap = {
   'us':     '🇺🇸 미국주식',
   'kr':     '🇰🇷 국내주식',
-  'crypto': '🪙 암호화폐'
+  'crypto': '🪙 암호화폐',
+  'guide':  '📚 가이드'
 };
 
 async function loadTabPosts(tabName) {

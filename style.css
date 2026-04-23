@@ -896,6 +896,23 @@ svg { display: block; }
 .modal-body img { max-width: 100%; border-radius: var(--radius-sm); margin: 12px 0; }
 .lw-chart { width: 100%; min-height: 300px; margin: 12px 0; border-radius: var(--radius-sm); overflow: hidden; }
 
+/* ── Iframe Modal ── */
+.modal-iframe {
+  width: 100%;
+  height: 70vh;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: #0a0b0f;
+}
+.modal-iframe-mode {
+  max-width: 960px;
+}
+.modal-iframe-mode .modal-footer-close { margin-top: 12px; }
+@media (max-width: 768px) {
+  .modal-iframe { height: 75vh; }
+  .modal-iframe-mode { padding: 16px; }
+}
+
 /* ── Share Menu ── */
 .share-menu {
   display: none;
