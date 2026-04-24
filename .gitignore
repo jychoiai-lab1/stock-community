@@ -1,6 +1,7 @@
 reports/
 !reports/quantum_guide.html
 !reports/bitcoin_defense_report.html
+!reports/agri_boom.html
 screenshot/
 *.pyc
 __pycache__/

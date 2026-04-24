@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌽 농업섹터의 붐은 오는가?</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Black+Han+Sans&family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --corn: #FFD93D;
+  --sky: #6BCB77;
+  --coral: #FF6B6B;
+  --berry: #C780FA;
+  --ocean: #4D96FF;
+  --sun: #FF9F45;
+  --cream: #FFF8E7;
+  --ink: #2B2D42;
+  --soft: #FDFBF7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--soft);
+  color: var(--ink);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* 배경 패턴 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 217, 61, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(107, 203, 119, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(199, 128, 250, 0.05) 0%, transparent 50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 히어로 섹션 */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  background: linear-gradient(180deg, #FFF8E7 0%, #FDFBF7 100%);
+}
+
+.hero-emoji {
+  font-size: 6rem;
+  animation: bounce 2s ease-in-out infinite;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 10px 20px rgba(255, 159, 69, 0.3));
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+.hero-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(2.5rem, 10vw, 4.5rem);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--sun) 0%, var(--coral) 50%, var(--berry) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 1s ease-out;
+}
+
+.hero-subtitle {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  color: var(--ink);
+  margin-bottom: 2rem;
+  animation: fadeInUp 1s ease-out 0.2s backwards;
+}
+
+.hero-date {
+  font-size: 0.9rem;
+  color: #888;
+  background: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  animation: fadeInUp 1s ease-out 0.4s backwards;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  animation: scrollBounce 2s ease-in-out infinite;
+  font-size: 2rem;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(10px); opacity: 1; }
+}
+
+/* 섹션 공통 */
+section {
+  padding: 4rem 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-tag {
+  display: inline-block;
+  background: var(--ink);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-family: 'Jua', sans-serif;
+}
+
+.section-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  line-height: 1.3;
+  margin-bottom: 2rem;
+}
+
+.section-title .highlight {
+  position: relative;
+  display: inline-block;
+}
+
+.section-title .highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: -2px;
+  right: -2px;
+  height: 12px;
+  background: var(--corn);
+  z-index: -1;
+  border-radius: 4px;
+}
+
+/* 섹션 1: 매크로 배경 */
+.macro {
+  background: linear-gradient(180deg, #FFF8E7 0%, #FFE8CC 100%);
+}
+
+.macro .section-tag { background: var(--sun); }
+
+.story-card {
+  background: white;
+  border-radius: 24px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+  border: 3px solid transparent;
+}
+
+.story-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.story-card.gold { border-color: var(--corn); background: linear-gradient(135deg, #FFFEF7 0%, #FFF9DB 100%); }
+.story-card.red { border-color: var(--coral); background: linear-gradient(135deg, #FFF5F5 0%, #FFE5E5 100%); }
+.story-card.blue { border-color: var(--ocean); background: linear-gradient(135deg, #F0F7FF 0%, #E0EEFF 100%); }
+.story-card.purple { border-color: var(--berry); background: linear-gradient(135deg, #FAF5FF 0%, #F0E5FF 100%); }
+.story-card.green { border-color: var(--sky); background: linear-gradient(135deg, #F5FFF5 0%, #E5F5E5 100%); }
+
+.story-emoji {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+  animation: wiggle 3s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.story-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--ink);
+}
+
+.story-text {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.story-text strong {
+  color: var(--coral);
+  background: linear-gradient(180deg, transparent 60%, rgba(255,107,107,0.2) 60%);
+}
+
+/* 비교 바 */
+.compare-bar {
+  background: #f3f3f3;
+  border-radius: 50px;
+  padding: 4px;
+  margin: 1rem 0;
+  position: relative;
+  overflow: hidden;
+  height: 40px;
+}
+
+.compare-fill {
+  height: 100%;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  width: 0;
+  transition: width 1.5s ease-out;
+}
+
+.compare-fill.gold { background: linear-gradient(90deg, var(--corn), var(--sun)); }
+.compare-fill.red { background: linear-gradient(90deg, var(--coral), #FF4444); }
+
+/* 섹션 2: 공급 감소 */
+.supply {
+  background: linear-gradient(180deg, #FFE8CC 0%, #FFF5F5 100%);
+}
+
+.supply .section-tag { background: var(--coral); }
+
+.shock-visual {
+  background: white;
+  border-radius: 28px;
+  padding: 2rem 1.5rem;
+  margin: 2rem 0;
+  box-shadow: 0 10px 40px rgba(255, 107, 107, 0.15);
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 1s ease-out;
+}
+
+.shock-visual.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.shock-big {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(3rem, 12vw, 5rem);
+  background: linear-gradient(135deg, var(--coral) 0%, #FF4444 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.shock-label {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.2rem;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.shock-detail {
+  display: inline-block;
+  background: #FFE5E5;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  color: var(--coral);
+  font-weight: 700;
+}
+
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+
+.price-box {
+  background: white;
+  border-radius: 16px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border: 2px solid var(--coral);
+}
+
+.price-box .label {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 0.3rem;
+}
+
+.price-box .value {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+}
+
+.price-box .change {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--coral);
+}
+
+/* 섹션 3: 수요 증가 */
+.demand {
+  background: linear-gradient(180deg, #FFF5F5 0%, #F0FFF0 100%);
+}
+
+.demand .section-tag { background: var(--sky); }
+
+.demand-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.flow-item {
+  background: white;
+  border-radius: 20px;
+  padding: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 6px 20px rgba(107, 203, 119, 0.15);
+  border: 2px solid var(--sky);
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.6s ease-out;
+}
+
+.flow-item.visible { opacity: 1; transform: translateX(0); }
+.flow-item:nth-child(2) { transition-delay: 0.15s; }
+.flow-item:nth-child(3) { transition-delay: 0.3s; }
+.flow-item:nth-child(4) { transition-delay: 0.45s; }
+
+.flow-emoji {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.flow-content {
+  flex: 1;
+}
+
+.flow-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.flow-desc {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* 섹션 4: 투자 지도 */
+.invest {
+  background: linear-gradient(180deg, #F0FFF0 0%, #F0F7FF 100%);
+}
+
+.invest .section-tag { background: var(--ocean); }
+
+.layer-card {
+  background: white;
+  border-radius: 24px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.7s ease-out;
+}
+
+.layer-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.layer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+
+.layer-1::before { background: linear-gradient(90deg, var(--corn), var(--sun)); }
+.layer-2::before { background: linear-gradient(90deg, var(--coral), #FF4444); }
+.layer-3::before { background: linear-gradient(90deg, var(--berry), #9B59B6); }
+.layer-4::before { background: linear-gradient(90deg, var(--sky), #4CAF50); }
+.layer-5::before { background: linear-gradient(90deg, var(--ocean), #1E88E5); }
+
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.layer-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1.2rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.layer-1 .layer-num { background: var(--sun); }
+.layer-2 .layer-num { background: var(--coral); }
+.layer-3 .layer-num { background: var(--berry); }
+.layer-4 .layer-num { background: var(--sky); }
+.layer-5 .layer-num { background: var(--ocean); }
+
+.layer-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.2rem;
+}
+
+.layer-desc {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.ticker-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ticker {
+  background: #f5f5f5;
+  padding: 0.4rem 0.9rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.ticker:hover {
+  border-color: currentColor;
+  transform: translateY(-2px);
+}
+
+.layer-1 .ticker { color: var(--sun); background: #FFF8E7; }
+.layer-2 .ticker { color: var(--coral); background: #FFF0F0; }
+.layer-3 .ticker { color: var(--berry); background: #F8F0FF; }
+.layer-4 .ticker { color: var(--sky); background: #F0FFF0; }
+.layer-5 .ticker { color: var(--ocean); background: #F0F7FF; }
+
+/* 섹션 5: S&P vs 농업 */
+.forecast {
+  background: linear-gradient(180deg, #F0F7FF 0%, #FAF5FF 100%);
+}
+
+.forecast .section-tag { background: var(--berry); }
+
+.vs-container {
+  background: white;
+  border-radius: 28px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+  margin: 2rem 0;
+}
+
+.vs-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.vs-item {
+  margin-bottom: 1.5rem;
+}
+
+.vs-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.vs-name {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+}
+
+.vs-value {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1.5rem;
+}
+
+.vs-bar {
+  background: #f3f3f3;
+  border-radius: 50px;
+  height: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.vs-fill {
+  height: 100%;
+  border-radius: 50px;
+  width: 0;
+  transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.vs-fill.sp { background: linear-gradient(90deg, #95A5A6, #7F8C8D); }
+.vs-fill.agri { background: linear-gradient(90deg, var(--corn), var(--sun), var(--coral)); }
+
+.vs-note {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
+}
+
+/* 결론 */
+.conclusion {
+  background: linear-gradient(135deg, var(--corn) 0%, var(--sun) 50%, var(--coral) 100%);
+  padding: 4rem 1.5rem;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.conclusion::before {
+  content: '🌽🌾🌱🚜🌾🌽';
+  position: absolute;
+  top: 20%;
+  left: -10%;
+  right: -10%;
+  font-size: 5rem;
+  opacity: 0.1;
+  white-space: nowrap;
+  letter-spacing: 2rem;
+  animation: slide 20s linear infinite;
+}
+
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.conclusion-emoji {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+.conclusion-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(2rem, 7vw, 3rem);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.conclusion-text {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.conclusion-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.reason-badge {
+  background: white;
+  color: var(--ink);
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  font-family: 'Jua', sans-serif;
+  font-size: 1rem;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.reason-badge.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reason-badge:nth-child(2) { transition-delay: 0.15s; }
+.reason-badge:nth-child(3) { transition-delay: 0.3s; }
+.reason-badge:nth-child(4) { transition-delay: 0.45s; }
+
+footer {
+  background: var(--ink);
+  color: white;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+footer .warn {
+  color: var(--corn);
+  margin-top: 0.5rem;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 플로팅 이모지 */
+.floating-emoji {
+  position: fixed;
+  font-size: 2rem;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+.floating-emoji.e1 { top: 10%; right: 5%; animation: float1 8s ease-in-out infinite; }
+.floating-emoji.e2 { top: 50%; left: 3%; animation: float2 10s ease-in-out infinite; }
+.floating-emoji.e3 { bottom: 20%; right: 8%; animation: float3 7s ease-in-out infinite; }
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(20px, -30px) rotate(20deg); }
+}
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(-20px, 40px) rotate(-15deg); }
+}
+@keyframes float3 {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(30px, -20px) rotate(25deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="floating-emoji e1">🌾</div>
+<div class="floating-emoji e2">🌽</div>
+<div class="floating-emoji e3">🚜</div>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-emoji">🌽</div>
+  <h1 class="hero-title">농업섹터의<br>붐은 오는가?</h1>
+  <p class="hero-subtitle">중학생도 이해하는 2026 투자 이야기</p>
+  <div class="hero-date">📅 2026년 4월 22일 기준</div>
+  <div class="scroll-hint">⬇️</div>
+</section>
+
+<!-- 섹션 1: 매크로 배경 -->
+<section class="macro">
+  <span class="section-tag">🌍 큰 그림</span>
+  <h2 class="section-title">왜 <span class="highlight">지금</span>이<br>농업 차례일까?</h2>
+
+  <div class="story-card gold">
+    <div class="story-emoji">💰</div>
+    <div class="story-title">1. 달러가 약해지고 있어</div>
+    <p class="story-text">정부가 돈을 너무 많이 찍어내서 <strong>달러 가치가 하락</strong> 중. 돈 가치가 떨어지면 '진짜 물건(원자재)' 가격이 올라가요.</p>
+  </div>
+
+  <div class="story-card purple">
+    <div class="story-emoji">🥇</div>
+    <div class="story-title">2. 금이 먼저 급등했어</div>
+    <p class="story-text">금값은 최근 <strong>1년 새 65% 폭등</strong>. 금이 오르면 다음 순서는 원자재(옥수수·밀·대두). 지금이 그 타이밍!</p>
+    <div class="compare-bar">
+      <div class="compare-fill gold" data-width="85%">금값 +65%</div>
+    </div>
+  </div>
+
+  <div class="story-card red">
+    <div class="story-emoji">📈</div>
+    <div class="story-title">3. CPI(물가)가 튀고 있어</div>
+    <p class="story-text">2월 2.4% → <strong>3월 3.3%</strong>. 에너지 가격이 계속 오르면 곧 4~5%도 가능. 물가 상승기엔 농산물이 최고의 방어 자산.</p>
+  </div>
+
+  <div class="story-card blue">
+    <div class="story-emoji">📚</div>
+    <div class="story-title">4. 1970년대랑 닮았어</div>
+    <p class="story-text">달러 신뢰 붕괴 + 에너지 충격 = <strong>1972년 재현</strong>. 그때 곡물 가격이 폭발했어요. 지금이 바로 그 초입.</p>
+  </div>
+
+  <div class="story-card green">
+    <div class="story-emoji">🛢️</div>
+    <div class="story-title">5. 호르무즈 사태</div>
+    <p class="story-text">중동 전쟁으로 비료·에너지 공급이 한 달 넘게 막혔어요. <strong>전쟁이 끝나도 즉시 복구 안됨</strong>. 파종 시기 놓침.</p>
+  </div>
+</section>
+
+<!-- 섹션 2: 공급 감소 -->
+<section class="supply">
+  <span class="section-tag">📉 공급 감소</span>
+  <h2 class="section-title">옥수수가<br><span class="highlight">줄어들고</span> 있어요</h2>
+
+  <div class="shock-visual">
+    <div class="shock-big">+48%</div>
+    <div class="shock-label">요소(비료) 가격 1년 상승률</div>
+    <div class="shock-detail">💥 농부들이 비료를 못 사요</div>
+  </div>
+
+  <p style="font-size: 0.95rem; color: #555; margin-bottom: 1rem;">비료값이 폭등해서 농부들이 옥수수 심는 걸 포기하고 있어요. 대신 비료가 덜 드는 대두(콩)로 바꾸는 중.</p>
+
+  <div class="price-grid">
+    <div class="price-box">
+      <div class="label">요소 비료</div>
+      <div class="value">$847</div>
+      <div class="change">+48% ↑</div>
+    </div>
+    <div class="price-box">
+      <div class="label">암모니아</div>
+      <div class="value">$1,088</div>
+      <div class="change">+40% ↑</div>
+    </div>
+    <div class="price-box">
+      <div class="label">UAN32</div>
+      <div class="value">$572</div>
+      <div class="change">+30% ↑</div>
+    </div>
+    <div class="price-box">
+      <div class="label">UAN28</div>
+      <div class="value">$513</div>
+      <div class="change">+38% ↑</div>
+    </div>
+  </div>
+
+  <div class="shock-visual">
+    <div class="shock-big">-4.8M</div>
+    <div class="shock-label">옥수수 파종면적 감소 (에이커)</div>
+    <div class="shock-detail">🌽 전년比 감소 확정</div>
+  </div>
+
+  <div class="story-card gold" style="margin-top: 2rem;">
+    <div class="story-emoji">💡</div>
+    <div class="story-title">힌트! NTR 주가가 이미 급등</div>
+    <p class="story-text">세계 최대 비료회사 NTR이 <strong>1월부터 선행 급등</strong>. 스마트머니가 농산물 붐을 미리 감지한 신호!</p>
+  </div>
+</section>
+
+<!-- 섹션 3: 수요 증가 -->
+<section class="demand">
+  <span class="section-tag">📈 수요 폭발</span>
+  <h2 class="section-title">게다가<br><span class="highlight">수요도 늘고</span> 있어요</h2>
+
+  <div class="demand-flow">
+    <div class="flow-item">
+      <div class="flow-emoji">⛽</div>
+      <div class="flow-content">
+        <div class="flow-title">E15 전국 확대</div>
+        <div class="flow-desc">5월부터 모든 주유소에서 판매. 옥수수 소비 +23억 부셸</div>
+      </div>
+    </div>
+
+    <div class="flow-item">
+      <div class="flow-emoji">🏭</div>
+      <div class="flow-content">
+        <div class="flow-title">RVO 상향 확정</div>
+        <div class="flow-desc">에탄올 의무 혼합량 8.86B RIN — 예상치 훨씬 초과</div>
+      </div>
+    </div>
+
+    <div class="flow-item">
+      <div class="flow-emoji">🚢</div>
+      <div class="flow-content">
+        <div class="flow-title">글로벌 선매수 시작</div>
+        <div class="flow-desc">멕시코 등 수입국이 2027~28년 물량까지 미리 확보 중</div>
+      </div>
+    </div>
+
+    <div class="flow-item">
+      <div class="flow-emoji">🍜</div>
+      <div class="flow-content">
+        <div class="flow-title">사료용 수요 증가</div>
+        <div class="flow-desc">중국·인도 등 아시아 사료 수요가 계속 상승세</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shock-visual" style="background: linear-gradient(135deg, #F0FFF0, #E0F5E0);">
+    <div class="shock-big" style="background: linear-gradient(135deg, var(--sky) 0%, #4CAF50 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">공급↓ + 수요↑</div>
+    <div class="shock-label">= 가격 상승은 시간 문제</div>
+  </div>
+</section>
+
+<!-- 섹션 4: 투자 지도 -->
+<section class="invest">
+  <span class="section-tag">🗺️ 투자 지도</span>
+  <h2 class="section-title">어디에<br><span class="highlight">투자</span>할까?</h2>
+
+  <div class="layer-card layer-1">
+    <div class="layer-header">
+      <div class="layer-num">1</div>
+      <div class="layer-title">선물 직접 (가장 기본)</div>
+    </div>
+    <p class="layer-desc">옥수수·밀·대두 선물 가격을 그대로 따라가는 ETF</p>
+    <div class="ticker-list">
+      <span class="ticker">CORN 🌽</span>
+      <span class="ticker">WEAT 🌾</span>
+      <span class="ticker">SOYB 🫘</span>
+      <span class="ticker">TAGS 🎯</span>
+    </div>
+  </div>
+
+  <div class="layer-card layer-2">
+    <div class="layer-header">
+      <div class="layer-num">2</div>
+      <div class="layer-title">비료 회사 (레버리지)</div>
+    </div>
+    <p class="layer-desc">비료값 오르면 회사 이익이 직접 튀는 구조. 변동성 큼</p>
+    <div class="ticker-list">
+      <span class="ticker">NTR</span>
+      <span class="ticker">CF ⭐</span>
+      <span class="ticker">MOS</span>
+      <span class="ticker">UAN</span>
+    </div>
+  </div>
+
+  <div class="layer-card layer-3">
+    <div class="layer-header">
+      <div class="layer-num">3</div>
+      <div class="layer-title">곡물 메이저 (안정)</div>
+    </div>
+    <p class="layer-desc">옥수수·밀·대두를 모두 가공·유통. 안정적 수익</p>
+    <div class="ticker-list">
+      <span class="ticker">ADM</span>
+      <span class="ticker">BG</span>
+    </div>
+  </div>
+
+  <div class="layer-card layer-4">
+    <div class="layer-header">
+      <div class="layer-num">4</div>
+      <div class="layer-title">에탄올 (수요 수혜)</div>
+    </div>
+    <p class="layer-desc">E15 확대의 직접 수혜주. 옥수수→에탄올 사이클</p>
+    <div class="ticker-list">
+      <span class="ticker">GPRE</span>
+    </div>
+  </div>
+
+  <div class="layer-card layer-5">
+    <div class="layer-header">
+      <div class="layer-num">5</div>
+      <div class="layer-title">광범위 분산 ETF</div>
+    </div>
+    <p class="layer-desc">농산물·원자재·농업 기업을 한번에 담은 넓은 그물</p>
+    <div class="ticker-list">
+      <span class="ticker">DBA</span>
+      <span class="ticker">DBC</span>
+      <span class="ticker">MOO</span>
+    </div>
+  </div>
+</section>
+
+<!-- 섹션 5: S&P vs 농업 -->
+<section class="forecast">
+  <span class="section-tag">🔮 5년 전망</span>
+  <h2 class="section-title">S&P 500 vs<br><span class="highlight">농업섹터</span></h2>
+
+  <div class="vs-container">
+    <div class="vs-title">향후 5년 연간 수익률 예상</div>
+
+    <div class="vs-item">
+      <div class="vs-label">
+        <span class="vs-name">📊 S&P 500</span>
+        <span class="vs-value" style="color: #7F8C8D;">약 3%</span>
+      </div>
+      <div class="vs-bar">
+        <div class="vs-fill sp" data-width="15%"></div>
+      </div>
+      <p class="vs-note">※ Research Affiliates 전망 (AI 버블 고평가 부담)</p>
+    </div>
+
+    <div class="vs-item">
+      <div class="vs-label">
+        <span class="vs-name">🌽 농업섹터</span>
+        <span class="vs-value" style="color: var(--coral);">15%+ ?</span>
+      </div>
+      <div class="vs-bar">
+        <div class="vs-fill agri" data-width="75%"></div>
+      </div>
+      <p class="vs-note">※ 2022년 고점까지 +19.8% 재평가 여력</p>
+    </div>
+  </div>
+
+  <div class="story-card gold">
+    <div class="story-emoji">🎯</div>
+    <div class="story-title">핵심 포인트</div>
+    <p class="story-text">주식시장이 <strong>AI 버블</strong>에 집중된 사이, 지난 10년간 농업에 돈이 안 들어갔어요. 그래서 농산물이 금보다 훨씬 싸게 남아있는 상태예요. 지금부터 <strong>5년간 재평가</strong>가 일어날 가능성이 높아요.</p>
+  </div>
+</section>
+
+<!-- 결론 -->
+<section class="conclusion">
+  <div class="conclusion-emoji">🚀</div>
+  <h2 class="conclusion-title">농업 붐은<br>이미 시작됐다</h2>
+  <p class="conclusion-text">달러 약세 + 공급 감소 + 수요 폭발 = 완벽한 삼박자</p>
+
+  <div class="conclusion-reasons">
+    <div class="reason-badge">🌾 공급 부족 확정 (파종 감소)</div>
+    <div class="reason-badge">⛽ 수요 구조적 증가 (E15)</div>
+    <div class="reason-badge">💰 금값 선행 → 농산물 차례</div>
+    <div class="reason-badge">📈 5년 재평가 사이클 시작</div>
+  </div>
+</section>
+
+<footer>
+  <p>📊 데이터 출처: USDA, DTN, Tradingeconomics, FRED</p>
+  <p>📅 2026년 4월 22일 기준</p>
+  <p class="warn">⚠️ 투자는 본인의 판단과 책임으로</p>
+</footer>
+
+<script>
+// 스크롤 애니메이션
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+
+      // 비교 바 채우기
+      if (entry.target.classList.contains('story-card')) {
+        const fill = entry.target.querySelector('.compare-fill');
+        if (fill) {
+          const width = fill.getAttribute('data-width');
+          setTimeout(() => fill.style.width = width, 300);
+        }
+      }
+
+      // VS 바 채우기
+      if (entry.target.classList.contains('vs-container')) {
+        const fills = entry.target.querySelectorAll('.vs-fill');
+        fills.forEach((fill, i) => {
+          const width = fill.getAttribute('data-width');
+          setTimeout(() => fill.style.width = width, 300 + i * 300);
+        });
+      }
+    }
+  });
+}, { threshold: 0.15 });
+
+// 모든 애니메이션 대상 관찰
+document.querySelectorAll('.story-card, .shock-visual, .flow-item, .layer-card, .vs-container, .reason-badge').forEach(el => {
+  observer.observe(el);
+});
+
+// VS 컨테이너
+const vsContainer = document.querySelector('.vs-container');
+if (vsContainer) {
+  const vsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const fills = entry.target.querySelectorAll('.vs-fill');
+        fills.forEach((fill, i) => {
+          const width = fill.getAttribute('data-width');
+          setTimeout(() => fill.style.width = width, 300 + i * 300);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  vsObserver.observe(vsContainer);
+}
+</script>
+
+</body>
+</html>
