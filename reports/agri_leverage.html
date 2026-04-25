@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚜 농작물의 레버리지, 농업섹터는 어떤게 있을까?</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Black+Han+Sans&family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --corn: #FFD93D;
+  --sky: #6BCB77;
+  --coral: #FF6B6B;
+  --berry: #C780FA;
+  --ocean: #4D96FF;
+  --sun: #FF9F45;
+  --mint: #4ECDC4;
+  --cream: #FFF8E7;
+  --ink: #2B2D42;
+  --soft: #FDFBF7;
+  --bg-yellow: #F4D03F;
+  --adm-blue: #5DADE2;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--soft);
+  color: var(--ink);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 217, 61, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(77, 150, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 이전 화 연결 배너 */
+.prev-banner {
+  background: linear-gradient(135deg, var(--corn), var(--sun));
+  padding: 0.7rem 1rem;
+  text-align: center;
+  font-family: 'Jua', sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+/* 히어로 */
+.hero {
+  min-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  background: linear-gradient(180deg, #FFF8E7 0%, #E8F4FD 100%);
+}
+
+.episode-tag {
+  background: var(--ink);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-family: 'Jua', sans-serif;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  animation: fadeInUp 1s ease-out;
+}
+
+.hero-emojis {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: shake 3s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px) rotate(-5deg); }
+  75% { transform: translateX(10px) rotate(5deg); }
+}
+
+.hero-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--sun) 0%, var(--ocean) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 1s ease-out 0.2s backwards;
+}
+
+.hero-subtitle {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(1rem, 4vw, 1.3rem);
+  color: #555;
+  margin-bottom: 2rem;
+  animation: fadeInUp 1s ease-out 0.4s backwards;
+}
+
+.hero-focus {
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  animation: fadeInUp 1s ease-out 0.6s backwards;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Jua', sans-serif;
+}
+
+.hero-focus .vs {
+  background: linear-gradient(135deg, var(--coral), #FF4444);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  animation: scrollBounce 2s ease-in-out infinite;
+  font-size: 2rem;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(10px); opacity: 1; }
+}
+
+section {
+  padding: 4rem 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-tag {
+  display: inline-block;
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-family: 'Jua', sans-serif;
+}
+
+.section-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  line-height: 1.3;
+  margin-bottom: 2rem;
+}
+
+.section-title .highlight {
+  position: relative;
+  display: inline-block;
+}
+
+.section-title .highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: -2px;
+  right: -2px;
+  height: 12px;
+  z-index: -1;
+  border-radius: 4px;
+}
+
+/* 섹션 1: 레버리지 개념 */
+.intro {
+  background: linear-gradient(180deg, #FFF8E7 0%, #FFE8CC 100%);
+}
+
+.intro .section-tag { background: var(--sun); }
+.intro .section-title .highlight::after { background: var(--corn); }
+
+.concept-card {
+  background: white;
+  border-radius: 24px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+  border: 3px solid transparent;
+}
+
+.concept-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.concept-card.one { border-color: var(--corn); background: linear-gradient(135deg, #FFFEF7, #FFF9DB); }
+.concept-card.two { border-color: var(--coral); background: linear-gradient(135deg, #FFF5F5, #FFE5E5); }
+.concept-card.three { border-color: var(--berry); background: linear-gradient(135deg, #FAF5FF, #F0E5FF); }
+
+.concept-num {
+  display: inline-block;
+  background: var(--ink);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 36px;
+  font-family: 'Black Han Sans', sans-serif;
+  margin-bottom: 0.8rem;
+}
+
+.concept-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.concept-text {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.concept-text strong {
+  color: var(--coral);
+  background: linear-gradient(180deg, transparent 60%, rgba(255,107,107,0.2) 60%);
+}
+
+.lev-example {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.lev-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.lev-row:last-child { border-bottom: none; }
+
+.lev-label {
+  font-family: 'Jua', sans-serif;
+  font-size: 1rem;
+}
+
+.lev-bar {
+  flex: 1;
+  margin: 0 1rem;
+  background: #f3f3f3;
+  height: 20px;
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+}
+
+.lev-fill {
+  height: 100%;
+  border-radius: 50px;
+  width: 0;
+  transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lev-fill.small { background: linear-gradient(90deg, var(--sky), #4CAF50); }
+.lev-fill.big { background: linear-gradient(90deg, var(--coral), #FF4444); }
+
+.lev-value {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1rem;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* 섹션 2: ABCD 4강체제 */
+.abcd {
+  background: linear-gradient(180deg, #FFE8CC 0%, #FFF0E0 100%);
+}
+
+.abcd .section-tag { background: var(--coral); }
+.abcd .section-title .highlight::after { background: var(--sun); }
+
+.abcd-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+
+.abcd-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.6s ease-out;
+}
+
+.abcd-card.visible { opacity: 1; transform: scale(1); }
+.abcd-card:nth-child(2) { transition-delay: 0.1s; }
+.abcd-card:nth-child(3) { transition-delay: 0.2s; }
+.abcd-card:nth-child(4) { transition-delay: 0.3s; }
+
+.abcd-letter {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 2.5rem;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.abcd-name {
+  font-family: 'Jua', sans-serif;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.abcd-note {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.abcd-card.a { background: linear-gradient(135deg, #FFF5F5, #FFE5E5); }
+.abcd-card.a .abcd-letter { color: var(--coral); }
+.abcd-card.b { background: linear-gradient(135deg, #FFFBE5, #FFF4B3); }
+.abcd-card.b .abcd-letter { color: #E6B800; }
+.abcd-card.c { background: linear-gradient(135deg, #F5F5F5, #E5E5E5); }
+.abcd-card.c .abcd-letter { color: #888; }
+.abcd-card.d { background: linear-gradient(135deg, #FFF0E5, #FFD9B3); }
+.abcd-card.d .abcd-letter { color: var(--sun); }
+
+.note-box {
+  background: #FFF9DB;
+  border-left: 4px solid var(--corn);
+  padding: 1rem 1.2rem;
+  border-radius: 0 12px 12px 0;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.note-box strong { color: var(--sun); }
+
+/* 섹션 3: BG 소개 */
+.bg-section {
+  background: linear-gradient(180deg, #FFF9DB 0%, #FFFDE7 100%);
+}
+
+.bg-section .section-tag { background: #E6B800; }
+.bg-section .section-title .highlight::after { background: var(--bg-yellow); }
+
+.company-header {
+  background: white;
+  border-radius: 28px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 15px 40px rgba(230, 184, 0, 0.15);
+  border: 3px solid var(--bg-yellow);
+  position: relative;
+  overflow: hidden;
+}
+
+.company-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(244, 208, 63, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.company-emoji {
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+  animation: wiggle 3s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.company-ticker {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 2rem;
+  background: linear-gradient(135deg, #E6B800, var(--sun));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.3rem;
+}
+
+.company-name {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.company-tagline {
+  background: #FFFDE7;
+  color: var(--ink);
+  padding: 0.8rem 1.2rem;
+  border-radius: 50px;
+  display: inline-block;
+  font-family: 'Jua', sans-serif;
+  font-size: 0.95rem;
+  border: 2px dashed var(--bg-yellow);
+}
+
+.biz-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.3rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.6s ease-out;
+}
+
+.biz-card.visible { opacity: 1; transform: translateX(0); }
+
+.biz-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.7rem;
+}
+
+.biz-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.biz-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  flex: 1;
+}
+
+.biz-desc {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.7;
+}
+
+.biz-desc strong { color: #E6B800; }
+
+/* 수직통합 플로우 */
+.flow-chain {
+  background: white;
+  border-radius: 24px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.flow-chain-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.chain-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  background: #FFFDE7;
+  border-radius: 16px;
+  margin-bottom: 0.5rem;
+  border-left: 4px solid var(--bg-yellow);
+}
+
+.chain-emoji {
+  font-size: 1.8rem;
+}
+
+.chain-text {
+  flex: 1;
+  font-family: 'Jua', sans-serif;
+  font-size: 0.95rem;
+}
+
+.chain-arrow {
+  text-align: center;
+  color: #E6B800;
+  font-size: 1.2rem;
+  margin: 0.2rem 0;
+}
+
+/* 섹션 4: ADM 소개 */
+.adm-section {
+  background: linear-gradient(180deg, #E8F4FD 0%, #F0F7FF 100%);
+}
+
+.adm-section .section-tag { background: var(--ocean); }
+.adm-section .section-title .highlight::after { background: var(--adm-blue); }
+
+.adm-section .company-header {
+  border-color: var(--adm-blue);
+  box-shadow: 0 15px 40px rgba(93, 173, 226, 0.15);
+}
+
+.adm-section .company-header::before {
+  background: radial-gradient(circle, rgba(93, 173, 226, 0.2) 0%, transparent 70%);
+}
+
+.adm-section .company-ticker {
+  background: linear-gradient(135deg, var(--ocean), var(--adm-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.adm-section .company-tagline {
+  background: #F0F7FF;
+  border-color: var(--adm-blue);
+}
+
+.adm-section .biz-desc strong { color: var(--ocean); }
+
+.adm-section .chain-item {
+  background: #F0F7FF;
+  border-left-color: var(--adm-blue);
+}
+
+.adm-section .chain-arrow { color: var(--ocean); }
+
+.segment-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+
+.segment-box {
+  background: white;
+  border-radius: 20px;
+  padding: 1.2rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-left: 5px solid var(--adm-blue);
+}
+
+.segment-emoji {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.segment-content { flex: 1; }
+
+.segment-name {
+  font-family: 'Jua', sans-serif;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.segment-desc {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* 섹션 5: 비교 */
+.compare {
+  background: linear-gradient(180deg, #F0F7FF 0%, #FFF5F0 100%);
+}
+
+.compare .section-tag { background: var(--berry); }
+.compare .section-title .highlight::after { background: var(--coral); }
+
+.vs-card {
+  background: white;
+  border-radius: 28px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+  margin: 1.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.vs-label-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1.5rem;
+}
+
+.vs-bg-label {
+  color: #E6B800;
+}
+
+.vs-adm-label {
+  color: var(--ocean);
+}
+
+.vs-divider {
+  background: linear-gradient(135deg, var(--coral), #FF4444);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-family: 'Jua', sans-serif;
+}
+
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.5rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px dashed #eee;
+  align-items: center;
+}
+
+.compare-row:last-child { border-bottom: none; }
+
+.compare-bg, .compare-adm {
+  font-size: 0.85rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  line-height: 1.5;
+}
+
+.compare-bg {
+  background: #FFFDE7;
+  color: #8B6F00;
+  text-align: right;
+}
+
+.compare-adm {
+  background: #F0F7FF;
+  color: #1E5A8B;
+  text-align: left;
+}
+
+.compare-label {
+  font-family: 'Jua', sans-serif;
+  font-size: 0.75rem;
+  color: #888;
+  text-align: center;
+  padding: 0.3rem 0.5rem;
+  background: #f5f5f5;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+
+/* 숫자 비교 바 */
+.metric-comparison {
+  background: white;
+  border-radius: 24px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.metric-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.metric-item {
+  margin-bottom: 1.2rem;
+}
+
+.metric-item:last-child { margin-bottom: 0; }
+
+.metric-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.metric-bars {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.metric-bar-bg, .metric-bar-adm {
+  background: #f3f3f3;
+  height: 26px;
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.metric-bar-bg {
+  justify-content: flex-end;
+}
+
+.metric-fill-bg {
+  height: 100%;
+  background: linear-gradient(90deg, #FDE68A, var(--bg-yellow));
+  border-radius: 50px;
+  width: 0;
+  transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  padding: 0 0.8rem;
+  color: #8B6F00;
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-width: fit-content;
+  justify-content: flex-start;
+}
+
+.metric-fill-adm {
+  height: 100%;
+  background: linear-gradient(90deg, var(--adm-blue), var(--ocean));
+  border-radius: 50px;
+  width: 0;
+  transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  padding: 0 0.8rem;
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.metric-vs {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* 섹션 6: 요약 */
+.summary {
+  background: linear-gradient(135deg, var(--corn) 0%, var(--sun) 30%, var(--ocean) 100%);
+  padding: 4rem 1.5rem;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary::before {
+  content: '🌽🌾🚜🏭🫘🌽';
+  position: absolute;
+  top: 20%;
+  left: -10%;
+  right: -10%;
+  font-size: 5rem;
+  opacity: 0.1;
+  white-space: nowrap;
+  letter-spacing: 2rem;
+  animation: slide 20s linear infinite;
+}
+
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.summary-emoji {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+.summary-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.summary-text {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.95;
+}
+
+.summary-point {
+  background: white;
+  color: var(--ink);
+  padding: 1rem 1.2rem;
+  border-radius: 20px;
+  font-family: 'Jua', sans-serif;
+  font-size: 0.95rem;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  margin-bottom: 0.8rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+  text-align: left;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: start;
+  gap: 0.7rem;
+}
+
+.summary-point.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.summary-point:nth-child(2) { transition-delay: 0.15s; }
+.summary-point:nth-child(3) { transition-delay: 0.3s; }
+.summary-point:nth-child(4) { transition-delay: 0.45s; }
+
+.sp-emoji {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.sp-content { flex: 1; }
+
+.sp-title {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.sp-desc {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+footer {
+  background: var(--ink);
+  color: white;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+footer .warn {
+  color: var(--corn);
+  margin-top: 0.5rem;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.floating-emoji {
+  position: fixed;
+  font-size: 2rem;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.2;
+}
+
+.floating-emoji.e1 { top: 15%; right: 5%; animation: float1 8s ease-in-out infinite; }
+.floating-emoji.e2 { top: 55%; left: 3%; animation: float2 10s ease-in-out infinite; }
+.floating-emoji.e3 { bottom: 25%; right: 8%; animation: float3 7s ease-in-out infinite; }
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(20px, -30px) rotate(20deg); }
+}
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(-20px, 40px) rotate(-15deg); }
+}
+@keyframes float3 {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(30px, -20px) rotate(25deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="floating-emoji e1">🫘</div>
+<div class="floating-emoji e2">🌾</div>
+<div class="floating-emoji e3">🏭</div>
+
+<div class="prev-banner">📖 Episode 2 · 전편 "농업섹터의 붐은 오는가?" 의 후속편</div>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="episode-tag">🎬 EPISODE 02</div>
+  <div class="hero-emojis">🌾 🚜 🏭</div>
+  <h1 class="hero-title">농작물의 레버리지,<br>농업섹터는<br>어떤게 있을까?</h1>
+  <p class="hero-subtitle">곡물 가격이 오르면 누가 돈을 벌까?</p>
+  <div class="hero-focus">
+    <span style="color:#E6B800; font-weight:700;">🌽 BG</span>
+    <span class="vs">VS</span>
+    <span style="color: var(--ocean); font-weight:700;">🫘 ADM</span>
+  </div>
+  <div class="scroll-hint">⬇️</div>
+</section>
+
+<!-- 섹션 1: 레버리지 개념 -->
+<section class="intro">
+  <span class="section-tag">💡 기본 개념</span>
+  <h2 class="section-title">곡물 <span class="highlight">레버리지</span>란?</h2>
+
+  <div class="concept-card one">
+    <div class="concept-num">1</div>
+    <div class="concept-title">🌽 옥수수 ETF는 "가격" 그대로</div>
+    <p class="concept-text">옥수수 가격이 <strong>+10% 오르면 +10% 수익</strong>. 딱 그만큼만. 안전하지만 폭발력이 약해요.</p>
+  </div>
+
+  <div class="concept-card two">
+    <div class="concept-num">2</div>
+    <div class="concept-title">🚀 기업 주식은 "증폭기"</div>
+    <p class="concept-text">곡물 가격이 오르면 그 곡물을 <strong>가공·유통하는 회사의 이익은 훨씬 더 크게</strong> 튀어요. 이게 바로 "레버리지".</p>
+  </div>
+
+  <div class="concept-card three">
+    <div class="concept-num">3</div>
+    <div class="concept-title">⚡ 대신 변동성도 크다</div>
+    <p class="concept-text">원재료 가격이 떨어지면 반대로 <strong>더 빠르게 하락</strong>할 수도. 그래서 종목 선택이 중요.</p>
+  </div>
+
+  <div class="lev-example">
+    <div class="metric-title">💡 예시: 옥수수가 +20% 오를 때</div>
+    <div class="lev-row">
+      <div class="lev-label">🌽 CORN ETF</div>
+      <div class="lev-bar"><div class="lev-fill small" data-width="40%"></div></div>
+      <div class="lev-value" style="color:#4CAF50;">+20%</div>
+    </div>
+    <div class="lev-row">
+      <div class="lev-label">🏭 가공 기업</div>
+      <div class="lev-bar"><div class="lev-fill big" data-width="80%"></div></div>
+      <div class="lev-value" style="color:var(--coral);">+40~60%</div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    💬 <strong>한줄 요약:</strong> 곡물 가격 상승 = ETF는 그대로, 기업은 2~3배 증폭
+  </div>
+</section>
+
+<!-- 섹션 2: ABCD 4강체제 -->
+<section class="abcd">
+  <span class="section-tag">🏆 업계 4강</span>
+  <h2 class="section-title">곡물 시장의<br><span class="highlight">ABCD</span> 4대 거인</h2>
+
+  <p style="font-size: 0.95rem; color: #555; margin-bottom: 1rem;">전 세계 곡물의 <strong>70~90%</strong>를 이 4개 회사가 사고, 가공하고, 유통해요. 첫 글자를 따서 "ABCD"라고 불러요.</p>
+
+  <div class="abcd-grid">
+    <div class="abcd-card a">
+      <div class="abcd-letter">A</div>
+      <div class="abcd-name">ADM</div>
+      <div class="abcd-note">🇺🇸 미국</div>
+    </div>
+    <div class="abcd-card b">
+      <div class="abcd-letter">B</div>
+      <div class="abcd-name">Bunge</div>
+      <div class="abcd-note">🌎 글로벌</div>
+    </div>
+    <div class="abcd-card c">
+      <div class="abcd-letter">C</div>
+      <div class="abcd-name">Cargill</div>
+      <div class="abcd-note">비상장</div>
+    </div>
+    <div class="abcd-card d">
+      <div class="abcd-letter">D</div>
+      <div class="abcd-name">Dreyfus</div>
+      <div class="abcd-note">비상장</div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    💡 일반 투자자가 살 수 있는 건 <strong>ADM과 BG 두 개뿐</strong>이에요. Cargill과 Dreyfus는 상장 안 된 가족기업!
+  </div>
+
+  <p style="font-size: 0.95rem; color: #555; margin-top: 1.5rem;">그래서 이번 편에서는 <strong>BG와 ADM</strong>을 집중 파헤칠게요 👇</p>
+</section>
+
+<!-- 섹션 3: BG 소개 -->
+<section class="bg-section">
+  <span class="section-tag">🌾 첫 번째 주자</span>
+  <h2 class="section-title">BG, <span class="highlight">번지 글로벌</span></h2>
+
+  <div class="company-header">
+    <div class="company-emoji">🌾</div>
+    <div class="company-ticker">BG</div>
+    <div class="company-name">Bunge Global SA</div>
+    <div class="company-tagline">"농장부터 공장까지 싹 다"</div>
+  </div>
+
+  <div class="biz-card">
+    <div class="biz-header">
+      <div class="biz-icon">🫘</div>
+      <div class="biz-title">대두(콩) 전문가</div>
+    </div>
+    <p class="biz-desc">콩을 사서 <strong>식용유·사료·바이오디젤</strong>로 만드는 일이 본업. 전 세계 대두 가공 1~2위권.</p>
+  </div>
+
+  <div class="biz-card">
+    <div class="biz-header">
+      <div class="biz-icon">🤝</div>
+      <div class="biz-title">Viterra 합병 완료</div>
+    </div>
+    <p class="biz-desc">2025년 7월, 곡물 유통 회사 <strong>Viterra를 $8.2B에 인수</strong>. 이제 "농장 → 항구 → 공장" 전 과정을 다 가진 회사가 됐어요.</p>
+  </div>
+
+  <div class="biz-card">
+    <div class="biz-header">
+      <div class="biz-icon">🌎</div>
+      <div class="biz-title">남미 + 호주가 주력</div>
+    </div>
+    <p class="biz-desc">브라질·아르헨티나의 <strong>대두 생산 벨트</strong>를 사실상 장악. 호주에서는 밀·보리 수출 네트워크.</p>
+  </div>
+
+  <div class="flow-chain">
+    <div class="flow-chain-title">🔗 BG의 수직통합 밸류체인</div>
+    <div class="chain-item">
+      <div class="chain-emoji">👨‍🌾</div>
+      <div class="chain-text">남미·호주 농가에서 곡물 매입</div>
+    </div>
+    <div class="chain-arrow">⬇️</div>
+    <div class="chain-item">
+      <div class="chain-emoji">🚢</div>
+      <div class="chain-text">자체 항만·물류로 운송</div>
+    </div>
+    <div class="chain-arrow">⬇️</div>
+    <div class="chain-item">
+      <div class="chain-emoji">🏭</div>
+      <div class="chain-text">자체 공장에서 가공 (콩기름·사료)</div>
+    </div>
+    <div class="chain-arrow">⬇️</div>
+    <div class="chain-item">
+      <div class="chain-emoji">🌍</div>
+      <div class="chain-text">전 세계 식품·연료 회사로 판매</div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    💡 <strong>한 회사가 전 과정을 다 가진다는 건?</strong> → 중간 마진이 다 내 회사 이익으로. 그리고 <strong>공급이 타이트할 때</strong> 이 구조의 힘이 극대화돼요.
+  </div>
+</section>
+
+<!-- 섹션 4: ADM 소개 -->
+<section class="adm-section">
+  <span class="section-tag">🫘 두 번째 주자</span>
+  <h2 class="section-title">ADM, <span class="highlight">다이너스티</span></h2>
+
+  <div class="company-header">
+    <div class="company-emoji">🫘</div>
+    <div class="company-ticker">ADM</div>
+    <div class="company-name">Archer-Daniels-Midland</div>
+    <div class="company-tagline">"농산물 종합 상사"</div>
+  </div>
+
+  <div class="biz-card">
+    <div class="biz-header">
+      <div class="biz-icon">🇺🇸</div>
+      <div class="biz-title">미국 최대 곡물 가공업체</div>
+    </div>
+    <p class="biz-desc">1902년 설립된 <strong>124년 역사의 공룡</strong>. 미국 옥수수·대두 가공량 1위, 에탄올 생산도 1위.</p>
+  </div>
+
+  <div class="biz-card">
+    <div class="biz-header">
+      <div class="biz-icon">🧬</div>
+      <div class="biz-title">사업 범위가 매우 넓음</div>
+    </div>
+    <p class="biz-desc">BG보다 훨씬 <strong>다양한 사업</strong>을 해요. 곡물만 하는 게 아니라 식품 성분, 건강식품, 동물 사료, 바이오연료까지.</p>
+  </div>
+
+  <div class="biz-card">
+    <div class="biz-header">
+      <div class="biz-icon">⛽</div>
+      <div class="biz-title">에탄올 최대 플레이어</div>
+    </div>
+    <p class="biz-desc">미국 정부의 <strong>바이오연료 정책 = ADM의 호재</strong>. E15 확대, RVO 상향 같은 뉴스에 민감하게 반응.</p>
+  </div>
+
+  <div class="flow-chain">
+    <div class="flow-chain-title">🎯 ADM의 3대 사업 영역</div>
+    <div class="segment-box" style="margin-bottom: 0.6rem;">
+      <div class="segment-emoji">🌽</div>
+      <div class="segment-content">
+        <div class="segment-name">Agricultural Services</div>
+        <div class="segment-desc">곡물 매입·저장·운송·가공 (본업)</div>
+      </div>
+    </div>
+    <div class="segment-box" style="margin-bottom: 0.6rem;">
+      <div class="segment-emoji">🍞</div>
+      <div class="segment-content">
+        <div class="segment-name">Nutrition</div>
+        <div class="segment-desc">식품 성분·건강식품·동물 영양</div>
+      </div>
+    </div>
+    <div class="segment-box" style="margin-bottom: 0;">
+      <div class="segment-emoji">⛽</div>
+      <div class="segment-content">
+        <div class="segment-name">Carbohydrate Solutions</div>
+        <div class="segment-desc">에탄올·옥수수 감미료·바이오연료</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    💡 <strong>ADM은 "곡물 회사" 라기보다 "종합 식품·에너지 회사"</strong>에 가까워요. 그래서 <strong>정책 영향</strong>도 많이 받아요.
+  </div>
+</section>
+
+<!-- 섹션 5: BG vs ADM 비교 -->
+<section class="compare">
+  <span class="section-tag">⚖️ 핵심 비교</span>
+  <h2 class="section-title">BG vs ADM,<br><span class="highlight">뭐가 다를까?</span></h2>
+
+  <div class="vs-card">
+    <div class="vs-label-top">
+      <span class="vs-bg-label">🌾 BG</span>
+      <span class="vs-divider">VS</span>
+      <span class="vs-adm-label">🫘 ADM</span>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-bg">대두·식물성 오일</div>
+      <div class="compare-label">전문 분야</div>
+      <div class="compare-adm">곡물·식품·에탄올</div>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-bg">남미·호주</div>
+      <div class="compare-label">주력 지역</div>
+      <div class="compare-adm">북미 중심</div>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-bg">좁고 깊게</div>
+      <div class="compare-label">사업 구조</div>
+      <div class="compare-adm">넓고 다양하게</div>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-bg">Viterra 시너지 (내부)</div>
+      <div class="compare-label">성장 엔진</div>
+      <div class="compare-adm">바이오연료 정책 (외부)</div>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-bg">자기가 통제</div>
+      <div class="compare-label">실행 리스크</div>
+      <div class="compare-adm">정부 정책에 의존</div>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-bg">깔끔함</div>
+      <div class="compare-label">재무 이슈</div>
+      <div class="compare-adm">회계 스캔들 해소 중</div>
+    </div>
+  </div>
+
+  <div class="metric-comparison">
+    <div class="metric-title">📊 최근 실적 비교</div>
+
+    <div class="metric-item">
+      <div class="metric-label">📈 매출 성장률 (최근 분기)</div>
+      <div class="metric-bars">
+        <div class="metric-bar-bg"><div class="metric-fill-bg" data-width="100%">+71.6%</div></div>
+        <div class="metric-vs">vs</div>
+        <div class="metric-bar-adm"><div class="metric-fill-adm" data-width="5%">+2.2%</div></div>
+      </div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-label">💰 영업이익률</div>
+      <div class="metric-bars">
+        <div class="metric-bar-bg"><div class="metric-fill-bg" data-width="60%">2.5%</div></div>
+        <div class="metric-vs">vs</div>
+        <div class="metric-bar-adm"><div class="metric-fill-adm" data-width="12%">0.5%</div></div>
+      </div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-label">🏆 매출총이익률</div>
+      <div class="metric-bars">
+        <div class="metric-bar-bg"><div class="metric-fill-bg" data-width="58%">5.8%</div></div>
+        <div class="metric-vs">vs</div>
+        <div class="metric-bar-adm"><div class="metric-fill-adm" data-width="47%">4.7%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    💡 <strong>최근 실적은 BG가 압도적으로 우위.</strong> Viterra 합병 효과가 본격적으로 나타나는 중. ADM은 사이클 저점 통과하며 반등 초입.
+  </div>
+</section>
+
+<!-- 섹션 6: 요약 -->
+<section class="summary">
+  <div class="summary-emoji">🎯</div>
+  <h2 class="summary-title">핵심 정리</h2>
+  <p class="summary-text">곡물 가격 상승기 = 가공 기업 레버리지 효과</p>
+
+  <div class="summary-point">
+    <div class="sp-emoji">🌾</div>
+    <div class="sp-content">
+      <div class="sp-title">BG = "순수 곡물 플레이어"</div>
+      <div class="sp-desc">대두·유지에 집중, 수직통합 완성, 내부 엔진</div>
+    </div>
+  </div>
+
+  <div class="summary-point">
+    <div class="sp-emoji">🫘</div>
+    <div class="sp-content">
+      <div class="sp-title">ADM = "종합 식품·에너지"</div>
+      <div class="sp-desc">곡물 + 식품 + 에탄올, 정책 수혜주 성격</div>
+    </div>
+  </div>
+
+  <div class="summary-point">
+    <div class="sp-emoji">⚡</div>
+    <div class="sp-content">
+      <div class="sp-title">공통점: 곡물 상승기 수혜</div>
+      <div class="sp-desc">옥수수·대두 가격 오르면 가공 마진 확대</div>
+    </div>
+  </div>
+
+  <div class="summary-point">
+    <div class="sp-emoji">🔀</div>
+    <div class="sp-content">
+      <div class="sp-title">차이점: 성격이 완전 다름</div>
+      <div class="sp-desc">BG는 순수 업사이드, ADM은 정책 옵션 + 다변화</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>📊 데이터 출처: Trefis, PortfoliosLab, 기업 공시자료</p>
+  <p>📅 2026년 4월 25일 기준</p>
+  <p class="warn">⚠️ 투자 판단은 본인의 책임으로</p>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+
+      // 레버리지 바
+      if (entry.target.classList.contains('lev-example')) {
+        const fills = entry.target.querySelectorAll('.lev-fill');
+        fills.forEach((fill, i) => {
+          const width = fill.getAttribute('data-width');
+          setTimeout(() => fill.style.width = width, 300 + i * 200);
+        });
+      }
+
+      // 매출 비교 바
+      if (entry.target.classList.contains('metric-comparison')) {
+        const fills = entry.target.querySelectorAll('.metric-fill-bg, .metric-fill-adm');
+        fills.forEach((fill, i) => {
+          const width = fill.getAttribute('data-width');
+          setTimeout(() => fill.style.width = width, 300 + i * 200);
+        });
+      }
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.concept-card, .abcd-card, .biz-card, .company-header, .flow-chain, .segment-box, .vs-card, .metric-comparison, .lev-example, .summary-point').forEach(el => {
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>
