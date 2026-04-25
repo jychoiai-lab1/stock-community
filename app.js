@@ -282,6 +282,11 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModa
 var tickers = {kospi:'2,650 +0.32%', kosdaq:'870 +0.78%', sp500:'5,123 +0.82%', nasdaq:'16,234 +1.21%', dow:'38,765 +0.35%'};
 Object.keys(tickers).forEach(function(id){ var el=document.getElementById(id); if(el){el.textContent=tickers[id]; el.className='ticker-value up';} });
 loadPosts();
+// 브리핑 탭 숨김 상태면 미국주식 탭 초기 로드
+var _briefingPanel = document.getElementById('tab-briefing');
+if (_briefingPanel && _briefingPanel.style.display === 'none') {
+  loadTabPosts('us');
+}
 
 // 공포·탐욕 지수
 async function loadFearGreed() {

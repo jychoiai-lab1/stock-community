@@ -34,14 +34,16 @@
         <!-- 메인 컨텐츠 -->
         <div class="briefings-main">
           <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchTab('briefing', this)">📊 브리핑</button>
-            <button class="tab-btn" onclick="switchTab('us', this)">🇺🇸 미국주식</button>
+            <!-- HIDDEN: 브리핑 탭 (일시 비활성) -->
+            <!-- <button class="tab-btn" onclick="switchTab('briefing', this)">📊 브리핑</button> -->
+            <button class="tab-btn active" onclick="switchTab('us', this)">🇺🇸 미국주식</button>
             <button class="tab-btn" onclick="switchTab('kr', this)">🇰🇷 국내주식</button>
             <button class="tab-btn" onclick="switchTab('crypto', this)">🪙 암호화폐</button>
             <button class="tab-btn" onclick="switchTab('guide', this)">📚 가이드</button>
           </div>
 
-          <section class="tab-panel" id="tab-briefing">
+          <!-- HIDDEN: 브리핑 패널 (일시 비활성, 데이터 유지) -->
+          <section class="tab-panel" id="tab-briefing" style="display:none">
             <div class="posts-meta">
               <span class="refresh-note">매일 오전 3시 자동 갱신</span>
               <span id="postsCount"></span>
@@ -51,7 +53,7 @@
             </div>
           </section>
 
-          <section class="tab-panel" id="tab-us" style="display:none">
+          <section class="tab-panel" id="tab-us">
             <div class="post-list" id="usPostList">
               <div class="loading-spinner"><div class="spinner"></div><p>불러오는 중...</p></div>
             </div>
@@ -106,10 +108,12 @@
             <div id="calList"><div class="cal-empty">로딩 중...</div></div>
           </div>
 
+          <!-- HIDDEN: 특별 분석 종목 (일시 비활성, 데이터 유지)
           <div class="widget-card">
             <div class="widget-title">🔬 특별 분석 종목</div>
             <div id="specialTickerList"><div class="loading-state" style="padding:16px 0"><div class="spinner"></div></div></div>
           </div>
+          -->
 
           <div class="widget-card">
             <div class="widget-title">👥 오늘 방문자</div>
